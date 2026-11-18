@@ -1,18 +1,17 @@
 import xoEvidence from '../../contracts/evidence/chipnet-transaction.json';
 
 export type BchNetwork = 'mainnet' | 'chipnet';
-const env = import.meta.env;
 export const projectConfig = {
-  deckUrl: env.VITE_PROJECT_DECK_URL?.trim() ?? '',
-  repositoryUrl: env.VITE_PROJECT_REPOSITORY_URL?.trim() || 'https://github.com/dr4ken-soul/Pact',
-  donationAddress: env.VITE_EMBER2026_CASHTOKENS_ADDRESS?.trim() ?? '',
-  donationAddressVerified: env.VITE_EMBER2026_VERIFIED === 'true',
-  network: (env.VITE_BCH_NETWORK === 'mainnet' ? 'mainnet' : 'chipnet') as BchNetwork,
-  mainnetSendsEnabled: env.VITE_ENABLE_MAINNET_SENDS === 'true',
-  demoRecipient: env.VITE_DEMO_RECIPIENT?.trim() ?? '',
-  demoAmountBch: env.VITE_DEMO_AMOUNT_BCH?.trim() ?? '',
-  mainnetElectrumHost: env.VITE_MAINNET_ELECTRUM_HOST?.trim() ?? '',
-  chipnetElectrumHost: env.VITE_CHIPNET_ELECTRUM_HOST?.trim() ?? '',
+  deckUrl: import.meta.env.VITE_PROJECT_DECK_URL?.trim() ?? '',
+  repositoryUrl: import.meta.env.VITE_PROJECT_REPOSITORY_URL?.trim() || 'https://github.com/dr4ken-soul/Pact',
+  donationAddress: import.meta.env.VITE_EMBER2026_CASHTOKENS_ADDRESS?.trim() ?? '',
+  donationAddressVerified: import.meta.env.VITE_EMBER2026_VERIFIED === 'true',
+  network: (import.meta.env.VITE_BCH_NETWORK === 'mainnet' ? 'mainnet' : 'chipnet') as BchNetwork,
+  mainnetSendsEnabled: import.meta.env.VITE_ENABLE_MAINNET_SENDS === 'true',
+  demoRecipient: import.meta.env.VITE_DEMO_RECIPIENT?.trim() ?? '',
+  demoAmountBch: import.meta.env.VITE_DEMO_AMOUNT_BCH?.trim() ?? '',
+  mainnetElectrumHost: import.meta.env.VITE_MAINNET_ELECTRUM_HOST?.trim() ?? '',
+  chipnetElectrumHost: import.meta.env.VITE_CHIPNET_ELECTRUM_HOST?.trim() ?? '',
   xoTransactionUrl: xoEvidence.transactionUrl,
   xoTransactionStatus: xoEvidence.status,
   xoPolicyFeeSatoshis: xoEvidence.policyFeeSatoshis,
