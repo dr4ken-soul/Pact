@@ -14,7 +14,7 @@ Do not reuse one address for another purpose without explicit owner approval and
 
 ## Key handling
 
-- No seed phrase, private key, PIN, or recovery phrase enters Pact, source code, issue tracker, logs, AI prompts, or chat.
+- End-user seed phrases, private keys, PINs, or recovery phrases never enter Pact, source code, issue tracker, logs, AI prompts, or chat. The isolated development-only Chipnet XO account may store its generated mnemonic only as current-user DPAPI ciphertext under ignored `contracts/.xo-state/`; never log, commit, upload, or reuse it on Mainnet.
 - The build agent may help the user create a wallet and copy a public receiving address but never asks for secrets.
 - If a future agent signing key is required by a contract design, it needs a separate threat model, restricted authority, secure key management, rotation, revocation, and explicit owner approval. It is not part of the first prototype by default.
 

@@ -54,6 +54,7 @@ body::after { z-index:3; }
 .boundary-row strong { font-size:12px; }
 .boundary-row>span:nth-child(2) { max-width:60ch; color:var(--text-secondary); font-size:11px; line-height:1.6; }
 .boundary-status { display:inline-flex; min-height:30px; align-items:center; padding:0 10px; border:1px solid var(--border-default); border-radius:999px; color:var(--warning); font-size:9px; white-space:nowrap; }
+.boundary-proof { display:flex; flex-wrap:wrap; gap:8px 24px; max-width:1240px; margin:14px auto 0; }
 .guided-section { background:#0d1210; }
 .guided-grid { display:grid; max-width:1240px; grid-template-columns:5fr 7fr; gap:1px; margin:auto; overflow:hidden; border:1px solid var(--border-default); border-radius:var(--radius-lg); background:var(--border-default); }
 .guided-instructions,.guided-summary { padding:clamp(20px,4vw,34px); background:var(--bg-surface); }

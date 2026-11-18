@@ -1,0 +1,23 @@
+{
+  "name": "pact-xo-chipnet",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "node scripts/validate-template.mjs",
+    "compile": "node scripts/compile-template.mjs",
+    "profile": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/New-ChipnetAccount.ps1",
+    "fund:chipnet": "node scripts/request-chipnet-funds.mjs",
+    "invitation:chipnet": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/New-ChipnetAccount.ps1 -Script create-invitation.mjs"
+  },
+  "dependencies": {
+    "@bitauth/libauth": "3.1.0-next.8",
+    "@xo-cash/engine": "0.1.1-next.18029697917",
+    "@xo-cash/primitives": "0.0.3",
+    "@xo-cash/state": "0.0.5",
+    "@xo-cash/templates": "0.0.12",
+    "@xo-cash/utils": "0.0.10",
+    "@electrum-cash/checkpoint": "0.7.2",
+    "@electrum-cash/servers": "4.2.0"
+  }
+}

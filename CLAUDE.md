@@ -37,7 +37,7 @@ Pact gives an AI agent a BCH payment capability bounded by a user-defined spendi
 
 ## Security and truthfulness
 
-- Never ask for or handle wallet seed phrases or private keys.
+- Never ask for or handle an end-user wallet seed phrase or private key. The development-only Chipnet XO harness may generate a separate random account mnemonic; encrypt it with Windows current-user DPAPI in ignored `contracts/.xo-state/`, and never log, commit, upload, or use it on Mainnet.
 - Never commit secrets or put secrets in browser-exposed environment variables.
 - Never fabricate a BCH address, CashTokens address, transaction ID, balance, confirmation count, explorer link, benchmark, or contract proof.
 - A UI check is not a covenant. Label enforcement as `ui-only`, `chipnet-verified`, or `mainnet-verified` accurately.

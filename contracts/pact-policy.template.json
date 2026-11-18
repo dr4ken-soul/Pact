@@ -1,0 +1,351 @@
+{
+  "$schema": "https://libauth.org/schemas/wallet-template-v0.schema.json",
+  "name": "Pact Bounded Payment",
+  "description": "A Chipnet BCH policy output that routes payments to one committed recipient under a per-payment cap, preserves the remaining funded balance, and lets the owner recover after a timestamp.",
+  "version": "0.1.6",
+  "supported": [
+    "BCH_2023_05",
+    "BCH_2024_05",
+    "BCH_2025_05",
+    "BCH_2026_05"
+  ],
+  "roles": {
+    "agent": {
+      "name": "Scoped agent",
+      "description": "Can spend one policy UTXO only to the committed recipient and within the per-payment cap."
+    },
+    "owner": {
+      "name": "Policy owner",
+      "description": "Receives the locked BCH after the recovery timestamp."
+    }
+  },
+  "start": [],
+  "actions": {
+    "pay": {
+      "name": "Make bounded payment",
+      "description": "Send BCH to the committed recipient and return the remaining policy funds to the same covenant.",
+      "roles": {
+        "agent": {
+          "requirements": {
+            "variables": [
+              "inputSatoshis",
+              "paymentSatoshis",
+              "recipientLockingBytecode",
+              "ownerLockingBytecode",
+              "perPaymentCapSatoshis",
+              "expiryTimestamp",
+              "policyFeeSatoshis",
+              "dustLimitSatoshis"
+            ],
+            "secrets": [
+              "agentKey"
+            ]
+          }
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "agent",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      },
+      "transaction": "payTransaction"
+    },
+    "reclaim": {
+      "name": "Recover policy funds",
+      "description": "After the recovery timestamp, route the remaining policy value to the owner's fixed BCH address.",
+      "roles": {
+        "owner": {
+          "requirements": {
+            "variables": [
+              "inputSatoshis"
+            ]
+          }
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "owner",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      },
+      "transaction": "reclaimTransaction"
+    }
+  },
+  "transactions": {
+    "payTransaction": {
+      "name": "Pact payment",
+      "description": "Pay $(<paymentSatoshis>) satoshis to the policy recipient.",
+      "inputs": [
+        {
+          "input": "policyPayInput",
+          "inputIndex": 0
+        }
+      ],
+      "outputs": [
+        {
+          "output": "recipientOutput",
+          "outputIndex": 0
+        },
+        {
+          "output": "policyContinuationOutput",
+          "outputIndex": 1
+        }
+      ],
+      "version": 2,
+      "locktime": 0,
+      "composable": false
+    },
+    "reclaimTransaction": {
+      "name": "Pact recovery",
+      "description": "Return the policy balance to its owner after the recovery timestamp.",
+      "inputs": [
+        {
+          "input": "policyReclaimInput",
+          "inputIndex": 0
+        }
+      ],
+      "outputs": [
+        {
+          "output": "ownerRecoveryOutput",
+          "outputIndex": 0
+        }
+      ],
+      "version": 2,
+      "locktime": "$(<expiryTimestamp>)",
+      "composable": false
+    }
+  },
+  "inputs": {
+    "policyPayInput": {
+      "name": "Pact policy input",
+      "description": "The policy UTXO being spent under its recipient and amount constraints.",
+      "token": null,
+      "unlockingScript": "unlockPay"
+    },
+    "policyReclaimInput": {
+      "name": "Pact policy input",
+      "description": "The policy UTXO being recovered after its timestamp.",
+      "token": null,
+      "unlockingScript": "unlockReclaim"
+    }
+  },
+  "outputs": {
+    "recipientOutput": {
+      "name": "Approved recipient",
+      "description": "The payment to the recipient committed by the policy.",
+      "lockingScript": "recipientLockingScript",
+      "valueSatoshis": "$(<paymentSatoshis>)",
+      "token": null
+    },
+    "policyContinuationOutput": {
+      "name": "Remaining policy balance",
+      "description": "Returns the remaining satoshis to the same Pact policy.",
+      "lockingScript": "pactPolicyLockingScript",
+      "valueSatoshis": "$(<inputSatoshis> <policyFeeSatoshis> OP_SUB <paymentSatoshis> OP_SUB)",
+      "token": null,
+      "roles": {
+        "agent": {
+          "relevant": true,
+          "selectable": true
+        }
+      }
+    },
+    "ownerRecoveryOutput": {
+      "name": "Owner recovery",
+      "description": "Returns the remaining BCH to the owner's committed locking script.",
+      "lockingScript": "ownerLockingScript",
+      "valueSatoshis": "$(<inputSatoshis> <policyFeeSatoshis> OP_SUB)",
+      "token": null,
+      "roles": {
+        "owner": {
+          "relevant": true,
+          "selectable": true
+        }
+      }
+    }
+  },
+  "lockingScripts": {
+    "pactPolicyLockingScript": {
+      "name": "Pact payment policy",
+      "description": "Enforces the fixed recipient, per-payment cap, one-input spending, a same-script balance continuation, fixed transaction fee, and delayed owner recovery. Payment signing remains available to the agent key after the recovery time; the recovery time makes the owner branch available.",
+      "lockingType": "p2sh",
+      "lockingBytecode": "pactPolicy",
+      "state": {
+        "variables": [
+          "recipientLockingBytecode",
+          "ownerLockingBytecode",
+          "perPaymentCapSatoshis",
+          "expiryTimestamp"
+        ],
+        "secrets": [
+          "agentKey"
+        ]
+      },
+      "roles": {
+        "agent": {
+          "state": {
+            "variables": [
+              "recipientLockingBytecode",
+              "ownerLockingBytecode",
+              "perPaymentCapSatoshis",
+              "expiryTimestamp"
+            ],
+            "secrets": [
+              "agentKey"
+            ]
+          },
+          "actions": [
+            {
+              "action": "pay",
+              "role": "agent",
+              "secrets": [
+                {
+                  "agentKey": null
+                }
+              ]
+            }
+          ],
+          "balance": {
+            "satoshis": true
+          },
+          "selectable": true
+        },
+        "owner": {
+          "state": {
+            "variables": [
+              "recipientLockingBytecode",
+              "ownerLockingBytecode",
+              "perPaymentCapSatoshis",
+              "expiryTimestamp"
+            ],
+            "secrets": []
+          },
+          "actions": [
+            {
+              "action": "reclaim",
+              "role": "owner"
+            }
+          ],
+          "balance": {
+            "satoshis": true
+          },
+          "selectable": true
+        }
+      }
+    },
+    "recipientLockingScript": {
+      "name": "Approved recipient",
+      "description": "P2PKH output to the address committed by the policy.",
+      "lockingType": "p2pkh",
+      "lockingBytecode": "lockToRecipient",
+      "actions": [],
+      "selectable": false
+    },
+    "ownerLockingScript": {
+      "name": "Policy owner",
+      "description": "P2PKH output to the address committed by the policy.",
+      "lockingType": "p2pkh",
+      "lockingBytecode": "lockToOwner",
+      "actions": [],
+      "selectable": false
+    }
+  },
+  "scripts": {
+    "pactPolicy": "OP_IF agentAuthorization paymentChecks OP_ELSE recoveryChecks OP_ENDIF OP_1",
+    "agentAuthorization": "<agentKey.public_key> OP_CHECKSIGVERIFY",
+    "paymentChecks": "OP_INPUTINDEX OP_0 OP_NUMEQUALVERIFY OP_TXINPUTCOUNT OP_1 OP_NUMEQUALVERIFY OP_TXLOCKTIME OP_0 OP_NUMEQUALVERIFY OP_TXOUTPUTCOUNT OP_2 OP_NUMEQUALVERIFY OP_0 OP_UTXOTOKENCATEGORY OP_0 OP_EQUALVERIFY OP_0 OP_UTXOTOKENAMOUNT OP_0 OP_NUMEQUALVERIFY OP_0 OP_OUTPUTTOKENCATEGORY OP_0 OP_EQUALVERIFY OP_1 OP_OUTPUTTOKENCATEGORY OP_0 OP_EQUALVERIFY OP_0 OP_OUTPUTTOKENAMOUNT OP_0 OP_NUMEQUALVERIFY OP_1 OP_OUTPUTTOKENAMOUNT OP_0 OP_NUMEQUALVERIFY OP_0 OP_OUTPUTBYTECODE <recipientLockingBytecode> OP_EQUALVERIFY OP_0 OP_OUTPUTVALUE <perPaymentCapSatoshis> OP_GREATERTHAN OP_NOT OP_VERIFY OP_0 OP_OUTPUTVALUE OP_0 OP_GREATERTHAN OP_VERIFY OP_0 OP_OUTPUTVALUE <dustLimitSatoshis> OP_LESSTHAN OP_NOT OP_VERIFY OP_1 OP_OUTPUTBYTECODE OP_INPUTINDEX OP_UTXOBYTECODE OP_EQUALVERIFY OP_0 OP_UTXOVALUE OP_0 OP_OUTPUTVALUE OP_SUB <policyFeeSatoshis> OP_SUB OP_1 OP_OUTPUTVALUE OP_NUMEQUALVERIFY OP_1 OP_OUTPUTVALUE <dustLimitSatoshis> OP_LESSTHAN OP_NOT OP_VERIFY",
+    "recoveryChecks": "OP_INPUTINDEX OP_0 OP_NUMEQUALVERIFY OP_TXINPUTCOUNT OP_1 OP_NUMEQUALVERIFY OP_TXOUTPUTCOUNT OP_1 OP_NUMEQUALVERIFY <expiryTimestamp> OP_CHECKLOCKTIMEVERIFY OP_DROP OP_0 OP_UTXOTOKENCATEGORY OP_0 OP_EQUALVERIFY OP_0 OP_UTXOTOKENAMOUNT OP_0 OP_NUMEQUALVERIFY OP_0 OP_OUTPUTTOKENCATEGORY OP_0 OP_EQUALVERIFY OP_0 OP_OUTPUTTOKENAMOUNT OP_0 OP_NUMEQUALVERIFY OP_0 OP_OUTPUTBYTECODE <ownerLockingBytecode> OP_EQUALVERIFY OP_0 OP_UTXOVALUE <policyFeeSatoshis> OP_SUB OP_0 OP_OUTPUTVALUE OP_NUMEQUALVERIFY OP_0 OP_OUTPUTVALUE <dustLimitSatoshis> OP_LESSTHAN OP_NOT OP_VERIFY",
+    "unlockPay": "<agentKey.schnorr_signature.all_outputs> <1>",
+    "unlockReclaim": "<0>",
+    "lockToRecipient": "$(<recipientLockingBytecode>)",
+    "lockToOwner": "$(<ownerLockingBytecode>)"
+  },
+  "constants": {},
+  "variables": {
+    "agentKey": {
+      "name": "Ephemeral agent signing key",
+      "description": "Generated by the Chipnet XO test engine for this policy; it is not a user's wallet key.",
+      "type": "private_key"
+    },
+    "recipientLockingBytecode": {
+      "name": "Approved recipient",
+      "description": "P2PKH locking bytecode for the only address the policy may pay.",
+      "type": "locking_script"
+    },
+    "ownerLockingBytecode": {
+      "name": "Owner recovery address",
+      "description": "P2PKH locking bytecode that receives recovered BCH.",
+      "type": "locking_script"
+    },
+    "perPaymentCapSatoshis": {
+      "name": "Per-payment cap",
+      "description": "Maximum satoshis allowed in one recipient output.",
+      "type": "satoshis"
+    },
+    "expiryTimestamp": {
+      "name": "Recovery timestamp",
+      "description": "Unix timestamp after which the owner recovery path is available.",
+      "type": "integer"
+    },
+    "inputSatoshis": {
+      "name": "Policy input value",
+      "description": "Satoshis in the selected contract UTXO; the contract verifies the constructed outputs against it.",
+      "type": "satoshis"
+    },
+    "paymentSatoshis": {
+      "name": "Payment amount",
+      "description": "Satoshis paid to the committed recipient.",
+      "type": "satoshis"
+    },
+    "policyFeeSatoshis": {
+      "name": "Fixed transaction fee",
+      "description": "Exact satoshi fee committed into this policy output.",
+      "type": "satoshis"
+    },
+    "dustLimitSatoshis": {
+      "name": "Minimum BCH output value",
+      "description": "Minimum satoshis for the payment, continuation, and recovery outputs.",
+      "type": "satoshis"
+    }
+  },
+  "defaults": {
+    "address": {
+      "lockingScript": "pactPolicyLockingScript",
+      "role": "agent",
+      "generate": [
+        "agentKey"
+      ],
+      "variables": [
+        {
+          "recipientLockingBytecode": null
+        },
+        {
+          "ownerLockingBytecode": null
+        },
+        {
+          "perPaymentCapSatoshis": null
+        },
+        {
+          "expiryTimestamp": null
+        },
+        {
+          "policyFeeSatoshis": 1000
+        },
+        {
+          "dustLimitSatoshis": 546
+        }
+      ]
+    }
+  }
+}

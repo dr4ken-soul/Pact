@@ -176,7 +176,7 @@ All money values are integer satoshis. Avoid floating-point arithmetic for polic
 
 ## 8. Security and privacy boundaries
 
-- Never request, log, store, transmit, or include seed phrases or wallet private keys.
+- Never request, log, store, transmit, or include an end-user wallet seed phrase or private key. The isolated development-only Chipnet XO harness may store its generated mnemonic only as current-user DPAPI ciphertext under ignored `contracts/.xo-state/`; never log, commit, upload, or reuse it on Mainnet.
 - Never put secrets in frontend environment variables or public repository files.
 - Do not send policy details to an external AI API without an explicit privacy review and user consent.
 - Treat wallet return data, addresses, remote APIs, and transaction status as untrusted inputs.

@@ -67,7 +67,7 @@ Apply these rules to every visible string, planning document, code comment, JSDo
 - This project is both an on-chain product and an AI-agent product. Do not apply EVM assumptions such as Solidity, Hardhat, wagmi, or viem unless a verified BCH-specific reason requires them.
 - WizardConnect is a mandatory integration for the current BCH BLAZE 2026 Mainnet track. XO templates are a separate contract/transaction integration and are not an alternative to WizardConnect.
 - Use Chipnet for contract and wallet testing first. Use current official XO packages and pin the version actually tested.
-- Never request, log, store, transmit, or expose seed phrases or private keys.
+- Never request, log, store, transmit, or expose an end-user wallet seed phrase or private key. The separate development-only Chipnet XO account may store its generated mnemonic only as current-user DPAPI ciphertext under ignored `contracts/.xo-state/`; never log, commit, upload, or use that account on Mainnet.
 - A user's model prompt is not an enforcement boundary. A UI check is not a covenant.
 - A per-payment maximum is not a cumulative spending cap. Prove the remaining-allowance state transition, including fees, change, repeated spends, multiple inputs, and re-funding.
 - A UI expiry timer is not an on-chain expiry. Specify and test the actual time/height rule and reclaim path.

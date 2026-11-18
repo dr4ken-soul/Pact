@@ -1,38 +1,46 @@
 # Submission status
 
-The interface and BCH wallet flow are implemented in this repository. The source must not be described as a completed, enforced XO covenant: the current published P2PKH template does not implement Pact's recipient, cap, or expiry policy.
+## Completed in this checkout
 
-## Values to supply in the root .env
+- Pact web app with WizardConnect wallet pairing, proposal checks, transaction review, and Chipnet-first configuration.
+- A custom XO template, pinned dependencies, local BCH VM validation, and a Chipnet invitation accepted by Electrum. Public invitation and transaction evidence are in `contracts/evidence/`. Current chain status: mempool, awaiting confirmation.
+- Production build passes template validation, TypeScript compilation, and Vite bundling.
+- The Vercel project and GitHub repository are linked; mainnet sends remain disabled.
+- A Pact pitch deck was created from the Widget Factory template and saved as `Pact_Pitch_Deck.pptx` in this repository. The current public URL points to the downloadable PowerPoint file, not a Google Slides copy.
 
-All \`VITE_*\` values are public browser configuration. Do not put private keys, seed phrases, API secrets, or wallet recovery material in this file.
+## Values in the real root `.env`
 
-- \`VITE_PROJECT_DECK_URL\`: the team's final Widget Factory presentation link.
-- \`VITE_EMBER2026_CASHTOKENS_ADDRESS\`: the official token address verified by the team.
-- \`VITE_DEMO_RECIPIENT\`: an owner-approved BCH address. Use a Chipnet address while testing.
-- \`VITE_DEMO_AMOUNT_BCH\`: the owner-approved test amount in BCH.
-- \`VITE_BCH_NETWORK\`: keep \`chipnet\` for testing.
-- \`VITE_ENABLE_MAINNET_SENDS\`: keep \`false\` until Chipnet review and explicit owner approval.
-- \`VITE_MAINNET_ELECTRUM_HOST\`, \`VITE_CHIPNET_ELECTRUM_HOST\`: optional host overrides; leave blank to use the package's public defaults.
-- \`VITE_PROJECT_REPOSITORY_URL\`: already set to the Pact GitHub repository.
+All `VITE_*` values are public browser configuration. Do not put a private key, seed phrase, API secret, or wallet backup in `.env` or Vercel environment variables.
 
-Restart Vite after editing .env. Vite embeds public values in the built client bundle.
+- `VITE_PROJECT_DECK_URL`: currently links to the public PPTX file in GitHub. Replace it with the Google Slides copy URL if a Google Slides copy is created.
+- `VITE_PROJECT_REPOSITORY_URL`: `https://github.com/dr4ken-soul/Pact`.
+- `VITE_EMBER2026_CASHTOKENS_ADDRESS`: set to the address supplied by the owner. It is labelled unverified in the app until the Pact team confirms it.
+- `VITE_EMBER2026_VERIFIED`: keep `false` until the team confirms the address and token category.
+- `VITE_DEMO_RECIPIENT`: a generated, separate `bchtest:` Chipnet recipient used by the public XO proof.
+- `VITE_DEMO_AMOUNT_BCH`: `0.00001` BCH (1,000 sats).
+- `VITE_XO_TRANSACTION_URL`: direct Chipnet explorer link for the executed XO payment.
+- `VITE_BCH_NETWORK`: `chipnet`.
+- `VITE_ENABLE_MAINNET_SENDS`: `false`.
+- `VITE_MAINNET_ELECTRUM_HOST` and `VITE_CHIPNET_ELECTRUM_HOST`: blank to use package defaults.
 
-## Required before calling the release submission-ready
+There are no API credentials required for the static Vite app or the WizardConnect browser flow. Do not upload the local XO test-account mnemonic to Vercel.
 
-- Confirm the deck and token address with the project owner.
-- Configure an approved Chipnet recipient and amount; fund the wallet from a Chipnet faucet.
-- Connect a compatible wallet, prepare a Chipnet payment, review it in the wallet, sign, broadcast, and retain the actual transaction ID.
-- Build and publish a Pact XO template that enforces the advertised policy, then validate an invitation and transaction on Chipnet. The current generic P2PKH template is not this contract.
-- Deploy a public demo and verify its URL. Do not enable Mainnet payments until the Chipnet evidence is reviewed and the owner explicitly opts in.
-- Complete the event's deck, project, demonstration, roll-call, and community submission steps, and retain actual proof URLs.
+## What still needs a human confirmation or external submission
 
-## Direct project links
+1. Ask the Pact team to verify the EMBER2026 CashTokens receive address and token category. Send a short message in the [BCH BLAZE Telegram community](https://t.me/bchblaze); set `VITE_EMBER2026_VERIFIED=true` only after confirmation.
+2. If the event requires a native Google Slides URL, make a Google Slides copy of the included PPTX/template and replace `VITE_PROJECT_DECK_URL` with that copy's URL. The presentation file itself is already in the repository.
+3. Complete the BLAZE roll call and event submission, then provide any requested Telegram confirmation. Keep the actual confirmation links with the project.
+4. Run the public wallet demo with a funded Chipnet-compatible wallet if a judge-facing WizardConnect transaction walkthrough is needed. The separate XO invitation is already executed and evidenced.
+5. Keep Mainnet payments disabled until the team verifies the EMBER address and the project owner separately approves a Mainnet release.
 
-- Widget Factory deck template: https://docs.google.com/presentation/d/1Yfuk9CJkf4U9M_WukcELhumWgj3Ak6345Ewy8hSp-Hk/edit?slide=id.p#slide=id.p
-- BCH BLAZE hackathon: https://dorahacks.io/hackathon/bchblaze2026/
-- BCH BLAZE roll call: https://bchblaze.cash/live/
-- BCH BLAZE community: https://t.me/bchblaze
+## Direct links
+
+- GitHub repository: https://github.com/dr4ken-soul/Pact
+- Pact pitch deck file: https://github.com/dr4ken-soul/Pact/blob/main/Pact_Pitch_Deck.pptx
+- Vercel demo: https://pact-bch.vercel.app
+- Widget Factory Slides template: https://docs.google.com/presentation/d/1Yfuk9CJkf4U9M_WukcELhumWgj3Ak6345Ewy8hSp-Hk/edit?slide=id.p#slide=id.p
+- BLAZE roll call: https://bchblaze.cash/live/
+- BLAZE Telegram: https://t.me/bchblaze
 - Paytaca wallet: https://www.paytaca.com/applications/wallet
-- Electron Cash: https://electroncash.org/
+- Electron Cash download page: https://electroncash.org/
 - Chipnet faucet: https://chipnet.bch.ninja/
-- Vercel project creation (if using Vercel): https://vercel.com/new

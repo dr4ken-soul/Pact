@@ -1,38 +1,39 @@
 # Pact
 
-Pact is a Bitcoin Cash agent-payment prototype. A person defines an approved recipient, a per-payment cap, and an expiry. An agent can submit a proposal for an app-level check. The person reviews the complete transaction in a WizardConnect wallet and approves each signature.
+Pact is a Bitcoin Cash agent-payment prototype. The web app connects through WizardConnect and asks the wallet owner to review every payment before signing. Its browser-side recipient, amount, and time checks are interface checks; the browser payment path does not spend from the XO policy address.
+
+A separate Chipnet XO template is included under `contracts/`. It commits one recipient, a per-payment cap, one policy input, a same-script balance continuation, a fixed fee, dust floors, no CashTokens, and a timestamped owner recovery branch. The template and executed invitation have public evidence in [contracts/evidence](contracts/evidence/). See the contract README for the exact boundary and expiry limitation.
 
 ## Run locally
 
 Requirements: Node.js 22 or later and npm.
 
-1. Keep the supplied \`.env\` file in the project root. Fill its public project values as described in [SUBMISSION_STATUS.md](SUBMISSION_STATUS.md). It contains no secrets.
-2. Run \`npm install\`.
-3. Run \`npm run dev\` and open the local URL printed by Vite.
-4. For a real Chipnet payment, use a WizardConnect-compatible BCH wallet with confirmed Chipnet funds and a Chipnet recipient. Review the full destination and fee in your wallet before approving.
+1. Use the actual root `.env` file. Its `VITE_*` values are public client configuration, not credentials.
+2. Run `npm ci --cache .npm-cache`.
+3. Run `npm run dev` and open the local Vite URL.
+4. Use a WizardConnect-compatible wallet on Chipnet for the browser payment demo. Mainnet sends remain disabled.
 
-The production build runs the XO template schema validation, TypeScript check, and Vite bundle: \`npm run build\`.
+The production build runs the XO schema checks, TypeScript compilation, and Vite bundle:
 
-## Product boundary
+```powershell
+$env:NPM_CONFIG_CACHE = 'S:\Hackathon\Pact\.npm-cache'
+npm run build
+```
 
-The current policy is an app-level check. It does not provide an on-chain covenant, cumulative spending control, or expiry enforcement. The published XO P2PKH template is schema-validated but does not encode Pact rules. Read [contracts/README.md](contracts/README.md) before making claims about contract enforcement.
+## XO Chipnet flow
 
-Pact does not request or store seed phrases or private keys. Wallet pairing is ephemeral in the browser. Mainnet sends are disabled by default and require local opt-in after Chipnet review.
+The isolated `contracts/` package pins the XO Engine used for the executable template and invitation. See [contracts/README.md](contracts/README.md) for the setup commands and public transaction proof.
 
-## Project documents
+The XO Engine creates its account from a mnemonic. For this development integration only, the Chipnet scripts generate a separate test account and encrypt its mnemonic with Windows current-user DPAPI under the ignored `contracts/.xo-state/` directory. It is never placed in `.env`, committed, uploaded to Vercel, or used on Mainnet. The Pact web app continues to use WizardConnect and never requests an end-user wallet recovery phrase.
 
-The original product, UX, team, and event planning documents are retained in this repository. See [SUBMISSION_STATUS.md](SUBMISSION_STATUS.md) for outstanding owner-supplied values and external release steps.
+## Honest boundaries
 
-## Pinned integration versions and verification
+- Browser proposals are app-checked; they are not signed by an agent or enforced by the XO policy.
+- The XO template enforces a maximum per payment and preserves a finite balance for each policy UTXO. It does not establish a global cumulative cap across separately funded UTXOs.
+- The recovery timestamp makes the owner's reclaim branch available. It does not disable the agent payment branch.
+- The EMBER2026 address in `.env` was supplied by the owner and remains labelled unverified until the Pact team confirms it.
+- Mainnet payments are disabled.
 
-The lockfile records these exact direct package versions:
+## Pinned integration versions
 
-- React 19.3.1, Vite 8.3.8, TypeScript 7.0.2, Tailwind CSS 4.3.5
-- WizardConnect React 0.2.6
-- @electrum-cash/network 4.4.8, @electrum-cash/servers 4.2.0, @electrum-cash/checkpoint 0.7.2
-- @bitauth/libauth 3.1.0-next.8
-- @xo-cash/templates 0.0.12 and @xo-cash/utils 0.0.11
-
-The published XO engine was inspected at 0.1.1-next.18029697917. It is not included in the app dependencies: its engine creation API requires a mnemonic, which is outside Pact's no-seed-handling design. The app validates the published P2PKH template schema only. See [contracts/README.md](contracts/README.md).
-
-Verification performed here: the production build runs XO schema parsing, strict TypeScript compilation, and Vite bundling. No live wallet session, Chipnet payment, Mainnet payment, desktop/mobile browser matrix, or contract covenant has been verified from this workspace.
+The root lockfile pins React 19.3.1, Vite 8.3.8, TypeScript 7.0.2, WizardConnect React 0.2.6, `@bitauth/libauth` 3.1.0-next.8, and the BCH network packages. The separate contract lockfile pins `@xo-cash/engine` 0.1.1-next.18029697917 and its dependencies.
