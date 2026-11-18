@@ -1,3 +1,5 @@
+import xoEvidence from '../../contracts/evidence/chipnet-transaction.json';
+
 export type BchNetwork = 'mainnet' | 'chipnet';
 const env = import.meta.env;
 export const projectConfig = {
@@ -11,7 +13,9 @@ export const projectConfig = {
   demoAmountBch: env.VITE_DEMO_AMOUNT_BCH?.trim() ?? '',
   mainnetElectrumHost: env.VITE_MAINNET_ELECTRUM_HOST?.trim() ?? '',
   chipnetElectrumHost: env.VITE_CHIPNET_ELECTRUM_HOST?.trim() ?? '',
-  xoTransactionUrl: env.VITE_XO_TRANSACTION_URL?.trim() ?? '',
+  xoTransactionUrl: xoEvidence.transactionUrl || env.VITE_XO_TRANSACTION_URL?.trim() || '',
+  xoTransactionStatus: xoEvidence.status,
+  xoPolicyFeeSatoshis: xoEvidence.policyFeeSatoshis,
 };
 export function releaseConfigurationIssues(): string[] {
   const issues: string[] = [];

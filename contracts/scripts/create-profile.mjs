@@ -78,7 +78,7 @@ try {
 
     await engine.setDefaultPolicies({ address: { templateIdentifier } });
     const expiryTimestamp = Math.floor(Date.now() / 1000) + 14 * 24 * 60 * 60;
-    const policyFeeSatoshis = 1_000;
+    const policyFeeSatoshis = 20_000;
     const dustLimitSatoshis = 546;
     const perPaymentCapSatoshis = 100_000;
     const policyLockingBytecode = await engine.generateLockingBytecodeFromDefaultPolicy('address', {

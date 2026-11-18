@@ -72,7 +72,7 @@ fs.writeFileSync(rawTransactionPath, hex.toLowerCase() + '\n');
 const evidence = {
   network: 'chipnet', status, templateIdentifier: profile.templateIdentifier, templateVersion: profile.templateVersion,
   invitationIdentifier: localEvidence.invitationIdentifier, policyAddress: profile.policyAddress,
-  sourceTransactionId: localEvidence.sourceTransactionId, sourceOutputIndex: localEvidence.sourceOutputIndex,
+  sourceTransactionId: localEvidence.sourceTransactionId, sourceTransactionUrl: `https://explorer.selene.cash/tx/${localEvidence.sourceTransactionId}?network=chipnet`, sourceOutputIndex: localEvidence.sourceOutputIndex,
   faucetFundingTransactionId: faucetClaim.txid, inputSatoshis: localEvidence.inputSatoshis,
   paymentSatoshis: localEvidence.paymentSatoshis, recipientAddress: profile.recipientAddress,
   continuationSatoshis: localEvidence.continuationSatoshis, policyFeeSatoshis: localEvidence.policyFeeSatoshis,

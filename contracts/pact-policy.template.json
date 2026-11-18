@@ -2,7 +2,7 @@
   "$schema": "https://libauth.org/schemas/wallet-template-v0.schema.json",
   "name": "Pact Bounded Payment",
   "description": "A Chipnet BCH policy output that routes payments to one committed recipient under a per-payment cap, preserves the remaining funded balance, and lets the owner recover after a timestamp.",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "supported": [
     "BCH_2023_05",
     "BCH_2024_05",
@@ -340,7 +340,7 @@
           "expiryTimestamp": null
         },
         {
-          "policyFeeSatoshis": 1000
+          "policyFeeSatoshis": 20000
         },
         {
           "dustLimitSatoshis": 546

@@ -7,7 +7,7 @@ const contractsDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 
 const stateDir = path.join(contractsDir, '.xo-state');
 const profile = JSON.parse(fs.readFileSync(path.join(stateDir, 'public-profile.json'), 'utf8'));
 const claimPath = path.join(stateDir, `faucet-claim-${profile.templateIdentifier.slice(0, 12)}.json`);
-const amountSatoshis = 10_000;
+const amountSatoshis = 100_000;
 const faucet = 'https://chipnet.bch.ninja';
 
 if (profile.network !== 'chipnet' || !/^bchtest:[rz]/.test(profile.policyTokenAddress)) {
@@ -31,8 +31,8 @@ const requestJson = async (path, body) => {
 const pool = await requestJson('pool');
 const maxSatoshis = Number(pool.max);
 const requestedSatoshis = Math.min(amountSatoshis, maxSatoshis);
-if (!Number.isSafeInteger(requestedSatoshis) || requestedSatoshis < 2_546) {
-  throw new Error(`Chipnet faucet has only ${String(pool.max)} sats available; at least 2,546 sats are needed for the bounded demo spend.`);
+if (!Number.isSafeInteger(requestedSatoshis) || requestedSatoshis < 21_546) {
+  throw new Error(`Chipnet faucet has only ${String(pool.max)} sats available; at least 21,546 sats are needed for the 20,000 sat policy fee, 1,000 sat payment, and dust-safe continuation.`);
 }
 console.log(`Requesting ${requestedSatoshis} Chipnet sats for the local Pact covenant.`);
 const challenge = await requestJson('challenge', { address: profile.policyTokenAddress, sats: String(requestedSatoshis) });
