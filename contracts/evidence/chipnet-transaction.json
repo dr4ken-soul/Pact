@@ -15,13 +15,13 @@
   "policyFeeSatoshis": 1000,
   "transactionId": "522c536196b91319fd0e2b3473e6e1942be5e56456c4b8ed85a7a376a70c9b5b",
   "transactionUrl": "https://explorer.selene.cash/tx/522c536196b91319fd0e2b3473e6e1942be5e56456c4b8ed85a7a376a70c9b5b?network=chipnet",
-  "recipientHistoryHeight": -1,
-  "continuationHistoryHeight": -1,
+  "recipientHistoryHeight": 0,
+  "continuationHistoryHeight": 0,
   "bch2023VmValidation": "passed",
   "electrumEndpoint": "wss://chipnet.bch.ninja:50004",
   "invitationFile": "contracts/evidence/chipnet-invitation.json",
   "rawTransactionFile": "contracts/evidence/chipnet-payment-transaction.hex",
   "templateFile": "contracts/pact-policy.template.json",
   "broadcastAt": "2026-11-18T05:28:29.517Z",
-  "verifiedAt": "2026-11-18T05:30:16.698Z"
+  "verifiedAt": "2026-11-18T18:49:29.790Z"
 }
