@@ -227,7 +227,7 @@ The demo must not depend on typing a long prompt, creating an account, fake bala
 - [ ] Project uses only minimal Mainnet funds and only with a tested recovery understanding.
 - [ ] Widget Factory short presentation is copied and completed.
 - [ ] Top-of-homepage banner links to final deck and source repository and displays the project-controlled EMBER2026 CashTokens donation address.
-- [ ] Roll call and any required Telegram confirmation are completed according to the current official event instructions. Save proof/links in the submission checklist.
+- [ ] Record current BLAZE participation status in the submission checklist. Do not treat a closed roll call or an unlisted Telegram confirmation as mandatory.
 - [ ] Submission is made within the official submission window and judging notes are ready.
 - [ ] No logo mark is added unless the user requests one.
 

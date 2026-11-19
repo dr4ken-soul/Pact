@@ -55,7 +55,8 @@ Any future fee model requires an explicit user decision, a public fee policy, a 
 
 ## Event operations checklist
 
-- Complete one required BCH BLAZE preparation-stream roll call as specified by the current official event page. The current event instructions identify one representative and one of the eligible streams as sufficient, with roll call via the live page when open.
-- Confirm the project is real in the BCH BLAZE Telegram channel.
-- Save the deck URL, repository URL, live demo URL, donation address, roll-call proof, and Telegram confirmation link for submission.
-- Re-check the official event page before the deadline because requirements and dates can change.
+- Roll call status: missed/closed. The BLAZE chat notice shown by the owner says late entrants can still compete and do not need to complete roll call.
+- Submit the project through the final Build form on the official DoraHacks event page. Registration alone is not a project submission. Include the repository, working demo, and short project description; check DoraHacks for the exact required fields and deadline.
+- The official BLAZE Getting Started page recommends joining the Telegram group and introducing the project. No separate mandatory Telegram confirmation was found in the current official event instructions.
+- Keep the deck, repository, live demo, Chipnet proof, and EMBER2026 status linked from the submission. The owner-supplied EMBER address remains unverified and is not an official token address.
+- Recheck the official event page before submission because dates and requirements can change.

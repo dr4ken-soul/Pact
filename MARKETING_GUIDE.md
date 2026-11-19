@@ -48,6 +48,6 @@ Keep a clear Chipnet fallback, marked as Chipnet. Never present a video as if it
 - Project-controlled EMBER2026 CashTokens address.
 - Short, direct product description.
 - Demo video or screen recording if useful.
-- Roll-call completion and BCH BLAZE Telegram confirmation.
+- BLAZE roll-call status and optional community introduction, following current organizer guidance.
 
 The build agent must guide the user through obtaining these values using the direct action links and steps in `BUILD_GUIDE.md`.

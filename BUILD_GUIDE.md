@@ -133,8 +133,8 @@ The event's official resources advise using Chipnet for development and testing,
 
 ### Community and deadlines
 
-- Complete the official BCH BLAZE roll call and any associated WizardConnect/token step exactly as instructed on the current event site.
-- Post the required confirmation in the official Telegram/community channel and save evidence.
+- Record the current BLAZE roll-call status. The pinned organizer notice says roll call is closed and late entrants may still compete without completing it.
+- Submit the final project through the BCH BLAZE DoraHacks Build page. The BLAZE Getting Started page encourages a Telegram introduction; no separate mandatory Telegram confirmation was listed.
 - The current DoraHacks track page lists submission opening at 2026-11-13 08:00 UTC-5 and deadline at 2026-11-22 09:00 UTC-5. Earlier planning notes listed November 14 to 22, so the build agent must verify the live event page and convert the displayed timezone to the user's local timezone before advising a deadline. Judging and winner dates should also be checked on the current event page.
 - Submit to the correct track and verify all required fields in DoraHacks.
 
@@ -159,7 +159,7 @@ Keep the explanation short and evidence-led:
 - [ ] Required top banner values are real and clickable.
 - [ ] Widget Factory deck is complete.
 - [ ] Source repository and hosted app are publicly accessible.
-- [ ] Roll call and Telegram confirmation are complete.
+- [ ] Record the current BLAZE roll-call status and follow the official DoraHacks Build submission instructions. Telegram group introduction is community guidance, not a separate submission confirmation.
 - [ ] No unverified claims, fake transaction history, or invented assets are present.
 
 ## 6. Official and technical references

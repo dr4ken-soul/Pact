@@ -31,7 +31,7 @@ The XO Engine creates its account from a mnemonic. For this development integrat
 - Browser proposals are app-checked; they are not signed by an agent or enforced by the XO policy.
 - The XO template enforces a maximum per payment and preserves a finite balance for each policy UTXO. It does not establish a global cumulative cap across separately funded UTXOs.
 - The recovery timestamp makes the owner's reclaim branch available. It does not disable the agent payment branch.
-- The EMBER2026 address in `.env` was supplied by the owner and remains labelled unverified until the Pact team confirms it.
+- The EMBER2026 address in `.env` was supplied by the owner, but BCH BLAZE says EMBER2026 has not been minted or distributed and no official receive address or token category is available yet. It is not an official EMBER2026 address.
 - Mainnet payments are disabled.
 
 ## Pinned integration versions

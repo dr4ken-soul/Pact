@@ -1,6 +1,6 @@
 # Pact XO Chipnet policy
 
-Pact provides a custom XO wallet template in `pact-policy.template.json` (version 0.1.7, template ID `a1248b8f4bb968c21072e930324a5e69b73cc642444d7807abf2456cccbd8321`). The template compiles with the pinned XO Engine and has a broadcast invitation on BCH Chipnet. Its latest transaction is still pending block confirmation.
+Pact provides a custom XO wallet template in `pact-policy.template.json` (version 0.1.7, template ID `a1248b8f4bb968c21072e930324a5e69b73cc642444d7807abf2456cccbd8321`). The template compiles with the pinned XO Engine and has a broadcast invitation on BCH Chipnet. Its latest Chipnet invitation is confirmed at block 337884. See the public evidence in evidence/README.md.
 
 ## What the covenant enforces
 
@@ -17,7 +17,7 @@ The timestamp is an owner-recovery delay, not an agent-spend expiry: the agent p
 
 ## Public Chipnet proof
 
-The latest broadcast policy transaction spends a 100,000 sat policy output, sends 1,000 sats to the committed recipient, returns 79,000 sats to the same policy script, and pays the fixed 20,000 sat miner fee. This gives a 46.62 sat/B fee rate for the 429-byte transaction. The signed invitation and raw transaction are in [`evidence/`](evidence/); the explorer link and latest verification status are in `evidence/chipnet-transaction.json`.
+The latest confirmed policy transaction spends a 100,000 sat policy output, sends 1,000 sats to the committed recipient, returns 79,000 sats to the same policy script, and pays the fixed 20,000 sat miner fee. This gives a 46.62 sat/B fee rate for the 429-byte transaction. The signed invitation and raw transaction are in [`evidence/`](evidence/); the explorer link and latest verification status are in `evidence/chipnet-transaction.json`.
 
 The invitation runner checks the transaction structure and exact outputs, then verifies the signed transaction with the BCH 2023 virtual machine before broadcasting. The earlier version 0.1.6, which used a 1,000 sat fee and remains pending, is preserved under `evidence/archive/v0.1.6-pending/`.
 
