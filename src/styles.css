@@ -110,3 +110,8 @@ body::after { z-index:3; }
   .mobile-menu-links { z-index:51; }
   .token-panel { grid-template-columns:1fr; }
 }
+.setup-banner.checklist-notice { border-color:var(--border-default); background:rgba(229,242,234,.025); }
+.checklist-notice .setup-icon { border-color:var(--border-default); color:var(--text-secondary); }
+.checklist-notice a { color:var(--text-secondary); }
+.wallet-notice { position:fixed; z-index:11; right:22px; bottom:22px; display:flex; align-items:center; gap:10px; padding:12px 15px; border:1px solid rgba(167,240,106,.25); border-radius:8px; color:var(--text-primary); background:#151d1a; box-shadow:0 9px 28px rgba(0,0,0,.32); font-size:10px; }
+@media (max-width:760px) { .wallet-notice { right:12px; bottom:12px; max-width:calc(100vw - 24px); } }

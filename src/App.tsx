@@ -28,11 +28,21 @@ export default function App() {
   const [activity,setActivity]=useState<PaymentReceipt[]>([]);
   const [copied,setCopied]=useState('');
   const [pairingOpen,setPairingOpen]=useState(true);
+  const [walletNotice,setWalletNotice]=useState('');
   const releaseIssues=useMemo(()=>releaseConfigurationIssues(),[]);
+  const emberOnlyIssue=releaseIssues.length===1&&releaseIssues[0].includes('EMBER2026');
   const host=network==='mainnet'?projectConfig.mainnetElectrumHost:projectConfig.chipnetElectrumHost;
   const manager=wallet.manager as unknown as WizardManager|null;
   const connected=wallet.state==='connected'&&!!manager;
   const networkName=network==='mainnet'?'Mainnet':'Chipnet';
+
+  useEffect(()=>{
+    if(!connected){setWalletNotice('');return;}
+    setPairingOpen(false);
+    setWalletNotice('Wallet connected. Check the selected network before sending.');
+    const timeout=window.setTimeout(()=>setWalletNotice(''),4500);
+    return ()=>window.clearTimeout(timeout);
+  },[connected]);
 
   useEffect(()=>{const update=()=>setCompactNav(window.scrollY>80);update();window.addEventListener('scroll',update,{passive:true});return ()=>window.removeEventListener('scroll',update);},[]);
 
@@ -110,7 +120,7 @@ export default function App() {
     setAmount(selected==='chipnet'?projectConfig.demoAmountBch:'');
     setRecipient(selected==='chipnet'?projectConfig.demoRecipient:'');
   }
-  const qrVisible=!!wallet.uri&&!!wallet.qrUri&&pairingOpen;
+  const qrVisible=!connected&&!!wallet.uri&&!!wallet.qrUri&&pairingOpen;
   const decision=evaluate();
   const sendBlocked=!connected||providerState!=='online'||(network==='mainnet'&&!projectConfig.mainnetSendsEnabled)||!policyCreated||(network==='chipnet'&&(!projectConfig.demoRecipient||!projectConfig.demoAmountBch))||busy;
 
@@ -135,7 +145,7 @@ export default function App() {
 
       <section className="workspace-section section-pad" id="workspace">
         <div className="section-heading"><div><div className="eyebrow"><span className="eyebrow-line"/>THE CONTROL ROOM</div><h2>Your spending workspace</h2><p>Set one rule, review one payment, keep control of every signature.</p></div><div className="provider-indicator"><span className={'status-dot '+(providerState==='online'?'online':providerState==='offline'?'offline':'')}/><span>{providerState==='online'?'BCH NETWORK READY':providerState==='checking'?'CHECKING NETWORK':'NETWORK UNAVAILABLE'}</span><span className="provider-network">{networkName}</span></div></div>
-        {releaseIssues.length>0&&<div className="setup-banner"><div className="setup-icon" aria-hidden="true">i</div><div><strong>Submission setup is incomplete</strong><span>{releaseIssues.length} project detail{releaseIssues.length===1?'':'s'} still need the owner's verified values. The app can run without them.</span></div><a href="#release-checklist">View checklist <span aria-hidden="true">-&gt;</span></a></div>}
+        {releaseIssues.length>0&&<div className="setup-banner checklist-notice"><div className="setup-icon" aria-hidden="true">i</div><div><strong>Project checklist: {releaseIssues.length} pending item{releaseIssues.length===1?'':'s'}</strong><span>{emberOnlyIssue?'BCH BLAZE has not issued EMBER2026, so no official token address exists. This does not block ordinary BCH payments.':'These are submission details, separate from the wallet connection and network indicators. See the checklist below for what remains.'}</span></div><a href="#release-checklist">View checklist <span aria-hidden="true">-&gt;</span></a></div>}
         {wallet.error&&<div className="inline-alert error-alert" role="alert">{wallet.error}</div>}
         {providerState==='offline'&&<div className="inline-alert error-alert" role="status"><span>{providerError||'Unable to reach a BCH provider.'}</span><button className="retry-button" type="button" onClick={()=>setProviderRetry(value=>value+1)}>Retry connection</button></div>}
         <div className="workspace-grid">
@@ -177,5 +187,6 @@ export default function App() {
     <dialog ref={reviewDialog} className="review-dialog" aria-labelledby="review-title" onCancel={()=>setPendingPlan(null)}>{pendingPlan&&<><div className="review-card-head"><strong id="review-title">Confirm this payment</strong><span>NOT BROADCAST</span></div><div className="review-line"><span>Network</span><strong>{pendingPlan.network==='mainnet'?'Bitcoin Cash Mainnet':'BCH Chipnet'}</strong></div><div className="review-line"><span>Recipient</span><strong className="address-full">{pendingPlan.recipient}</strong></div><div className="review-line"><span>Payment amount</span><strong>{formatSatoshis(pendingPlan.amountSats)} BCH</strong></div><div className="review-line"><span>Estimated network fee</span><strong>{formatSatoshis(pendingPlan.feeSats)} BCH</strong></div><div className="review-actions"><button type="button" className="button button-outline" onClick={()=>setPendingPlan(null)}>Cancel</button><button type="button" className="button button-primary" onClick={approveAndBroadcast} disabled={busy}>{busy?'Waiting for wallet...':'Open wallet to approve'}</button></div></>}</dialog>
     {qrVisible&&<WizardConnectQRDialog show={qrVisible} uri={wallet.uri!} qrUri={wallet.qrUri!} onClose={()=>setPairingOpen(false)} title="Connect your BCH wallet" subtitle="Scan with a WizardConnect compatible wallet" theme={{dialogBackground:'#151D1A',headerBackground:'#101715',titleColor:'#F2F5F1',subtitleColor:'#A6B2AA',borderColor:'rgba(229,242,234,.16)',qrForeground:'#0B0F0E',qrBackground:'#F2F5F1'}}/>}
     {wallet.state==='connecting'&&<div className="wallet-connecting" role="status"><span className="spinner"/>Waiting for wallet connection</div>}
+    {walletNotice&&<div className="wallet-notice" role="status"><span className="status-dot online" aria-hidden="true"/>{walletNotice}</div>}
   </div>;
 }
