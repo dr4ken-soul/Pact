@@ -45,9 +45,9 @@ Keep a clear Chipnet fallback, marked as Chipnet. Never present a video as if it
 - Live app URL.
 - Source repository URL.
 - Completed Widget Factory presentation URL.
-- Project-controlled EMBER2026 CashTokens address.
+- Official EMBER2026 CashTokens receive address for Community Choice, once the token is issued and the destination is verified.
 - Short, direct product description.
 - Demo video or screen recording if useful.
-- BLAZE roll-call status and optional community introduction, following current organizer guidance.
+- BLAZE roll-call status and project-real confirmation in the official Telegram channel, following current organizer guidance.
 
 The build agent must guide the user through obtaining these values using the direct action links and steps in `BUILD_GUIDE.md`.

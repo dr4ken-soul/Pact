@@ -28,7 +28,7 @@ The build agent must actively guide the user to obtain each release value. Do no
 ### EMBER2026 CashTokens receive address
 
 - Direct BCH wallet choices: Paytaca wallet at https://www.paytaca.com/applications/wallet or Electron Cash at https://electroncash.org/ . Use only an official wallet download page and verify the current app supports CashTokens and receiving the specific EMBER2026 token.
-- Walk the user through creating or selecting a dedicated project wallet, choosing Bitcoin Cash Mainnet, opening `Receive`, copying the public receiving address, and verifying the EMBER2026 token identity with the official event information before publishing the address.
+- BLAZE says EMBER2026 is not yet issued, so an address cannot be verified to receive it now. Wait for official token and receive details, then verify the address with organizers before publishing it.
 - Never ask for a seed phrase, private key, wallet file, PIN, or recovery phrase. Never paste a secret into chat. Never copy another team's address.
 
 ### Mainnet demo recipient and amount
@@ -127,15 +127,15 @@ The event's official resources advise using Chipnet for development and testing,
 ### Widget Factory deck and banner
 
 - Copy and complete the official Widget Factory presentation template: https://docs.google.com/presentation/d/1Yfuk9CJkf4U9M_WukcELhumWgj3Ak6345Ewy8hSp-Hk/edit?slide=id.p#slide=id.p
-- The homepage banner must link to the final deck and source repository and display the actual project CashTokens address for EMBER2026 donations.
+- The homepage banner links to the deck and source. Show an official EMBER2026 address only after the token is issued and the address is verified; the CompeteHub mirror of the DoraHacks track listing associates that address with Community Choice.
 - Verify the address can receive the relevant token. Do not copy an address from another project.
 - Verify all links on desktop and mobile before submission.
 
 ### Community and deadlines
 
 - Record the current BLAZE roll-call status. The pinned organizer notice says roll call is closed and late entrants may still compete without completing it.
-- Submit the final project through the BCH BLAZE DoraHacks Build page. The BLAZE Getting Started page encourages a Telegram introduction; no separate mandatory Telegram confirmation was listed.
-- The current DoraHacks track page lists submission opening at 2026-11-13 08:00 UTC-5 and deadline at 2026-11-22 09:00 UTC-5. Earlier planning notes listed November 14 to 22, so the build agent must verify the live event page and convert the displayed timezone to the user's local timezone before advising a deadline. Judging and winner dates should also be checked on the current event page.
+- Submit the final project through the BCH BLAZE DoraHacks Build page. The CompeteHub mirror of the DoraHacks track listing says to confirm the project is real in the BCH BLAZE Telegram channel; post the project/demo/repository links and keep proof.
+- The BLAZE schedule says hacking ends and submissions/judging begin Sunday 22 November 2026 at 14:00 UTC (15:00 Lagos). A mirrored DoraHacks listing gives a November 14–22 submission period. Confirm the closing time and required fields in the logged-in DoraHacks form before submitting.
 - Submit to the correct track and verify all required fields in DoraHacks.
 
 ### Judge-facing narrative
@@ -159,7 +159,7 @@ Keep the explanation short and evidence-led:
 - [ ] Required top banner values are real and clickable.
 - [ ] Widget Factory deck is complete.
 - [ ] Source repository and hosted app are publicly accessible.
-- [ ] Record the current BLAZE roll-call status and follow the official DoraHacks Build submission instructions. Telegram group introduction is community guidance, not a separate submission confirmation.
+- [ ] Record roll call as missed/closed per the organizer notice; late entrants may still compete without roll call. Confirm the project is real in the BCH BLAZE Telegram as the CompeteHub mirror of the DoraHacks track listing requires.
 - [ ] No unverified claims, fake transaction history, or invented assets are present.
 
 ## 6. Official and technical references

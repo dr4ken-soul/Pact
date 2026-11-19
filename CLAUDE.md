@@ -31,8 +31,8 @@ Pact gives an AI agent a BCH payment capability bounded by a user-defined spendi
 - A real useful BCH Mainnet transaction must be possible through the app. Require full review and explicit wallet authorization. Never auto-broadcast.
 - WizardConnect integration is mandatory for the BCH BLAZE 2026 Mainnet track according to the current official Tracks page. XO templates are a separate contract/template path and do not replace the wallet integration requirement. Use both where appropriate. Chipnet testing comes first.
 - Use the official Widget Factory presentation template for the project deck.
-- The homepage top banner must link to the finished deck and actual source repository and display the actual project-controlled CashTokens address for EMBER2026 donations.
-- Follow current BLAZE instructions. A closed roll call may be recorded as missed/closed; do not require a separate Telegram confirmation unless organizers explicitly request it.
+- The homepage banner links to the finished deck and source repository. Display an EMBER2026 CashTokens receive address only when BLAZE has issued the token and the destination is verified; it is for Community Choice, not a prerequisite for ordinary BCH Mainnet sends.
+- Follow current BLAZE instructions. The organizer notice says late entrants can compete without completing roll call; the CompeteHub mirror of the DoraHacks track listing separately says to confirm the project is real in the BCH BLAZE Telegram.
 - Keep the project minimal, original, plug-and-play, judge-friendly, useful, and ambitious in technical clarity rather than decorative complexity.
 
 ## Security and truthfulness

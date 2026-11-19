@@ -8,7 +8,7 @@ Pact must keep three concepts distinct:
 
 1. **Owner wallet:** user-controlled wallet connected through WizardConnect.
 2. **Demo recipient:** a project-controlled or user-selected BCH receive address for the useful payment demo.
-3. **EMBER2026 donation address:** a CashTokens receive address listed in the required homepage banner for community voting.
+3. **EMBER2026 receive address:** a verified CashTokens receive address for Community Choice voting once the token is issued; it does not make ordinary BCH Mainnet sends work.
 
 Do not reuse one address for another purpose without explicit owner approval and a clear verification. Never publish an address copied from another project.
 
@@ -57,6 +57,6 @@ Any future fee model requires an explicit user decision, a public fee policy, a 
 
 - Roll call status: missed/closed. The BLAZE chat notice shown by the owner says late entrants can still compete and do not need to complete roll call.
 - Submit the project through the final Build form on the official DoraHacks event page. Registration alone is not a project submission. Include the repository, working demo, and short project description; check DoraHacks for the exact required fields and deadline.
-- The official BLAZE Getting Started page recommends joining the Telegram group and introducing the project. No separate mandatory Telegram confirmation was found in the current official event instructions.
-- Keep the deck, repository, live demo, Chipnet proof, and EMBER2026 status linked from the submission. The owner-supplied EMBER address remains unverified and is not an official token address.
+- The CompeteHub mirror of the DoraHacks track listing says projects must confirm they are real in the BCH BLAZE Telegram channel. Post a clear Pact project confirmation with the live demo and repository links, then keep proof. A general introduction or EMBER question may not satisfy this.
+- Mainnet sends are disabled in the current live app; do not mark Mainnet-track demo readiness complete until that path is safely enabled and verified. The owner-supplied EMBER address remains unverified. It is only relevant to Community Choice eligibility after the token is issued.
 - Recheck the official event page before submission because dates and requirements can change.

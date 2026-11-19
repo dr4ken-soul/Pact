@@ -25,15 +25,15 @@ All VITE values are public browser configuration; the app needs no private API c
 ## Event and community status
 
 - BLAZE roll call: MISSED / CLOSED. The BLAZE chat notice shown by the owner says late entrants can still compete and do not need to complete roll call.
-- DoraHacks registration and project submission are separate. The event submission is the final Build entry on the BCH BLAZE DoraHacks page, with the repository, demo, and project description. The official schedule says submissions and judging begin Sunday 22 November at 14:00 UTC (15:00 Lagos time); use the deadline shown on DoraHacks.
-- Telegram: the official Getting Started page encourages joining the group and introducing yourself. I found no separate mandatory Telegram confirmation step. The earlier wording that implied one was required was inaccurate.
-- EMBER2026: wait until the token is issued. Then ask BLAZE for the official BCH Mainnet receive address and token category ID; keep the supplied address marked not official until then.
+- Event entry: not submitted yet. The accessible DoraHacks listing summary says Mainnet-track entries need an original project, a feature sending BCH Mainnet, a live demo, WizardConnect, a short Widget Factory-based presentation, and confirmation in the BCH BLAZE Telegram. The live Vercel app currently has VITE_ENABLE_MAINNET_SENDS=false, so a Mainnet send cannot currently be demonstrated.
+- Telegram: the CompeteHub mirror of the DoraHacks track listing says projects must confirm they are real in the BCH BLAZE Telegram channel. The screenshot available here shows an EMBER question, not a clear Pact project confirmation. Post the project name, demo/repository links, and an explicit confirmation; keep the post link or screenshot. My earlier statement that no confirmation was required was incorrect.
+- EMBER2026: BLAZE says the token is not minted or distributed and no official address/category exists. The CompeteHub mirror of the DoraHacks track listing places a receive-capable EMBER2026 CashTokens address under Community Choice, not the Mainnet-track requirements. The supplied address therefore cannot qualify the project for Community Choice; wait for the official token details. It is not needed to make Pact send ordinary BCH.
 - XO template limitations remain documented: the cap is per spend, not cumulative across separate outputs, and the agent payment branch remains usable after the owner recovery time.
 - The XO developer feedback draft is local for owner review and has not been submitted.
 
 ## Google Slides copy
 
-No connected Google Slides session is available here. The existing PowerPoint deck is the completed editable file; a native Google Slides copy must be made in Drive from the Widget Factory template, then its URL can replace VITE_PROJECT_DECK_URL in local .env and Vercel.
+No connected Google Slides session is available here. The editable PowerPoint deck is derived from the Widget Factory template, but the requested native Slides copy and URL are still outstanding. This does not prevent building the app; verify the accepted presentation format in the live DoraHacks form.
 
 ## Links
 
@@ -45,3 +45,9 @@ No connected Google Slides session is available here. The existing PowerPoint de
 - DoraHacks event: https://dorahacks.io/hackathon/bchblaze2026/
 - BLAZE schedule and roll call: https://bchblaze.cash/live/
 - BLAZE Telegram community: https://t.me/bchblaze
+
+## Event-listing research
+
+- DoraHacks is the authoritative submission portal, but its page returned HTTP 405 to the read-only web reader. The explicit requirements above come from a CompeteHub mirror of the DoraHacks listing; verify the current track text and form fields in the logged-in DoraHacks page before submitting.
+- The mirror lists an EMBER-capable CashTokens address under Community Choice, while its Mainnet-track requirements list a live Mainnet BCH feature and WizardConnect but not the EMBER address.
+- Examples visible publicly: the owner-provided screenshot shows a Vouch Telegram post with a concise description, live demo, repository, and wallet integration. The BLAZE account also linked a Spirits of Bitcoin demo on 17 November. These demonstrate how projects are being presented publicly; I could not verify that either is a final DoraHacks BUIDL submission, and web search did not expose a public submission roster.

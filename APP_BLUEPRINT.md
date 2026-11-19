@@ -51,7 +51,7 @@ The product is designed for a short judge review: open the live app, understand 
 - Chipnet-first contract test and a visible distinction between Chipnet contract validation and any Mainnet payment.
 - One bounded policy flow demonstrating spending limit, approved destination, and expiry. Avoid claiming that a single payment cap proves an unrestricted cumulative budget.
 - Actual transaction receipt and explorer link, only after a real transaction is returned by the provider.
-- Required Widget Factory deck, source repository, top-of-homepage banner, and project EMBER2026 CashTokens donation address.
+- Widget Factory-based presentation, source repository, and top-of-homepage banner. An official EMBER2026 receive address is for Community Choice once the token is issued; do not block Mainnet-track readiness on an unavailable token address.
 
 ### Explicitly out of scope unless separately approved
 
@@ -226,8 +226,8 @@ The demo must not depend on typing a long prompt, creating an account, fake bala
 - [ ] Build and contract testing start on Chipnet.
 - [ ] Project uses only minimal Mainnet funds and only with a tested recovery understanding.
 - [ ] Widget Factory short presentation is copied and completed.
-- [ ] Top-of-homepage banner links to final deck and source repository and displays the project-controlled EMBER2026 CashTokens donation address.
-- [ ] Record current BLAZE participation status in the submission checklist. Do not treat a closed roll call or an unlisted Telegram confirmation as mandatory.
+- [ ] Top banner links to the deck and source. Display an EMBER2026 receive address only after the token has been issued and its destination is verified, for Community Choice eligibility.
+- [ ] Record roll call as missed/closed per the organizer notice and confirm the project is real in the BCH BLAZE Telegram as the CompeteHub mirror of the DoraHacks track listing requires.
 - [ ] Submission is made within the official submission window and judging notes are ready.
 - [ ] No logo mark is added unless the user requests one.
 

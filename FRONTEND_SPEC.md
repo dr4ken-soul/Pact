@@ -129,7 +129,7 @@ No section may introduce an undocumented stacking context. Every decorative laye
 
 **Recipe:** bespoke announcement strip. It exists above the application navigation and is not a card in the bento grid.
 
-**Purpose:** permanently satisfy the required top-of-homepage links to the Widget Factory presentation, source repository, and project-controlled EMBER2026 CashTokens donation address.
+**Purpose:** link the Widget Factory-based presentation and source repository; show an EMBER2026 receive address for Community Choice only after the token and official destination are available.
 
 **Structure and classes:**
 
@@ -146,9 +146,9 @@ Required links and values:
 
 - `Widget Factory deck`: final project presentation URL, copied from the official template.
 - `Source`: actual project repository URL.
-- `EMBER2026 address`: a project-controlled CashTokens receive address that has been verified to accept the token.
+- EMBER2026 address: use an official project-controlled CashTokens receive address verified to accept the issued token. Until issuance, show that no official address exists and do not publish the owner-supplied value as official.
 - Official template source: https://docs.google.com/presentation/d/1Yfuk9CJkf4U9M_WukcELhumWgj3Ak6345Ewy8hSp-Hk/edit?slide=id.p#slide=id.p
-- The final presentation URL, repository URL, and project CashTokens address are not yet known. Do not invent or reuse another team's values. Until configured, show a clear build-time warning in development and block release readiness. Do not ship a fake address or a dead link.
+- The repository and PPTX URL are configured, but the native Google Slides copy and official EMBER2026 address are still outstanding. The address is not a Mainnet-send dependency; it is needed for Community Choice after issuance. Do not claim an unverified address is official.
 
 **Responsive behavior:** mobile stacks the label and links; address may wrap and copy remains a 44px target. Desktop uses one row. No horizontal page overflow.
 
