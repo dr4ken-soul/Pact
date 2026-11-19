@@ -1,6 +1,6 @@
 {
   "network": "chipnet",
-  "status": "mempool",
+  "status": "confirmed",
   "templateIdentifier": "a1248b8f4bb968c21072e930324a5e69b73cc642444d7807abf2456cccbd8321",
   "templateVersion": "0.1.7",
   "invitationIdentifier": "6ae6b111261be806e0a65e0f08322ec0",
@@ -16,13 +16,14 @@
   "policyFeeSatoshis": 20000,
   "transactionId": "da7d089a14e5bc9206535013ce20c7b5048d0303a1fe5b64e3a9769f1aec3aa6",
   "transactionUrl": "https://explorer.selene.cash/tx/da7d089a14e5bc9206535013ce20c7b5048d0303a1fe5b64e3a9769f1aec3aa6?network=chipnet",
-  "recipientHistoryHeight": -1,
-  "continuationHistoryHeight": -1,
+  "sourceFundingHistoryHeight": 337675,
+  "recipientHistoryHeight": 337884,
+  "continuationHistoryHeight": 337884,
   "bch2023VmValidation": "passed",
   "electrumEndpoint": "wss://chipnet.bch.ninja:50004",
   "invitationFile": "contracts/evidence/chipnet-invitation.json",
   "rawTransactionFile": "contracts/evidence/chipnet-payment-transaction.hex",
   "templateFile": "contracts/pact-policy.template.json",
   "broadcastAt": "2026-11-18T19:58:36.589Z",
-  "verifiedAt": "2026-11-18T20:09:25.719Z"
+  "verifiedAt": "2026-11-19T07:38:04.247Z"
 }

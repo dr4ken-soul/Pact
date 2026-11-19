@@ -62,6 +62,9 @@ const historyFor = (id) => {
 };
 const recipientHistory = historyFor(2);
 const continuationHistory = historyFor(3);
+const policyHistory = responses.get(3);
+const sourceFundingHistoryEntry = Array.isArray(policyHistory) ? policyHistory.find((item) => item.tx_hash?.toLowerCase() === localEvidence.sourceTransactionId.toLowerCase()) : undefined;
+const sourceFundingHistoryHeight = sourceFundingHistoryEntry?.height ?? null;
 const status = recipientHistory.height > 0 && continuationHistory.height > 0 ? 'confirmed' : recipientHistory.found && continuationHistory.found ? 'mempool' : 'retrieved-from-electrum';
 const publicInvitationPath = path.join(evidenceDir, 'chipnet-invitation.json');
 const rawTransactionPath = path.join(evidenceDir, 'chipnet-payment-transaction.hex');
@@ -77,7 +80,7 @@ const evidence = {
   paymentSatoshis: localEvidence.paymentSatoshis, recipientAddress: profile.recipientAddress,
   continuationSatoshis: localEvidence.continuationSatoshis, policyFeeSatoshis: localEvidence.policyFeeSatoshis,
   transactionId: txid, transactionUrl: `https://explorer.selene.cash/tx/${txid}?network=chipnet`,
-  recipientHistoryHeight: recipientHistory.height, continuationHistoryHeight: continuationHistory.height,
+  sourceFundingHistoryHeight, recipientHistoryHeight: recipientHistory.height, continuationHistoryHeight: continuationHistory.height,
   bch2023VmValidation: 'passed', electrumEndpoint: 'wss://chipnet.bch.ninja:50004',
   invitationFile: 'contracts/evidence/chipnet-invitation.json',
   rawTransactionFile: 'contracts/evidence/chipnet-payment-transaction.hex',
@@ -85,4 +88,4 @@ const evidence = {
   verifiedAt: new Date().toISOString(),
 };
 fs.writeFileSync(publicEvidencePath, JSON.stringify(evidence, null, 2) + '\n');
-console.log(JSON.stringify({ status, transactionId: txid, transactionUrl: evidence.transactionUrl, recipientHistory, continuationHistory, bch2023VmValidation: true, publicEvidence: 'contracts/evidence/chipnet-transaction.json' }, null, 2));
+console.log(JSON.stringify({ status, transactionId: txid, transactionUrl: evidence.transactionUrl, sourceFundingHistoryHeight, recipientHistory, continuationHistory, bch2023VmValidation: true, publicEvidence: 'contracts/evidence/chipnet-transaction.json' }, null, 2));
