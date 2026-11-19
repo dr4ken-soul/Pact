@@ -83,7 +83,7 @@ async function readCandidate(client:ElectrumClient<ElectrumClientEvents>,utxo:Ne
 function feeFor(inputs:number,outputs:number) { return BigInt(10+148*inputs+34*outputs); }
 
 export async function prepareBchPayment(args:{manager:WizardManager;network:BchNetwork;hostOverride:string;recipient:string;amountSats:bigint;capSats:bigint;mainnetSendsEnabled:boolean}):Promise<PaymentPlan> {
-  if (args.network==='mainnet'&&!args.mainnetSendsEnabled) throw new Error('Mainnet sends are disabled. Complete Chipnet checks before enabling them.');
+  if (args.network==='mainnet'&&!args.mainnetSendsEnabled) throw new Error('Mainnet sends are disabled by configuration.');
   if (args.amountSats>args.capSats) throw new Error('The payment is above the per-payment cap.');
   if (args.amountSats<546n) throw new Error('The payment is below the BCH standard dust limit.');
   const receiveXpub=args.manager.getSessionPaths().find(path=>path.name==='receive')?.xpub;
