@@ -13,7 +13,7 @@ export interface WizardManager {
 }
 type SourceOutput = Transaction['inputs'][number] & Transaction['outputs'][number];
 type NetworkUtxo = { tx_hash:string; tx_pos:number; value:string|number|bigint; height:number };
-type Candidate = { txid:string; vout:number; value:bigint; addressIndex:number; lockingBytecode:Uint8Array };
+type Candidate = { txid:string; vout:number; value:bigint; pathName:'receive'|'change'; addressIndex:number; lockingBytecode:Uint8Array; height:number };
 export interface PaymentPlan { network:BchNetwork; recipient:string; amountSats:bigint; feeSats:bigint; totalInputSats:bigint; unsignedTransaction:string; sourceOutputs:SourceOutput[]; inputPaths:[number,string,number][]; }
 export interface PaymentReceipt { txid:string; network:BchNetwork; explorerUrl:string; amountSats:bigint; feeSats:bigint; broadcastAt:string; }
 
@@ -49,8 +49,8 @@ export async function verifyBchProvider(network:BchNetwork, hostOverride:string)
   await withVerifiedElectrum(network,hostOverride,async()=>undefined);
 }
 
-function deriveAddress(manager:WizardManager,index:number,network:BchNetwork) {
-  const publicKey=manager.getPubkey(0,BigInt(index));
+function deriveAddress(manager:WizardManager,index:number,network:BchNetwork,childIndex:number) {
+  const publicKey=manager.getPubkey(childIndex,BigInt(index));
   if (!publicKey) throw new Error('The connected wallet did not provide a receive public key.');
   const encoded=publicKeyToP2pkhCashAddress({publicKey,prefix:network==='mainnet'?'bitcoincash':'bchtest'});
   if (typeof encoded==='string') throw new Error('The connected wallet public key could not be encoded as a BCH address.');
@@ -64,9 +64,8 @@ async function electrumScriptHash(lockingBytecode:Uint8Array) {
   return binToHex(digest.reverse());
 }
 
-async function readCandidate(client:ElectrumClient<ElectrumClientEvents>,utxo:NetworkUtxo,addressIndex:number,expectedScript:Uint8Array):Promise<Candidate|null> {
-  if (!/^[0-9a-f]{64}$/i.test(utxo.tx_hash)||!Number.isInteger(utxo.tx_pos)||utxo.tx_pos<0||BigInt(String(utxo.value))<=0n) return null;
-  if (utxo.height<=0) return null;
+async function readCandidate(client:ElectrumClient<ElectrumClientEvents>,utxo:NetworkUtxo,pathName:'receive'|'change',addressIndex:number,expectedScript:Uint8Array):Promise<Candidate|null> {
+  if (!/^[0-9a-f]{64}$/i.test(utxo.tx_hash)||!Number.isInteger(utxo.tx_pos)||utxo.tx_pos<0||!Number.isInteger(utxo.height)||utxo.height<0||BigInt(String(utxo.value))<=0n) return null;
   const raw=await client.request('blockchain.transaction.get',utxo.tx_hash);
   if (raw instanceof Error||typeof raw!=='string'||!/^(?:[0-9a-f]{2})+$/i.test(raw)) return null;
   const txBytes=hexToBin(raw);
@@ -77,7 +76,7 @@ async function readCandidate(client:ElectrumClient<ElectrumClientEvents>,utxo:Ne
   if (!output||output.token||!sameLockingBytecode(output.lockingBytecode,expectedScript)) return null;
   const outputValue=BigInt(String(output.valueSatoshis));
   if (outputValue!==BigInt(String(utxo.value))) return null;
-  return {txid:utxo.tx_hash.toLowerCase(),vout:utxo.tx_pos,value:outputValue,addressIndex,lockingBytecode:output.lockingBytecode};
+  return {txid:utxo.tx_hash.toLowerCase(),vout:utxo.tx_pos,value:outputValue,pathName,addressIndex,lockingBytecode:output.lockingBytecode,height:utxo.height};
 }
 
 function feeFor(inputs:number,outputs:number) { return BigInt(10+148*inputs+34*outputs); }
@@ -86,26 +85,33 @@ export async function prepareBchPayment(args:{manager:WizardManager;network:BchN
   if (args.network==='mainnet'&&!args.mainnetSendsEnabled) throw new Error('Mainnet sends are disabled by configuration.');
   if (args.amountSats>args.capSats) throw new Error('The payment is above the per-payment cap.');
   if (args.amountSats<546n) throw new Error('The payment is below the BCH standard dust limit.');
-  const receiveXpub=args.manager.getSessionPaths().find(path=>path.name==='receive')?.xpub;
-  if (!receiveXpub) throw new Error('The connected wallet did not share a receive public key.');
-  const decodedXpub=decodeHdKeyUnchecked(receiveXpub);
-  if (typeof decodedXpub==='string'||decodedXpub.version!==expectedKeyVersion(args.network)) throw new Error(args.network==='mainnet'?'Connect a BCH Mainnet wallet.':'Connect a BCH test-network wallet. The selected Chipnet provider is checked separately.');
+  const walletPaths=args.manager.getSessionPaths();
+  const pathsToScan=([{name:'receive',childIndex:0},{name:'change',childIndex:1}] as const).filter(path=>walletPaths.some(walletPath=>walletPath.name===path.name));
+  if (!pathsToScan.some(path=>path.name==='receive')) throw new Error('The connected wallet did not share a receive public key.');
+  for(const path of pathsToScan){
+    const xpub=walletPaths.find(walletPath=>walletPath.name===path.name)?.xpub;
+    const decodedXpub=xpub?decodeHdKeyUnchecked(xpub):'The wallet did not share this public key.';
+    if(typeof decodedXpub==='string'||decodedXpub.version!==expectedKeyVersion(args.network)) throw new Error(args.network==='mainnet'?'Connect a BCH Mainnet wallet.':'Connect a BCH test-network wallet. The selected Chipnet provider is checked separately.');
+  }
   const destination=checkCashAddress(args.recipient,args.network);
   if (!destination.valid) throw new Error(destination.message);
 
   return withVerifiedElectrum(args.network,args.hostOverride,async client=>{
     const candidates:Candidate[]=[];
-    for (let index=0;index<20;index++) {
-      const derived=deriveAddress(args.manager,index,args.network);
-      const scriptHash=await electrumScriptHash(derived.lockingBytecode);
-      const response=await client.request('blockchain.scripthash.listunspent',scriptHash);
-      if (response instanceof Error) throw response;
-      if (!Array.isArray(response)) throw new Error('The BCH provider returned an invalid unspent-output list.');
-      for (const entry of response) {
-        if (!entry||typeof entry!=='object') continue;
-        const utxo=entry as NetworkUtxo;
-        const candidate=await readCandidate(client,utxo,index,derived.lockingBytecode);
-        if (candidate) candidates.push(candidate);
+    const unconfirmedCandidates:Candidate[]=[];
+    for (const path of pathsToScan){
+      for (let index=0;index<20;index++) {
+        const derived=deriveAddress(args.manager,index,args.network,path.childIndex);
+        const scriptHash=await electrumScriptHash(derived.lockingBytecode);
+        const response=await client.request('blockchain.scripthash.listunspent',scriptHash);
+        if (response instanceof Error) throw response;
+        if (!Array.isArray(response)) throw new Error('The BCH provider returned an invalid unspent-output list.');
+        for (const entry of response) {
+          if (!entry||typeof entry!=='object') continue;
+          const utxo=entry as NetworkUtxo;
+          const candidate=await readCandidate(client,utxo,path.name,index,derived.lockingBytecode);
+          if(candidate){if(candidate.height>0)candidates.push(candidate);else unconfirmedCandidates.push(candidate);}
+        }
       }
     }
     candidates.sort((a,b)=>a.value===b.value?0:a.value>b.value?-1:1);
@@ -118,7 +124,15 @@ export async function prepareBchPayment(args:{manager:WizardManager;network:BchN
       if (total>=args.amountSats+withChange) break;
     }
     const noChangeFee=feeFor(selected.length,1);
-    if (total<args.amountSats+noChangeFee) throw new Error('The connected wallet does not have enough confirmed BCH for this payment and fee.');
+    if (total<args.amountSats+noChangeFee) {
+      const possibleInputs=[...candidates,...unconfirmedCandidates].sort((a,b)=>a.value===b.value?0:a.value>b.value?-1:1);
+      let possibleTotal=0n;
+      let possibleCount=0;
+      let includesUnconfirmed=false;
+      for(const candidate of possibleInputs){possibleTotal+=candidate.value;possibleCount++;if(candidate.height<=0)includesUnconfirmed=true;if(possibleTotal>=args.amountSats+feeFor(possibleCount,1))break;}
+      if(includesUnconfirmed&&possibleTotal>=args.amountSats+feeFor(possibleCount,1)) throw new Error('Your wallet has enough BCH only when an unconfirmed payment is included. Pact waits for confirmed BCH; try again after the incoming transaction confirms.');
+      throw new Error('Pact did not find enough confirmed BCH in the connected wallet’s first 20 receive and change addresses. Check the wallet network, account, and incoming transaction status.');
+    }
     const estimatedWithChange=feeFor(selected.length,2);
     let outputs:Transaction['outputs'];
     let fee=estimatedWithChange;
@@ -138,7 +152,7 @@ export async function prepareBchPayment(args:{manager:WizardManager;network:BchN
     const inputs:Transaction['inputs']=selected.map(item=>({outpointIndex:item.vout,outpointTransactionHash:hexToBin(item.txid),sequenceNumber:0xffffffff,unlockingBytecode:new Uint8Array()}));
     const transaction:Transaction={version:2,inputs,outputs,locktime:0};
     const sourceOutputs:SourceOutput[]=selected.map(item=>({outpointIndex:item.vout,outpointTransactionHash:hexToBin(item.txid),sequenceNumber:0xffffffff,unlockingBytecode:new Uint8Array(),lockingBytecode:item.lockingBytecode,valueSatoshis:item.value}));
-    return {network:args.network,recipient:args.recipient,amountSats:args.amountSats,feeSats:fee,totalInputSats:total,unsignedTransaction:binToHex(encodeTransactionBCH(transaction)),sourceOutputs,inputPaths:selected.map((item,index)=>[index,'receive',item.addressIndex])};
+    return {network:args.network,recipient:args.recipient,amountSats:args.amountSats,feeSats:fee,totalInputSats:total,unsignedTransaction:binToHex(encodeTransactionBCH(transaction)),sourceOutputs,inputPaths:selected.map((item,index)=>[index,item.pathName,item.addressIndex])};
   });
 }
 
