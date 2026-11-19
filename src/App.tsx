@@ -100,6 +100,16 @@ export default function App() {
     catch { setFormMessage('Clipboard access is unavailable. Select the text and copy it manually.'); }
   }
 
+  function changeNetwork(selected:'mainnet'|'chipnet') {
+    if(selected===network)return;
+    setNetwork(selected);setPolicyCreated(false);setPendingPlan(null);setReceipt(null);
+    setFormMessage(connected?'Network changed. Reconnect a wallet on the selected network before sending.':'');
+    if(connected)wallet.disconnect();
+    setPolicyRecipient(selected==='chipnet'?projectConfig.demoRecipient:'');
+    setCap(selected==='chipnet'?projectConfig.demoAmountBch:'');
+    setAmount(selected==='chipnet'?projectConfig.demoAmountBch:'');
+    setRecipient(selected==='chipnet'?projectConfig.demoRecipient:'');
+  }
   const qrVisible=!!wallet.uri&&!!wallet.qrUri&&pairingOpen;
   const decision=evaluate();
   const sendBlocked=!connected||providerState!=='online'||(network==='mainnet'&&!projectConfig.mainnetSendsEnabled)||!policyCreated||(network==='chipnet'&&(!projectConfig.demoRecipient||!projectConfig.demoAmountBch))||busy;
@@ -110,7 +120,7 @@ export default function App() {
       <a className="wordmark" href="#top" aria-label="Pact home">pact</a>
       <nav className="desktop-nav" aria-label="Main navigation"><a href="#rules">Policy</a><a href="#activity">Activity</a><a href="#how-it-works">How it works</a></nav><details className="mobile-nav"><summary aria-label="Open navigation">Menu</summary><div className="mobile-menu-links"><a href="#rules">Policy</a><a href="#activity">Activity</a><a href="#how-it-works">How it works</a></div></details>
       <div className="topbar-actions">
-        <label className="network-select"><span className={'status-dot '+(providerState==='online'?'online':providerState==='offline'?'offline':'')}/><span className="sr-only">Network</span><select value={network} onChange={event=>{const selected=event.target.value as 'mainnet'|'chipnet';setNetwork(selected);setPolicyCreated(false);setPendingPlan(null);setReceipt(null);setFormMessage('');if(connected){wallet.disconnect();setFormMessage('Network changed. Reconnect a wallet on the selected network before sending.');}setPolicyRecipient(selected==='chipnet'?projectConfig.demoRecipient:'');setCap(selected==='chipnet'?projectConfig.demoAmountBch:'');setAmount(selected==='chipnet'?projectConfig.demoAmountBch:'');setRecipient(selected==='chipnet'?projectConfig.demoRecipient:'');}}><option value="chipnet">Chipnet</option><option value="mainnet">Mainnet</option></select><span className="chevron">v</span></label>
+        <div className="network-control"><span className={'status-dot '+(providerState==='online'?'online':providerState==='offline'?'offline':'')} title={providerState==='online'?'BCH provider online':providerState==='offline'?'BCH provider offline':'Checking BCH provider'} aria-hidden="true"/><div className="network-switch" role="group" aria-label="Select Bitcoin Cash network"><button type="button" className={'network-option '+(network==='chipnet'?'selected':'')} aria-pressed={network==='chipnet'} onClick={()=>changeNetwork('chipnet')}>Chipnet</button><button type="button" className={'network-option '+(network==='mainnet'?'selected':'')} aria-pressed={network==='mainnet'} onClick={()=>changeNetwork('mainnet')}>Mainnet</button></div></div>
         {connected?<button className="wallet-pill connected-pill" onClick={()=>wallet.disconnect()}><span className="status-dot online"/>{wallet.walletName||'Wallet connected'}<span className="disconnect-mark">x</span></button>:<button className="button button-small button-outline" onClick={()=>{setPairingOpen(true);wallet.connect();}}>Connect wallet</button>}
       </div>
     </header>
