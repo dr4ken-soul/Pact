@@ -6,7 +6,7 @@
 - XO template version 0.1.7 and invitation transaction confirmed on Chipnet at block 337884. Its 100,000 sat funding transaction confirmed at block 337675. The 429-byte payment pays 1,000 sats, returns 79,000 sats to the covenant, and pays a fixed 20,000 sat fee. BCH 2023 VM validation passed.
 - Public transaction and invitation evidence are in contracts/evidence/.
 - Production build passes template validation, TypeScript compilation, and Vite bundling.
-- GitHub and Vercel are linked. The production site is https://pact-bch.vercel.app and mainnet sends are disabled.
+- GitHub and Vercel are linked. The production site is https://pact-bch.vercel.app; Mainnet sends are enabled, with Chipnet remaining the default network. The Mainnet Electrum provider identity was verified read-only. No Mainnet transaction has been sent from this project.
 - Pact_Pitch_Deck.pptx is the editable PowerPoint deck derived from the Widget Factory template. It is not a Google Slides file stored in Drive.
 
 ## Real .env and Vercel settings
@@ -19,13 +19,13 @@ All VITE values are public browser configuration; the app needs no private API c
 - VITE_DEMO_RECIPIENT is a separate Chipnet address used for the XO proof.
 - VITE_DEMO_AMOUNT_BCH is 0.00001 BCH (1,000 sats).
 - VITE_XO_TRANSACTION_URL points to the confirmed Chipnet payment.
-- VITE_BCH_NETWORK is chipnet; VITE_ENABLE_MAINNET_SENDS is false.
+- VITE_BCH_NETWORK remains chipnet by default; VITE_ENABLE_MAINNET_SENDS is true in local .env and Vercel. Choose Mainnet in the app to use a bitcoincash recipient and a Mainnet-connected WizardConnect wallet.
 - Mainnet and Chipnet Electrum host overrides are blank, so the app uses its packaged server list.
 
 ## Event and community status
 
 - BLAZE roll call: MISSED / CLOSED. The BLAZE chat notice shown by the owner says late entrants can still compete and do not need to complete roll call.
-- Event entry: not submitted yet. The accessible DoraHacks listing summary says Mainnet-track entries need an original project, a feature sending BCH Mainnet, a live demo, WizardConnect, a short Widget Factory-based presentation, and confirmation in the BCH BLAZE Telegram. The live Vercel app currently has VITE_ENABLE_MAINNET_SENDS=false, so a Mainnet send cannot currently be demonstrated.
+- Event entry: not submitted yet. The CompeteHub mirror of the DoraHacks listing says Mainnet-track entries need an original project, a feature sending BCH Mainnet, a live demo, WizardConnect, a short Widget Factory-based presentation, and project confirmation in the BCH BLAZE Telegram. Mainnet sending is now enabled in production, and the provider identity check passes. A real Mainnet transfer still requires an owner-selected bitcoincash recipient, wallet funds, and an explicit wallet signature; none has been broadcast by this project.
 - Telegram: the CompeteHub mirror of the DoraHacks track listing says projects must confirm they are real in the BCH BLAZE Telegram channel. The screenshot available here shows an EMBER question, not a clear Pact project confirmation. Post the project name, demo/repository links, and an explicit confirmation; keep the post link or screenshot. My earlier statement that no confirmation was required was incorrect.
 - EMBER2026: BLAZE says the token is not minted or distributed and no official address/category exists. The CompeteHub mirror of the DoraHacks track listing places a receive-capable EMBER2026 CashTokens address under Community Choice, not the Mainnet-track requirements. The supplied address therefore cannot qualify the project for Community Choice; wait for the official token details. It is not needed to make Pact send ordinary BCH.
 - XO template limitations remain documented: the cap is per spend, not cumulative across separate outputs, and the agent payment branch remains usable after the owner recovery time.

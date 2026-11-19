@@ -25,6 +25,6 @@ export function releaseConfigurationIssues(): string[] {
   if (!projectConfig.demoRecipient) issues.push('The Chipnet demo recipient is missing.');
   if (!projectConfig.demoAmountBch) issues.push('The owner-approved demo amount is missing.');
   if (!projectConfig.xoTransactionUrl) issues.push('The Chipnet XO transaction proof is missing.');
-  if (projectConfig.network === 'mainnet' && !projectConfig.mainnetSendsEnabled) issues.push('Mainnet sends remain disabled until Chipnet checks and explicit approval are complete.');
+  if (projectConfig.network === 'mainnet' && !projectConfig.mainnetSendsEnabled) issues.push('Mainnet sends are disabled by the current release configuration.');
   return issues;
 }

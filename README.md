@@ -11,7 +11,7 @@ Requirements: Node.js 22 or later and npm.
 1. Use the actual root `.env` file. Its `VITE_*` values are public client configuration, not credentials.
 2. Run `npm ci --cache .npm-cache`.
 3. Run `npm run dev` and open the local Vite URL.
-4. Use a WizardConnect-compatible wallet on Chipnet for the browser payment demo. Mainnet sends remain disabled.
+4. Use a WizardConnect-compatible BCH wallet. Chipnet is the prefilled demo network; Mainnet is available when enabled in `.env` and requires a Mainnet wallet, recipient, and user signature.
 
 The production build runs the XO schema checks, TypeScript compilation, and Vite bundle:
 
@@ -32,7 +32,7 @@ The XO Engine creates its account from a mnemonic. For this development integrat
 - The XO template enforces a maximum per payment and preserves a finite balance for each policy UTXO. It does not establish a global cumulative cap across separately funded UTXOs.
 - The recovery timestamp makes the owner's reclaim branch available. It does not disable the agent payment branch.
 - The EMBER2026 address in `.env` was supplied by the owner, but BCH BLAZE says EMBER2026 has not been minted or distributed and no official receive address or token category is available yet. It is not an official EMBER2026 address.
-- Mainnet payments are disabled.
+- Mainnet sends are enabled behind WizardConnect review and signature. The app defaults to Chipnet; no Mainnet payment has been broadcast by the project. Mainnet requires a valid bitcoincash recipient and a funded Mainnet wallet.
 
 ## Pinned integration versions
 
