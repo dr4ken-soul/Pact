@@ -21,7 +21,7 @@ The latest confirmed policy transaction spends a 100,000 sat policy output, send
 
 The invitation runner checks the transaction structure and exact outputs, then verifies the signed transaction with the BCH 2023 virtual machine before broadcasting. The earlier version 0.1.6, which used a 1,000 sat fee and remains pending, is preserved under `evidence/archive/v0.1.6-pending/`.
 
-Chipnet funding and transaction records are public. The generated test-account mnemonic and local engine database remain excluded from Git and stored only in ignored local state. Mainnet sends remain disabled.
+Chipnet funding and transaction records are public. The generated test-account mnemonic and local engine database remain excluded from Git and stored only in ignored local state. XO deployment and invitation execution remain Chipnet-only. The separate web app has a WizardConnect BCH Mainnet send path enabled by VITE_ENABLE_MAINNET_SENDS and uses the owner wallet; it does not use this test account.
 
 ## Reproduce on Windows
 
