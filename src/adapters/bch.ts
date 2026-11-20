@@ -14,7 +14,7 @@ export interface WizardManager {
 type SourceOutput = Transaction['inputs'][number] & Transaction['outputs'][number];
 type NetworkUtxo = { tx_hash:string; tx_pos:number; value:string|number|bigint; height:number };
 type NetworkHistoryEntry = { tx_hash?:unknown; height?:unknown };
-type Candidate = { txid:string; vout:number; value:bigint; pathName:'receive'|'change'; addressIndex:number; lockingBytecode:Uint8Array; height:number };
+type Candidate = { txid:string; vout:number; value:bigint; pathName:'receive'|'change'|'defi'; addressIndex:number; lockingBytecode:Uint8Array; height:number };
 export interface PaymentPlan { network:BchNetwork; recipient:string; amountSats:bigint; feeSats:bigint; totalInputSats:bigint; availableBalanceSats:bigint; unsignedTransaction:string; sourceOutputs:SourceOutput[]; inputPaths:[number,string,number][]; }
 export interface PaymentReceipt { txid:string; network:BchNetwork; explorerUrl:string; amountSats:bigint; feeSats:bigint; broadcastAt:string; }
 
@@ -93,7 +93,7 @@ async function electrumScriptHash(lockingBytecode:Uint8Array) {
   return binToHex(digest.reverse());
 }
 
-async function readCandidate(client:ElectrumClient<ElectrumClientEvents>,utxo:NetworkUtxo,pathName:'receive'|'change',addressIndex:number,expectedScript:Uint8Array):Promise<Candidate|null> {
+async function readCandidate(client:ElectrumClient<ElectrumClientEvents>,utxo:NetworkUtxo,pathName:'receive'|'change'|'defi',addressIndex:number,expectedScript:Uint8Array):Promise<Candidate|null> {
   if (!/^[0-9a-f]{64}$/i.test(utxo.tx_hash)||!Number.isInteger(utxo.tx_pos)||utxo.tx_pos<0||!Number.isInteger(utxo.height)||utxo.height<0||BigInt(String(utxo.value))<=0n) return null;
   const raw=await client.request('blockchain.transaction.get',utxo.tx_hash);
   if (raw instanceof Error||typeof raw!=='string'||!/^(?:[0-9a-f]{2})+$/i.test(raw)) return null;
@@ -125,7 +125,7 @@ export async function prepareBchPayment(args:{manager:WizardManager;network:BchN
   if (args.amountSats>args.capSats) throw new Error('The payment is above the per-payment cap.');
   if (args.amountSats<546n) throw new Error('The payment is below the BCH standard dust limit.');
   const walletPaths=args.manager.getSessionPaths();
-  const pathsToScan=([{name:'receive',childIndex:0},{name:'change',childIndex:1}] as const).filter(path=>walletPaths.some(walletPath=>walletPath.name===path.name));
+  const pathsToScan=([{name:'receive',childIndex:0},{name:'change',childIndex:1},{name:'defi',childIndex:7}] as const).filter(path=>walletPaths.some(walletPath=>walletPath.name===path.name));
   if (!pathsToScan.some(path=>path.name==='receive')) throw new Error('The connected wallet did not share a receive public key.');
   for(const path of pathsToScan){
     const xpub=walletPaths.find(walletPath=>walletPath.name===path.name)?.xpub;
@@ -180,7 +180,7 @@ export async function prepareBchPayment(args:{manager:WizardManager;network:BchN
       if (possibleTotal>=args.amountSats+feeFor(possibleCount,1)) break;
     }
     if (includesUnconfirmed&&possibleTotal>=args.amountSats+feeFor(possibleCount,1)) throw new Error('Your wallet has enough BCH only when an unconfirmed payment is included. Pact waits for confirmed BCH; try again after the incoming transaction confirms.');
-    throw new Error('Pact connected to your wallet but did not find enough confirmed BCH across its receive and change address history on the available BCH providers. Check the connected wallet account and incoming transaction network.');
+    throw new Error('Pact connected to your wallet but did not find enough confirmed BCH in the receive, change, or DeFi address paths shared by that wallet. Check that Paytaca has the account holding the funds selected when it connects.');
   }
 
   candidates.sort((a,b)=>a.value===b.value?0:a.value>b.value?-1:1);
