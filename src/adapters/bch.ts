@@ -1,4 +1,5 @@
 import { binToHex, cashAddressToLockingBytecode, decodeHdKeyUnchecked, decodeTransactionBCH, HdKeyVersion, encodeTransactionBCH, hashTransaction, hexToBin, publicKeyToP2pkhCashAddress, type Transaction } from '@bitauth/libauth';
+import { sourceOutputToRelay } from '@wizardconnect/core/hdwalletv1-serialize';
 import { chipnet, mainnet } from '@electrum-cash/checkpoint';
 import { ElectrumClient, type ElectrumClientEvents } from '@electrum-cash/network';
 import { chipnetServers, mainnetServers } from '@electrum-cash/servers';
@@ -9,7 +10,9 @@ export interface WizardManager {
   getPubkey: (childIndex:number, addressIndex:bigint) => Uint8Array|undefined;
   getXpubNode: (childIndex:number) => unknown;
   getSessionPaths: () => { name:string; xpub:string }[];
-  signTransaction: (request: { transaction:{ transaction:string; sourceOutputs:SourceOutput[]; broadcast:boolean; userPrompt:string }; inputPaths:[number,string,number][] }) => Promise<{ signedTransaction:string; error?:string }>;
+  on: (event:'messagesent', listener:(message:{action?:string})=>void) => unknown;
+  off: (event:'messagesent', listener:(message:{action?:string})=>void) => unknown;
+  signTransaction: (request: { transaction:{ transaction:string; sourceOutputs:unknown[]; broadcast:boolean; userPrompt:string }; inputPaths:[number,string,number][] }, options?:{signal?:AbortSignal}) => Promise<{ signedTransaction:string; error?:string }>;
 }
 type SourceOutput = Transaction['inputs'][number] & Transaction['outputs'][number];
 type NetworkUtxo = { tx_hash:string; tx_pos:number; value:string|number|bigint; height:number };
@@ -157,10 +160,12 @@ export async function prepareBchPayment(args:{manager:WizardManager;network:BchN
       for (let index=0;index<MAX_ADDRESSES_PER_PATH;index++) {
         const derived=deriveAddress(args.manager,index,args.network,path.childIndex);
         const scriptHash=await electrumScriptHash(derived.lockingBytecode);
-        const history=await client.request('blockchain.scripthash.get_history',scriptHash);
+        const [history,response]=await Promise.all([
+          client.request('blockchain.scripthash.get_history',scriptHash),
+          client.request('blockchain.scripthash.listunspent',scriptHash),
+        ]);
         if (history instanceof Error) throw history;
         if (!Array.isArray(history)) throw new Error('The BCH provider returned an invalid address history.');
-        const response=await client.request('blockchain.scripthash.listunspent',scriptHash);
         if (response instanceof Error) throw response;
         if (!Array.isArray(response)) throw new Error('The BCH provider returned an invalid unspent-output list.');
         const hasActivity=(history as NetworkHistoryEntry[]).length>0||response.length>0;
@@ -173,8 +178,10 @@ export async function prepareBchPayment(args:{manager:WizardManager;network:BchN
           if (candidate.height>0) { candidatesByOutpoint.set(key,candidate);unconfirmedByOutpoint.delete(key); }
           else if (!candidatesByOutpoint.has(key)) unconfirmedByOutpoint.set(key,candidate);
         }
+        if (canCoverPayment(candidatesByOutpoint.values(),args.amountSats)) return true;
         if (unusedAddressGap>=ADDRESS_GAP_LIMIT) break;
       }
+      if (canCoverPayment(candidatesByOutpoint.values(),args.amountSats)) break;
     }
     return canCoverPayment(candidatesByOutpoint.values(),args.amountSats);
   });
@@ -249,8 +256,17 @@ function assertReturnedTransaction(plan:PaymentPlan,signedHex:string) {
   return hexToBin(signedHex);
 }
 
-export async function signAndBroadcastPayment(args:{manager:WizardManager;plan:PaymentPlan;hostOverride:string;onSigned:()=>void;validateBeforeBroadcast:()=>string|null}):Promise<PaymentReceipt> {
-  const response=await args.manager.signTransaction({transaction:{transaction:args.plan.unsignedTransaction,sourceOutputs:args.plan.sourceOutputs,broadcast:false,userPrompt:'Review the BCH amount, full recipient, and fee before approval.'},inputPaths:args.plan.inputPaths});
+export async function signAndBroadcastPayment(args:{manager:WizardManager;plan:PaymentPlan;hostOverride:string;signal?:AbortSignal;onRequestSent?:()=>void;onSigned:()=>void;validateBeforeBroadcast:()=>string|null}):Promise<PaymentReceipt> {
+  const requestSentListener=(message:{action?:string})=>{
+    if(message.action==='sign_transaction_request') args.onRequestSent?.();
+  };
+  args.manager.on('messagesent',requestSentListener);
+  let response:{signedTransaction:string;error?:string};
+  try {
+    response=await args.manager.signTransaction({transaction:{transaction:args.plan.unsignedTransaction,sourceOutputs:args.plan.sourceOutputs.map(sourceOutputToRelay),broadcast:false,userPrompt:'Review the BCH amount, full recipient, and fee before approval.'},inputPaths:args.plan.inputPaths},{signal:args.signal});
+  } finally {
+    args.manager.off('messagesent',requestSentListener);
+  }
   if(response.error) throw new Error(response.error);
   const signedHex=response.signedTransaction;
   const signedBytes=assertReturnedTransaction(args.plan,signedHex);

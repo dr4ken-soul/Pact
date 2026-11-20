@@ -22,8 +22,11 @@ export default function App() {
   const [formMessage,setFormMessage]=useState('');
   const [pendingPlan,setPendingPlan]=useState<PaymentPlan|null>(null);
   const reviewDialog=useRef<HTMLDialogElement>(null);
+  const signingAbort=useRef<AbortController|null>(null);
   const [compactNav,setCompactNav]=useState(false);
   const [busy,setBusy]=useState(false);
+  const [walletRequestState,setWalletRequestState]=useState<'idle'|'sending'|'waiting'|'signed'|'error'>('idle');
+  const [walletRequestError,setWalletRequestError]=useState('');
   const [receipt,setReceipt]=useState<PaymentReceipt|null>(null);
   const [activity,setActivity]=useState<PaymentReceipt[]>([]);
   const [copied,setCopied]=useState('');
@@ -79,7 +82,7 @@ export default function App() {
   }
 
   async function reviewPayment(event:FormEvent<HTMLFormElement>) {
-    event.preventDefault();setFormMessage('');setReceipt(null);setPendingPlan(null);
+    event.preventDefault();setFormMessage('');setReceipt(null);setPendingPlan(null);setWalletRequestState('idle');setWalletRequestError('');
     const verdict=evaluate();
     if(!verdict.allowed){setFormMessage(verdict.reason);return;}
     if(!connected||!manager){setFormMessage('Connect a wallet before preparing a transaction.');return;}
@@ -97,12 +100,29 @@ export default function App() {
     if(!manager||!pendingPlan)return;
     const beforeSigning=evaluate(formatSatoshis(pendingPlan.amountSats),pendingPlan.recipient);
     if(!beforeSigning.allowed){setPendingPlan(null);setFormMessage(beforeSigning.reason);return;}
-    setBusy(true);setFormMessage('');
+    const controller=new AbortController();
+    signingAbort.current=controller;
+    setBusy(true);setFormMessage('');setWalletRequestError('');setWalletRequestState('sending');
+    const timeout=window.setTimeout(()=>{
+      if(!controller.signal.aborted){
+        setWalletRequestState('error');
+        setWalletRequestError('Paytaca did not respond within 2 minutes. Open Paytaca, check its pending WizardConnect requests, reconnect if needed, then try again.');
+        controller.abort(new Error('Wallet approval timed out.'));
+      }
+    },120_000);
     try {
-      const result=await signAndBroadcastPayment({manager,plan:pendingPlan,hostOverride:host,onSigned:()=>setFormMessage('Wallet signed the reviewed transaction. Broadcasting now.'),validateBeforeBroadcast:()=>{const latest=evaluate(formatSatoshis(pendingPlan.amountSats),pendingPlan.recipient);return latest.allowed?null:latest.reason;}});
+      const result=await signAndBroadcastPayment({manager,plan:pendingPlan,hostOverride:host,signal:controller.signal,onRequestSent:()=>setWalletRequestState('waiting'),onSigned:()=>setWalletRequestState('signed'),validateBeforeBroadcast:()=>{const latest=evaluate(formatSatoshis(pendingPlan.amountSats),pendingPlan.recipient);return latest.allowed?null:latest.reason;}});
       setReceipt(result);setActivity(current=>[result,...current]);setPendingPlan(null);setFormMessage('Broadcast accepted by the verified BCH network provider.');
-    } catch(error){setFormMessage(error instanceof Error?error.message:String(error));}
-    finally{setBusy(false);}
+      setWalletRequestState('idle');
+    } catch(error){
+      if(!controller.signal.aborted){setWalletRequestState('error');setWalletRequestError(error instanceof Error?error.message:String(error));}
+    } finally{window.clearTimeout(timeout);if(signingAbort.current===controller)signingAbort.current=null;setBusy(false);}
+  }
+
+  function cancelReview() {
+    signingAbort.current?.abort(new Error('Approval request cancelled.'));
+    signingAbort.current=null;
+    setPendingPlan(null);setBusy(false);setWalletRequestState('idle');setWalletRequestError('');
   }
 
   async function copyText(label:string,value:string) {
@@ -112,7 +132,7 @@ export default function App() {
 
   function changeNetwork(selected:'mainnet'|'chipnet') {
     if(selected===network)return;
-    setNetwork(selected);setPolicyCreated(false);setPendingPlan(null);setReceipt(null);
+    cancelReview();setNetwork(selected);setPolicyCreated(false);setReceipt(null);
     setFormMessage(connected?'Network changed. Reconnect a wallet on the selected network before sending.':'');
     if(connected)wallet.disconnect();
     setPolicyRecipient(selected==='chipnet'?projectConfig.demoRecipient:'');
@@ -184,7 +204,7 @@ export default function App() {
       <section className="submission-section section-pad" id="release-checklist"><div className="section-heading"><div><div className="eyebrow"><span className="eyebrow-line"/>BEFORE SUBMISSION</div><h2>Make the demo verifiable.</h2><p>Verified chain evidence is public. Confirm the remaining team and event details.</p></div><span className="section-index">03 / CHECKLIST</span></div><div className="checklist-grid">{[['Project deck','Pact pitch deck is linked from the project configuration.',!!projectConfig.deckUrl],['EMBER2026 address','BLAZE says the token is not issued; no official receive address or category exists yet.',projectConfig.donationAddressVerified],['Demo payment','Chipnet recipient and amount are configured.',!!projectConfig.demoRecipient&&!!projectConfig.demoAmountBch],['XO proof','The custom policy and signed Chipnet invitation have transaction evidence.',!!projectConfig.xoTransactionUrl],['Live demo','This deployment is available at the public project URL.',window.location.hostname!=='localhost'&&window.location.hostname!=='127.0.0.1'],['BLAZE roll call','Roll call has closed. The BLAZE announcement says late entrants can still compete without completing it.',false]].map(([title,detail,done])=><div className="checklist-row" key={String(title)}><span className={'checklist-check '+(done?'done':'')}>{done?'OK':'-'}</span><div><strong>{title}</strong><span>{String(detail)}{title==='XO proof'&&projectConfig.xoTransactionUrl&&<> <a className="text-link" href={projectConfig.xoTransactionUrl} target="_blank" rel="noreferrer">Inspect tx <span aria-hidden="true">-&gt;</span></a></>}</span></div><span className={'checklist-state '+(done?'done':'')}>{done?'CONFIGURED':title==='BLAZE roll call'?'MISSED / CLOSED':'PENDING'}</span></div>)}</div></section>
     </main>
     <footer className="footer"><a className="wordmark" href="#top">pact</a><span>APP-LEVEL POLICY CHECKS, WIZARDCONNECT SIGNING, AND REAL BCH TRANSACTIONS</span><div><a href={projectConfig.repositoryUrl} target="_blank" rel="noreferrer">GitHub</a><a href="https://bchblaze.cash/" target="_blank" rel="noreferrer">BCH BLAZE</a><span>BUILT FOR REVIEW</span></div></footer>
-    <dialog ref={reviewDialog} className="review-dialog" aria-labelledby="review-title" onCancel={()=>setPendingPlan(null)}>{pendingPlan&&<><div className="review-card-head"><strong id="review-title">Confirm this payment</strong><span>NOT BROADCAST</span></div><div className="review-line"><span>Network</span><strong>{pendingPlan.network==='mainnet'?'Bitcoin Cash Mainnet':'BCH Chipnet'}</strong></div><div className="review-line"><span>Recipient</span><strong className="address-full">{pendingPlan.recipient}</strong></div><div className="review-line"><span>Payment amount</span><strong>{formatSatoshis(pendingPlan.amountSats)} BCH</strong></div><div className="review-line"><span>Confirmed BCH found in scanned wallet addresses</span><strong>{formatSatoshis(pendingPlan.availableBalanceSats)} BCH</strong></div><div className="review-line"><span>Estimated network fee</span><strong>{formatSatoshis(pendingPlan.feeSats)} BCH</strong></div><div className="review-actions"><button type="button" className="button button-outline" onClick={()=>setPendingPlan(null)}>Cancel</button><button type="button" className="button button-primary" onClick={approveAndBroadcast} disabled={busy}>{busy?'Waiting for wallet...':'Open wallet to approve'}</button></div></>}</dialog>
+    <dialog ref={reviewDialog} className="review-dialog" aria-labelledby="review-title" onCancel={cancelReview}>{pendingPlan&&<><div className="review-card-head"><strong id="review-title">Confirm this payment</strong><span>{walletRequestState==='signed'?'SIGNED · BROADCASTING':'NOT BROADCAST'}</span></div><p className="review-explainer">Nothing has been sent yet. Approve this exact payment in Paytaca; Pact broadcasts it only after the wallet returns its signature.</p><div className="review-line"><span>Network</span><strong>{pendingPlan.network==='mainnet'?'Bitcoin Cash Mainnet':'BCH Chipnet'}</strong></div><div className="review-line"><span>Recipient</span><strong className="address-full">{pendingPlan.recipient}</strong></div><div className="review-line"><span>Payment amount</span><strong>{formatSatoshis(pendingPlan.amountSats)} BCH</strong></div><div className="review-line"><span>Confirmed BCH found so far</span><strong>{formatSatoshis(pendingPlan.availableBalanceSats)} BCH</strong></div><div className="review-line"><span>Estimated network fee</span><strong>{formatSatoshis(pendingPlan.feeSats)} BCH</strong></div>{busy&&<div className="wallet-request-status" role="status">{walletRequestState==='sending'?'Sending approval request through WizardConnect…':walletRequestState==='signed'?'Paytaca approved it. Pact is broadcasting the transaction…':'Request sent. Open Paytaca on your phone and check its pending WizardConnect request.'}</div>}{walletRequestError&&<div className="wallet-request-error" role="alert">{walletRequestError}</div>}<div className="review-actions"><button type="button" className="button button-outline" onClick={cancelReview}>{busy?'Cancel request':'Cancel'}</button><button type="button" className="button button-primary" onClick={approveAndBroadcast} disabled={busy}>{busy?'Waiting for Paytaca…':'Open wallet to approve'}</button></div></>}</dialog>
     {qrVisible&&<WizardConnectQRDialog show={qrVisible} uri={wallet.uri!} qrUri={wallet.qrUri!} onClose={()=>setPairingOpen(false)} title="Connect your BCH wallet" subtitle="Scan with a WizardConnect compatible wallet" theme={{dialogBackground:'#151D1A',headerBackground:'#101715',titleColor:'#F2F5F1',subtitleColor:'#A6B2AA',borderColor:'rgba(229,242,234,.16)',qrForeground:'#0B0F0E',qrBackground:'#F2F5F1'}}/>}
     {wallet.state==='connecting'&&<div className="wallet-connecting" role="status"><span className="spinner"/>Waiting for wallet connection</div>}
     {walletNotice&&<div className="wallet-notice" role="status"><span className="status-dot online" aria-hidden="true"/>{walletNotice}</div>}
