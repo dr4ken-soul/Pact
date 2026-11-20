@@ -93,19 +93,33 @@ async function electrumScriptHash(lockingBytecode:Uint8Array) {
   return binToHex(digest.reverse());
 }
 
+function toSafeNonnegativeInteger(value:unknown):number|null {
+  let integer:bigint;
+  if (typeof value==='bigint') integer=value;
+  else if (typeof value==='number'&&Number.isSafeInteger(value)) integer=BigInt(value);
+  else if (typeof value==='string'&&/^\d+$/.test(value)) integer=BigInt(value);
+  else return null;
+  if (integer<0n||integer>BigInt(Number.MAX_SAFE_INTEGER)) return null;
+  return Number(integer);
+}
+
 async function readCandidate(client:ElectrumClient<ElectrumClientEvents>,utxo:NetworkUtxo,pathName:'receive'|'change'|'defi',addressIndex:number,expectedScript:Uint8Array):Promise<Candidate|null> {
-  if (!/^[0-9a-f]{64}$/i.test(utxo.tx_hash)||!Number.isInteger(utxo.tx_pos)||utxo.tx_pos<0||!Number.isInteger(utxo.height)||utxo.height<0||BigInt(String(utxo.value))<=0n) return null;
+  const outputIndex=toSafeNonnegativeInteger(utxo.tx_pos);
+  const height=toSafeNonnegativeInteger(utxo.height);
+  let value:bigint;
+  try { value=BigInt(String(utxo.value)); } catch { return null; }
+  if (!/^[0-9a-f]{64}$/i.test(utxo.tx_hash)||outputIndex===null||height===null||value<=0n) return null;
   const raw=await client.request('blockchain.transaction.get',utxo.tx_hash);
   if (raw instanceof Error||typeof raw!=='string'||!/^(?:[0-9a-f]{2})+$/i.test(raw)) return null;
   const txBytes=hexToBin(raw);
   if (hashTransaction(txBytes).toLowerCase()!==utxo.tx_hash.toLowerCase()) return null;
   const decoded=decodeTransactionBCH(txBytes);
   if (typeof decoded==='string') return null;
-  const output=decoded.outputs[utxo.tx_pos];
+  const output=decoded.outputs[outputIndex];
   if (!output||output.token||!sameLockingBytecode(output.lockingBytecode,expectedScript)) return null;
   const outputValue=BigInt(String(output.valueSatoshis));
-  if (outputValue!==BigInt(String(utxo.value))) return null;
-  return {txid:utxo.tx_hash.toLowerCase(),vout:utxo.tx_pos,value:outputValue,pathName,addressIndex,lockingBytecode:output.lockingBytecode,height:utxo.height};
+  if (outputValue!==value) return null;
+  return {txid:utxo.tx_hash.toLowerCase(),vout:outputIndex,value:outputValue,pathName,addressIndex,lockingBytecode:output.lockingBytecode,height};
 }
 
 function feeFor(inputs:number,outputs:number) { return BigInt(10+148*inputs+34*outputs); }
