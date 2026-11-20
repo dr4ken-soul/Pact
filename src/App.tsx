@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { WizardConnectQRDialog, useWizardConnect } from '@wizardconnect/react';
 import { prepareBchPayment, signAndBroadcastPayment, verifyBchProvider, type PaymentPlan, type PaymentReceipt, type WizardManager } from './adapters/bch';
 import { projectConfig, releaseConfigurationIssues } from './lib/config';
+import { mainnetPaymentEvidence } from './lib/evidence';
 import { checkCashAddress, evaluateIntent, formatSatoshis, parseBchAmount } from './lib/policy';
 
 const initialExpiry = (() => { const date=new Date(Date.now()+60*60*1000); const pad=(n:number)=>String(n).padStart(2,'0'); return date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate())+'T'+pad(date.getHours())+':'+pad(date.getMinutes()); })();
@@ -166,6 +167,11 @@ export default function App() {
       <section className="workspace-section section-pad" id="workspace">
         <div className="section-heading"><div><div className="eyebrow"><span className="eyebrow-line"/>THE CONTROL ROOM</div><h2>Your spending workspace</h2><p>Set one rule, review one payment, keep control of every signature.</p></div><div className="provider-indicator"><span className={'status-dot '+(providerState==='online'?'online':providerState==='offline'?'offline':'')}/><span>{providerState==='online'?'BCH NETWORK READY':providerState==='checking'?'CHECKING NETWORK':'NETWORK UNAVAILABLE'}</span><span className="provider-network">{networkName}</span></div></div>
         {releaseIssues.length>0&&<div className="setup-banner checklist-notice"><div className="setup-icon" aria-hidden="true">i</div><div><strong>Project checklist: {releaseIssues.length} pending item{releaseIssues.length===1?'':'s'}</strong><span>{emberOnlyIssue?'BCH BLAZE has not issued EMBER2026, so no official token address exists. This does not block ordinary BCH payments.':'These are submission details, separate from the wallet connection and network indicators. See the checklist below for what remains.'}</span></div><a href="#release-checklist">View checklist <span aria-hidden="true">-&gt;</span></a></div>}
+        <aside className="mainnet-proof" aria-label="Confirmed Bitcoin Cash Mainnet demo payment">
+          <div className="mainnet-proof-status"><span className="status-dot online"/>CONFIRMED MAINNET DEMO</div>
+          <div className="mainnet-proof-copy"><strong>1,000 sats sent · block {mainnetPaymentEvidence.blockHeight}</strong><span>Confirmed {mainnetPaymentEvidence.confirmedAt} · 226 sat fee · ordinary WizardConnect payment</span><code>{mainnetPaymentEvidence.transactionId}</code></div>
+          <a href={mainnetPaymentEvidence.explorerUrl} target="_blank" rel="noreferrer">View transaction <span aria-hidden="true">-&gt;</span></a>
+        </aside>
         {wallet.error&&<div className="inline-alert error-alert" role="alert">{wallet.error}</div>}
         {providerState==='offline'&&<div className="inline-alert error-alert" role="status"><span>{providerError||'Unable to reach a BCH provider.'}</span><button className="retry-button" type="button" onClick={()=>setProviderRetry(value=>value+1)}>Retry connection</button></div>}
         <div className="workspace-grid">

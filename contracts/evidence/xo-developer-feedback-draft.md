@@ -1,0 +1,27 @@
+# XO developer feedback — review draft
+
+AI-assisted working draft for factual review only. The BLAZE bounty requires personally written feedback and says AI-written submissions will be rejected. Rewrite this in your own words and verify every statement from your own experience before submitting.
+
+**Separate demo evidence for project records:** Pact's WizardConnect browser payment also completed a 1,000 sat BCH Mainnet send, confirmed in block 978164 with a 226 sat fee ([explorer](https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704)). This was an ordinary wallet payment, not the XO Chipnet covenant spend described in this feedback. Keep it out of the first-person bounty feedback unless you personally verify and decide it is relevant.
+
+## What worked well
+
+I built Pact’s XO example around a narrow, inspectable payment rule. The template separates an agent payment from owner recovery, and the compiler lets me check the template before creating a funded policy. The BCH 2023 virtual machine check was useful because it caught whether the signed transaction actually satisfied the script, rather than only whether the invitation had the expected fields. The invitation also gives a useful record of the committed variables, input, outputs, and signatures, so another developer can compare the intended payment with the raw transaction.
+
+The core rule is straightforward to explain and verify: one policy input, a payment to one committed BCH address, a per-payment ceiling, no CashTokens, and a continuation to the same policy script after a fixed fee. The confirmed 0.1.7 Chipnet example spends 100,000 sats, sends 1,000 sats to the committed recipient, returns 79,000 sats to the same policy script, and pays a fixed 20,000 sat fee. The earlier 0.1.6 transaction used a 1,000 sat fee and remained pending. I created a new policy and separately funded output with a higher fixed fee; that 429-byte transaction confirmed at block 337884. The funding transaction confirmed at block 337675. Keeping the amounts visible in the invitation and raw transaction made the result straightforward to verify.
+
+## What was difficult and what is missing
+
+XO is still early enough that the account and transaction lifecycle takes meaningful setup. The current engine flow is mnemonic-based. Pact’s browser payment flow uses WizardConnect, so the XO invitation demo and the connected-wallet demo are separate paths. I kept the generated test account local and encrypted; it is not a user’s wallet and its recovery phrase is not collected by the web app. A clearer supported path for wallet-based XO signing would make it easier to connect an application like Pact without managing a separate test account.
+
+The covenant also makes a few policy boundaries important to communicate. The payment cap applies to each payment. A single continuation chain spends down its funded balance, but separately funded policy outputs do not share a global cumulative allowance. The timestamp enables owner recovery; it does not stop the agent branch from being used after that time. The fixed fee is enforced exactly, which is easy to audit but gives the developer little room to raise the miner fee without creating a new policy. I first broadcast the example with a 1,000 sat fixed fee; it remained pending, so I created a new 0.1.7 policy with a 20,000 sat fee and rebroadcast from a separately funded output.
+
+The first 0.1.6 transaction showed why an Electrum broadcast response is not confirmation: it passed the local BCH VM check and was accepted into Chipnet’s mempool, but remained pending. I archived that transaction and verified the replacement 0.1.7 spend through Electrum history; both recipient and covenant continuation histories reported block 337884. The explorer also shows the confirmed transaction: https://explorer.selene.cash/tx/da7d089a14e5bc9206535013ce20c7b5048d0303a1fe5b64e3a9769f1aec3aa6?network=chipnet. The tooling should distinguish script validity, broadcast acceptance, and block confirmation, and should make it straightforward to monitor each stage.
+
+## Suggestions
+
+I would like to see more examples for stateful policies such as a cumulative budget that decreases on every continuation, as well as a way to express whether a timestamp is a recovery opening or a true spend expiry. Fee configuration and fee-bump guidance would also help developers build examples that survive changing testnet conditions. A small end-to-end example that creates the policy, funds it, executes a follow-up payment, verifies it with the VM, and waits for confirmation would be especially useful.
+
+## Reproduction
+
+From the Pact repository root on Windows, install the pinned contracts dependencies, run `npm run validate --prefix contracts` and `npm run compile --prefix contracts`, then run `npm run profile --prefix contracts`, `npm run fund:chipnet --prefix contracts`, and `npm run invitation:chipnet --prefix contracts`. Finally run `node contracts/scripts/verify-chipnet-transaction.mjs`. The profile and mnemonic are stored only in the local ignored state folder; the public evidence bundle contains the template, signed invitation, raw transaction, and verification result.

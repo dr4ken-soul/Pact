@@ -2,9 +2,9 @@
 
 ## Project status
 
-Pact is a BCH BLAZE 2026 bounded-permission AI payments project. Planning is approved. The design gates, name, palette, fingerprint, and frontend specification are confirmed. No application code or build has been approved yet.
+Pact is a BCH BLAZE 2026 bounded-permission AI payments project. The owner approved the initial build, and the prototype is implemented. Its WizardConnect BCH Mainnet send path has a confirmed transaction; see `SUBMISSION_STATUS.md` and `contracts/evidence/mainnet-payment.json` for the evidence and remaining submission work.
 
-**Stop before writing or modifying application code.** Wait for the user to explicitly approve the build step. Reading references, updating planning documents, and discussing implementation are permitted. Do not create a scaffold, install dependencies, or start a dev server without that approval.
+Continue only in response to a specific user request. Do not treat the initial build approval as permission to add unrelated features or make new Mainnet payments. Never handle end-user seed phrases or private keys.
 
 ## Source of truth
 

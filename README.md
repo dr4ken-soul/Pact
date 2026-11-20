@@ -32,7 +32,7 @@ The XO Engine creates its account from a mnemonic. For this development integrat
 - The XO template enforces a maximum per payment and preserves a finite balance for each policy UTXO. It does not establish a global cumulative cap across separately funded UTXOs.
 - The recovery timestamp makes the owner's reclaim branch available. It does not disable the agent payment branch.
 - The EMBER2026 address in `.env` was supplied by the owner, but BCH BLAZE says EMBER2026 has not been minted or distributed and no official receive address or token category is available yet. It is not an official EMBER2026 address.
-- Mainnet sends are enabled behind WizardConnect review and signature. The app defaults to Chipnet; no Mainnet payment has been broadcast by the project. Mainnet requires a valid bitcoincash recipient and a funded Mainnet wallet.
+- Mainnet sends are enabled behind WizardConnect review and signature; Chipnet remains the default network. One owner-approved 1,000 sat Mainnet payment was broadcast and confirmed in block 978164 on 2026-11-20; the transaction paid a 226 sat fee. [View the transaction](https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704). This proves the wallet approval and BCH Mainnet send path worked for this payment; the UI spending rule remains an app-level check, not an on-chain covenant.
 
 ## Pinned integration versions
 

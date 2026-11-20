@@ -1,6 +1,6 @@
 # Pact Frontend Specification
 
-**Status:** Design decisions confirmed. Planning specification only. No application code has been approved.
+**Status:** Design specification for the implemented prototype. The WizardConnect BCH Mainnet send path has a confirmed payment; the application-level policy and XO limitations remain as described in the implementation and `SUBMISSION_STATUS.md`.
 
 ## 0. Product and design decisions
 

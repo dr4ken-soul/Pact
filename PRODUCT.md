@@ -1,6 +1,6 @@
 # Pact Product Overview
 
-**Status:** concept and prototype plan. Pact is not yet a released product.
+**Status:** implemented prototype, not a released product. The WizardConnect BCH Mainnet send path has a confirmed 1,000 sat payment (block 978164). Browser spending rules remain app-level checks; the separate XO policy has Chipnet evidence and documented limits.
 
 ## What Pact does
 
@@ -38,3 +38,7 @@ The initial customer segment is a hypothesis. The team should validate it with d
 ## Demo promise
 
 A judge can open the app, understand the three bounds, connect a wallet, inspect a real BCH payment, explicitly approve it, and verify the actual result. The demo must use a real configured address and amount, never fake activity.
+
+## Verified Mainnet demo
+
+The Mainnet send path completed an owner-approved 1,000 sat payment on 2026-11-20. It confirmed in block 978164 with a 226 sat fee. [View the transaction](https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704). This demonstrates the wallet approval, signing, broadcast, and confirmation flow for an ordinary BCH payment; it does not demonstrate that the browser policy is enforced by a covenant.

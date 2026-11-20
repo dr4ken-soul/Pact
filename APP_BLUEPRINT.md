@@ -1,6 +1,6 @@
 # Pact App Blueprint
 
-**Status:** Planning artifact. No application code has been approved.
+**Status:** Implemented prototype. The WizardConnect BCH Mainnet payment path has completed and confirmed a 1,000 sat owner-approved payment (block 978164, 2026-11-20). Ordinary payment rules remain app-level checks; the separate XO covenant proof is on Chipnet. The project is not a released or audited product, and event submission tasks remain open.
 
 ## 1. Executive summary
 
@@ -219,13 +219,13 @@ The demo must not depend on typing a long prompt, creating an account, fake bala
 
 ## 11. Hackathon compliance checklist
 
-- [ ] Live hosted version loads directly into the working app.
-- [ ] At least one useful BCH Mainnet transaction can be initiated and completed through Pact with explicit wallet approval.
-- [ ] WizardConnect integration is present and tested as required by the Mainnet track.
-- [ ] XO template integration, if selected for policy enforcement, is separately documented and pinned to the tested version.
-- [ ] Build and contract testing start on Chipnet.
+- [x] Live hosted version loads directly into the working app. The production URL is recorded in `SUBMISSION_STATUS.md`.
+- [x] At least one useful BCH Mainnet transaction can be initiated and completed through Pact with explicit wallet approval. Confirmed transaction: `3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704`, block 978164.
+- [x] WizardConnect integration is present and exercised on Mainnet by the confirmed transaction above.
+- [x] XO template integration, if selected for policy enforcement, is separately documented and pinned to the tested version.
+- [x] Build and contract testing start on Chipnet; template validation and BCH 2023 VM validation passed for the documented invitation.
 - [ ] Project uses only minimal Mainnet funds and only with a tested recovery understanding.
-- [ ] Widget Factory short presentation is copied and completed.
+- [x] Widget Factory short presentation is copied and completed as `Pact_Pitch_Deck.pptx`. It is not a native Google Slides copy; check whether the final event form accepts PPTX.
 - [ ] Top banner links to the deck and source. Display an EMBER2026 receive address only after the token has been issued and its destination is verified, for Community Choice eligibility.
 - [ ] Record roll call as missed/closed per the organizer notice and confirm the project is real in the BCH BLAZE Telegram as the CompeteHub mirror of the DoraHacks track listing requires.
 - [ ] Submission is made within the official submission window and judging notes are ready.

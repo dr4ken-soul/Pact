@@ -1,6 +1,6 @@
 # Pact Project Rules and Reference Integration
 
-**Status:** persistent instructions for future AI coding agents. No application code is approved until the user explicitly says to begin implementation.
+**Status:** persistent instructions for future AI coding agents. The owner explicitly approved the initial implementation, which is now built. Continue to require a specific user request for new implementation work, as directed below.
 
 ## 1. The user's setup should be guided, not bounced back
 

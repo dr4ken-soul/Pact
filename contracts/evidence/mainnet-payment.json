@@ -1,0 +1,29 @@
+{
+  "evidence_type": "ordinary-bch-mainnet-wallet-payment",
+  "transaction_id": "3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704",
+  "network": "Bitcoin Cash Mainnet",
+  "status": "confirmed",
+  "block_height": 978164,
+  "block_time_utc": "2026-11-20T12:04:31Z",
+  "checked_at_utc": "2026-11-20T18:30:57Z",
+  "confirmations_at_check": 35,
+  "chain_tip_at_check": 978198,
+  "input_total_sats": 95560,
+  "outputs": [
+    {
+      "type": "payment",
+      "address": "bitcoincash:qrx6fm43qwuf5jpdlpcm6r2t8tdv6efutqlr99sh6l",
+      "value_sats": 1000
+    },
+    {
+      "type": "change",
+      "address": "bitcoincash:qrl8v722d9shl2y3wpcdpm8t6deg7hcmg5rlav84t7",
+      "value_sats": 94334
+    }
+  ],
+  "fee_sats": 226,
+  "explorer_url": "https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704",
+  "provider_api_url": "https://api.blockchair.com/bitcoin-cash/dashboards/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704",
+  "authorization": "Owner-approved WizardConnect wallet transaction in the Pact web app.",
+  "scope_note": "This is an ordinary BCH wallet payment. It proves the Mainnet wallet approval, signing, broadcast, and confirmation path for this transaction. It is not an XO covenant spend and does not prove the app-level spending rule is enforced on-chain."
+}

@@ -13,3 +13,7 @@ node contracts/scripts/verify-chipnet-transaction.mjs
 ```
 
 The verifier reads the live transaction, the funding transaction history, and both script histories from Chipnet Electrum. The mnemonic and engine database remain local; the public proof bundle contains only the signed invitation, raw transaction, transaction ID, and verified output values.
+
+## Separate BCH Mainnet wallet payment
+
+Pact's WizardConnect browser flow also completed a user-approved 1,000 sat ordinary BCH Mainnet payment. It confirmed in block 978164 with a 226 sat fee. The snapshot and explorer link are recorded in [`mainnet-payment.json`](mainnet-payment.json). This is wallet-flow evidence; it is not an XO invitation or proof that the browser's spending rule is enforced on-chain.
