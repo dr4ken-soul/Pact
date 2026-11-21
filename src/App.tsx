@@ -52,7 +52,8 @@ export default function App() {
   const [receipt,setReceipt]=useState<PaymentReceipt|null>(null);
   const [activity,setActivity]=useState<PaymentReceipt[]>([]);
   const [copied,setCopied]=useState('');
-  const [pairingOpen,setPairingOpen]=useState(true);
+  const [pairingOpen,setPairingOpen]=useState(false);
+  const pairingRestartRequested=useRef(false);
   const [walletNotice,setWalletNotice]=useState('');
   const releaseIssues=useMemo(()=>releaseConfigurationIssues(),[]);
 
@@ -63,11 +64,19 @@ export default function App() {
 
   useEffect(()=>{
     if(!connected){setWalletNotice('');return;}
+    pairingRestartRequested.current=false;
     setPairingOpen(false);
     setWalletNotice('Wallet connected. Check the selected network before sending.');
     const timeout=window.setTimeout(()=>setWalletNotice(''),4500);
     return ()=>window.clearTimeout(timeout);
   },[connected]);
+
+  useEffect(()=>{
+    if(!pairingRestartRequested.current||wallet.state!=='idle')return;
+    pairingRestartRequested.current=false;
+    setPairingOpen(true);
+    if(!wallet.connect())setWalletNotice('A fresh wallet pairing could not be started. Click Connect wallet to try again.');
+  },[wallet.state,wallet.connect]);
 
   useEffect(()=>{const update=()=>setCompactNav(window.scrollY>80);update();window.addEventListener('scroll',update,{passive:true});return ()=>window.removeEventListener('scroll',update);},[]);
 
@@ -201,11 +210,27 @@ export default function App() {
     if(selected===network)return;
     cancelReview();setNetwork(selected);setPolicyCreated(false);setReceipt(null);setCovenantPolicy(null);setPolicyOutpoint('');setPolicyUtxo(null);
     setFormMessage(connected?'Network changed. Reconnect a wallet on the selected network before sending.':'');
-    if(connected)wallet.disconnect();
+    if(wallet.state!=='idle'){pairingRestartRequested.current=false;setPairingOpen(false);void wallet.disconnect();}
     setPolicyRecipient(selected==='chipnet'?projectConfig.demoRecipient:'');
     setCap(selected==='chipnet'?projectConfig.demoAmountBch:'');
     setAmount(selected==='chipnet'?projectConfig.demoAmountBch:'');
     setRecipient(selected==='chipnet'?projectConfig.demoRecipient:'');
+  }
+  function closeWalletPairing(){
+    pairingRestartRequested.current=false;
+    setPairingOpen(false);
+    void wallet.disconnect();
+  }
+  function startWalletPairing(){
+    setWalletNotice('');
+    setPairingOpen(true);
+    if(wallet.state==='connecting'||wallet.state==='reconnecting'){
+      pairingRestartRequested.current=true;
+      setPairingOpen(false);
+      void wallet.disconnect();
+      return;
+    }
+    if(!wallet.connect())setWalletNotice('Wallet pairing did not start. Please click Connect wallet again.');
   }
   const qrVisible=!connected&&!!wallet.uri&&!!wallet.qrUri&&pairingOpen;
   const decision=evaluate();
@@ -218,7 +243,7 @@ export default function App() {
       <nav className="desktop-nav" aria-label="Main navigation"><a href="#rules">Policy</a><a href="#activity">Activity</a><a href="#how-it-works">How it works</a></nav><details className="mobile-nav"><summary aria-label="Open navigation">Menu</summary><div className="mobile-menu-links"><a href="#rules">Policy</a><a href="#activity">Activity</a><a href="#how-it-works">How it works</a></div></details>
       <div className="topbar-actions">
         <div className="network-control"><span className={'status-dot '+(providerState==='online'?'online':providerState==='offline'?'offline':'')} title={providerState==='online'?'BCH provider online':providerState==='offline'?'BCH provider offline':'Checking BCH provider'} aria-hidden="true"/><div className="network-switch" role="group" aria-label="Select Bitcoin Cash network"><button type="button" className={'network-option '+(network==='chipnet'?'selected':'')} aria-pressed={network==='chipnet'} onClick={()=>changeNetwork('chipnet')}>Chipnet</button><button type="button" className={'network-option '+(network==='mainnet'?'selected':'')} aria-pressed={network==='mainnet'} onClick={()=>changeNetwork('mainnet')}>BCH Mainnet</button></div></div>
-        {connected?<button className="wallet-pill connected-pill" onClick={()=>wallet.disconnect()}><span className="status-dot online"/>{wallet.walletName||'Wallet connected'}<span className="disconnect-mark">x</span></button>:<button className="button button-small button-outline" onClick={()=>{setPairingOpen(true);wallet.connect();}}>Connect wallet</button>}
+        {connected?<button className="wallet-pill connected-pill" onClick={()=>wallet.disconnect()}><span className="status-dot online"/>{wallet.walletName||'Wallet connected'}<span className="disconnect-mark">x</span></button>:<button className="button button-small button-outline" onClick={startWalletPairing}>{wallet.state==='connecting'||wallet.state==='reconnecting'?'Restart pairing':'Connect wallet'}</button>}
       </div>
     </header>
 
@@ -299,7 +324,7 @@ export default function App() {
     </main>
     <footer className="footer"><a className="wordmark" href="#top">pact</a><span>ON-CHAIN COVENANT RULES, WIZARDCONNECT SIGNING, AND REAL BCH TRANSACTIONS</span><div><a href={projectConfig.repositoryUrl} target="_blank" rel="noreferrer">GitHub</a><a href="https://bchblaze.cash/" target="_blank" rel="noreferrer">BCH BLAZE</a><span>BUILT FOR REVIEW</span></div></footer>
     <dialog ref={reviewDialog} className="review-dialog" aria-labelledby="review-title" onCancel={cancelReview}>{pendingPlan&&<><div className="review-card-head"><strong id="review-title">{pendingPlan.kind==='policy-funding'?'Confirm covenant funding':pendingPlan.kind==='covenant-recovery'?'Confirm owner recovery':'Confirm this covenant payment'}</strong><span>{walletRequestState==='signed'?'SIGNED · BROADCASTING':'NOT BROADCAST'}</span></div><p className="review-explainer">Nothing has been sent yet. Approve this exact transaction in Paytaca; Pact broadcasts it only after the wallet returns its signature.</p><div className="review-line"><span>Network</span><strong>{pendingPlan.network==='mainnet'?'Bitcoin Cash Mainnet':'BCH Chipnet'}</strong></div><div className="review-line"><span>Recipient</span><strong className="address-full">{pendingPlan.recipient}</strong></div><div className="review-line"><span>{pendingPlan.kind==='policy-funding'?'Covenant funding amount':'Payment amount'}</span><strong>{formatSatoshis(pendingPlan.amountSats)} BCH</strong></div><div className="review-line"><span>{pendingPlan.kind==='policy-funding'?'Confirmed wallet BCH':'Confirmed covenant BCH'}</span><strong>{formatSatoshis(pendingPlan.availableBalanceSats)} BCH</strong></div><div className="review-line"><span>{pendingPlan.kind==='policy-funding'?'Estimated network fee':'Fixed covenant fee'}</span><strong>{formatSatoshis(pendingPlan.feeSats)} BCH</strong></div>{pendingPlan.kind?.startsWith('covenant-')&&pendingPlan.policy&&<div className="review-line"><span>Contract address</span><strong className="address-full">{pendingPlan.policy.address}</strong></div>}{busy&&<div className="wallet-request-status" role="status">{walletRequestState==='sending'?'Sending approval request through WizardConnect…':walletRequestState==='signed'?'Paytaca approved it. Pact is validating and broadcasting the transaction…':'Request sent. Open Paytaca on your phone and check its pending WizardConnect request.'}</div>}{walletRequestError&&<div className="wallet-request-error" role="alert">{walletRequestError}</div>}<div className="review-actions"><button type="button" className="button button-outline" onClick={cancelReview}>{busy?'Cancel request':'Cancel'}</button><button type="button" className="button button-primary" onClick={approveAndBroadcast} disabled={busy}>{busy?'Waiting for Paytaca…':'Open wallet to approve'}</button></div></>}</dialog>
-    {qrVisible&&<WizardConnectQRDialog show={qrVisible} uri={wallet.uri!} qrUri={wallet.qrUri!} onClose={()=>setPairingOpen(false)} title="Connect your BCH wallet" subtitle="Scan with a WizardConnect compatible wallet" theme={{dialogBackground:'#151D1A',headerBackground:'#101715',titleColor:'#F2F5F1',subtitleColor:'#A6B2AA',borderColor:'rgba(229,242,234,.16)',qrForeground:'#0B0F0E',qrBackground:'#F2F5F1'}}/>}
+    {qrVisible&&<WizardConnectQRDialog show={qrVisible} uri={wallet.uri!} qrUri={wallet.qrUri!} onClose={closeWalletPairing} title="Connect your BCH wallet" subtitle="Scan with a WizardConnect compatible wallet" theme={{dialogBackground:'#151D1A',headerBackground:'#101715',titleColor:'#F2F5F1',subtitleColor:'#A6B2AA',borderColor:'rgba(229,242,234,.16)',qrForeground:'#0B0F0E',qrBackground:'#F2F5F1'}}/>}
     {wallet.state==='connecting'&&<div className="wallet-connecting" role="status"><span className="spinner"/>Waiting for wallet connection</div>}
     {walletNotice&&<div className="wallet-notice" role="status"><span className="status-dot online" aria-hidden="true"/>{walletNotice}</div>}
   </div>;
