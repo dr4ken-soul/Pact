@@ -1,6 +1,6 @@
 # Pact submission and implementation status
 
-**Checked:** 21 November 2026. The BLAZE submission deadline is listed as 22 November at 14:00 UTC.
+**Checked:** 21 November 2026. The official schedule says submissions and judging begin 22 November at 14:00 UTC (15:00 Lagos); check the logged-in DoraHacks form for its closing time.
 
 ## BLAZE Mainnet track
 
