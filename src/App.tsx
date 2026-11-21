@@ -10,6 +10,12 @@ import { checkCashAddress, evaluateIntent, formatSatoshis, parseBchAmount } from
 const initialExpiry = (() => { const date=new Date(Date.now()+60*60*1000); const pad=(n:number)=>String(n).padStart(2,'0'); return date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate())+'T'+pad(date.getHours())+':'+pad(date.getMinutes()); })();
 const shortAddress = (value:string) => value.length>24?value.slice(0,12)+'...'+value.slice(-8):value;
 const policyStorageKey=(network:'mainnet'|'chipnet')=>'pact-covenant-policy:'+network;
+type WizardRelayChoice='primary'|'alternate';
+const wizardRelayStorageKey='pact-wizardconnect-relay';
+const wizardAlternateRelayUrls=['wss://relay.cauldron.quest:443'];
+function readWizardRelayChoice():WizardRelayChoice {
+  try{return localStorage.getItem(wizardRelayStorageKey)==='alternate'?'alternate':'primary';}catch{return 'primary';}
+}
 function readStoredPolicy(network:'mainnet'|'chipnet'):{policy:CovenantPolicy;outpoint:string}|null {
   try {
     const raw=localStorage.getItem(policyStorageKey(network));
@@ -26,7 +32,9 @@ function persistPolicy(policy:CovenantPolicy,outpoint:string){
 function dateInputFromTimestamp(timestamp:number){const date=new Date(timestamp*1000);const pad=(value:number)=>String(value).padStart(2,'0');return date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate())+'T'+pad(date.getHours())+':'+pad(date.getMinutes());}
 
 export default function App() {
-  const wallet=useWizardConnect({dappName:'Pact',sessionKey:'pact-wizardconnect-session',persistSession:true});
+  const [relayChoice,setRelayChoice]=useState<WizardRelayChoice>(readWizardRelayChoice);
+  const [relayRestart,setRelayRestart]=useState(0);
+  const wallet=useWizardConnect({dappName:'Pact',sessionKey:'pact-wizardconnect-session',persistSession:true,relayUrls:relayChoice==='alternate'?wizardAlternateRelayUrls:undefined});
   const [network,setNetwork]=useState<'mainnet'|'chipnet'>(projectConfig.network);
   const [providerState,setProviderState]=useState<'checking'|'online'|'offline'>('checking');
   const [providerRetry,setProviderRetry]=useState(0);
@@ -72,6 +80,12 @@ export default function App() {
   useEffect(()=>{const update=()=>setCompactNav(window.scrollY>80);update();window.addEventListener('scroll',update,{passive:true});return ()=>window.removeEventListener('scroll',update);},[]);
 
   useEffect(()=>{const dialog=reviewDialog.current;if(!dialog)return;if(pendingPlan&&!dialog.open)dialog.showModal();else if(!pendingPlan&&dialog.open)dialog.close();},[pendingPlan]);
+
+  useEffect(()=>{
+    if(relayRestart===0||wallet.state==='connecting'||wallet.state==='connected')return;
+    setPairingOpen(true);
+    wallet.connect();
+  },[relayRestart]);
 
   useEffect(()=>{
     let active=true;
@@ -212,6 +226,14 @@ export default function App() {
     setPairingOpen(true);
     if(wallet.state!=='connecting')wallet.connect();
   }
+  function switchWizardRelay() {
+    const next:WizardRelayChoice=relayChoice==='primary'?'alternate':'primary';
+    try{localStorage.setItem(wizardRelayStorageKey,next);}catch{}
+    setWalletNotice('');
+    setPairingOpen(true);
+    setRelayChoice(next);
+    setRelayRestart(value=>value+1);
+  }
   const qrVisible=!connected&&!!wallet.uri&&!!wallet.qrUri&&pairingOpen;
   const decision=evaluate();
   const sendBlocked=!connected||providerState!=='online'||(network==='mainnet'&&!projectConfig.mainnetSendsEnabled)||!policyCreated||!policyUtxo||busy;
@@ -223,7 +245,7 @@ export default function App() {
       <nav className="desktop-nav" aria-label="Main navigation"><a href="#rules">Policy</a><a href="#activity">Activity</a><a href="#how-it-works">How it works</a></nav><details className="mobile-nav"><summary aria-label="Open navigation">Menu</summary><div className="mobile-menu-links"><a href="#rules">Policy</a><a href="#activity">Activity</a><a href="#how-it-works">How it works</a></div></details>
       <div className="topbar-actions">
         <div className="network-control"><span className={'status-dot '+(providerState==='online'?'online':providerState==='offline'?'offline':'')} title={providerState==='online'?'BCH provider online':providerState==='offline'?'BCH provider offline':'Checking BCH provider'} aria-hidden="true"/><div className="network-switch" role="group" aria-label="Select Bitcoin Cash network"><button type="button" className={'network-option '+(network==='chipnet'?'selected':'')} aria-pressed={network==='chipnet'} onClick={()=>changeNetwork('chipnet')}>Chipnet</button><button type="button" className={'network-option '+(network==='mainnet'?'selected':'')} aria-pressed={network==='mainnet'} onClick={()=>changeNetwork('mainnet')}>BCH Mainnet</button></div></div>
-        {connected?<button className="wallet-pill connected-pill" onClick={()=>wallet.disconnect()}><span className="status-dot online"/>{wallet.walletName||'Wallet connected'}<span className="disconnect-mark">x</span></button>:<button className="button button-small button-outline" onClick={openWalletPairing}>{wallet.state==='reconnecting'?'Create fresh pairing':wallet.state==='connecting'?'Show connection QR':'Connect wallet'}</button>}
+        {connected?<button className="wallet-pill connected-pill" onClick={()=>wallet.disconnect()}><span className="status-dot online"/>{wallet.walletName||'Wallet connected'}<span className="disconnect-mark">x</span></button>:<button className="button button-small button-outline" onClick={wallet.state==='reconnecting'?switchWizardRelay:openWalletPairing}>{wallet.state==='reconnecting'?'Try other relay':wallet.state==='connecting'?'Show connection QR':'Connect wallet'}</button>}
       </div>
     </header>
 
@@ -244,7 +266,7 @@ export default function App() {
           <a href={mainnetPaymentEvidence.explorerUrl} target="_blank" rel="noreferrer">View transaction <span aria-hidden="true">-&gt;</span></a>
         </aside>
         {wallet.error&&<div className="inline-alert error-alert" role="alert">{wallet.error}</div>}
-        {wallet.state==='reconnecting'&&<div className="inline-alert reconnect-alert" role="status"><div><strong>Wallet connection is trying to reconnect.</strong><span>If Paytaca keeps showing “Subscription closed”, remove the old Pact entries there, then create a fresh pairing and scan or paste the new link.</span></div><button className="retry-button" type="button" onClick={openWalletPairing}>Create fresh pairing</button></div>}
+        {wallet.state==='reconnecting'&&<div className="inline-alert reconnect-alert" role="status"><div><strong>Paytaca’s WizardConnect relay subscription closed.</strong><span>This attempt uses {relayChoice==='primary'?'relay.riften.net':'relay.cauldron.quest'}. Switch relays to create a new QR/link on the other official endpoint.</span></div><button className="retry-button" type="button" onClick={switchWizardRelay}>{relayChoice==='primary'?'Try alternate relay':'Try primary relay'}</button></div>}
         {providerState==='offline'&&<div className="inline-alert error-alert" role="status"><span>{providerError||'Unable to reach a BCH provider.'}</span><button className="retry-button" type="button" onClick={()=>setProviderRetry(value=>value+1)}>Retry connection</button></div>}
         <div className="workspace-grid">
           <article className="panel rule-panel" id="rules"><div className="panel-head"><div><span className="panel-kicker">01 / ON-CHAIN POLICY</span><h3>Set the boundary</h3></div><span className={'state-chip '+(policyCreated?'state-live':'state-draft')}><span className="status-dot"/>{policyCreated?'FUNDED · CONFIRMED':covenantPolicy?'WAITING FOR CONFIRMATION':'NOT FUNDED'}</span></div><p className="panel-intro">Commit one BCH recipient and a per-payment cap in a covenant output. The owner wallet reviews and signs each payment.</p>
@@ -305,7 +327,7 @@ export default function App() {
     </main>
     <footer className="footer"><a className="wordmark" href="#top">pact</a><span>ON-CHAIN COVENANT RULES, WIZARDCONNECT SIGNING, AND REAL BCH TRANSACTIONS</span><div><a href={projectConfig.repositoryUrl} target="_blank" rel="noreferrer">GitHub</a><a href="https://bchblaze.cash/" target="_blank" rel="noreferrer">BCH BLAZE</a><span>BUILT FOR REVIEW</span></div></footer>
     <dialog ref={reviewDialog} className="review-dialog" aria-labelledby="review-title" onCancel={cancelReview}>{pendingPlan&&<><div className="review-card-head"><strong id="review-title">{pendingPlan.kind==='policy-funding'?'Confirm covenant funding':pendingPlan.kind==='covenant-recovery'?'Confirm owner recovery':'Confirm this covenant payment'}</strong><span>{walletRequestState==='signed'?'SIGNED · BROADCASTING':'NOT BROADCAST'}</span></div><p className="review-explainer">Nothing has been sent yet. Approve this exact transaction in Paytaca; Pact broadcasts it only after the wallet returns its signature.</p><div className="review-line"><span>Network</span><strong>{pendingPlan.network==='mainnet'?'Bitcoin Cash Mainnet':'BCH Chipnet'}</strong></div><div className="review-line"><span>Recipient</span><strong className="address-full">{pendingPlan.recipient}</strong></div><div className="review-line"><span>{pendingPlan.kind==='policy-funding'?'Covenant funding amount':'Payment amount'}</span><strong>{formatSatoshis(pendingPlan.amountSats)} BCH</strong></div><div className="review-line"><span>{pendingPlan.kind==='policy-funding'?'Confirmed wallet BCH':'Confirmed covenant BCH'}</span><strong>{formatSatoshis(pendingPlan.availableBalanceSats)} BCH</strong></div><div className="review-line"><span>{pendingPlan.kind==='policy-funding'?'Estimated network fee':'Fixed covenant fee'}</span><strong>{formatSatoshis(pendingPlan.feeSats)} BCH</strong></div>{pendingPlan.kind?.startsWith('covenant-')&&pendingPlan.policy&&<div className="review-line"><span>Contract address</span><strong className="address-full">{pendingPlan.policy.address}</strong></div>}{busy&&<div className="wallet-request-status" role="status">{walletRequestState==='sending'?'Sending approval request through WizardConnect…':walletRequestState==='signed'?'Paytaca approved it. Pact is validating and broadcasting the transaction…':'Request sent. Open Paytaca on your phone and check its pending WizardConnect request.'}</div>}{walletRequestError&&<div className="wallet-request-error" role="alert">{walletRequestError}</div>}<div className="review-actions"><button type="button" className="button button-outline" onClick={cancelReview}>{busy?'Cancel request':'Cancel'}</button><button type="button" className="button button-primary" onClick={approveAndBroadcast} disabled={busy}>{busy?'Waiting for Paytaca…':'Open wallet to approve'}</button></div></>}</dialog>
-    {qrVisible&&<WizardConnectQRDialog show={qrVisible} uri={wallet.uri!} qrUri={wallet.qrUri!} onClose={()=>setPairingOpen(false)} title="Connect your BCH wallet" subtitle="In Paytaca, remove stale Pact entries first if they show Subscription closed. Then scan this fresh code or copy the wiz:// link below." theme={{dialogBackground:'#151D1A',headerBackground:'#101715',titleColor:'#F2F5F1',subtitleColor:'#A6B2AA',borderColor:'rgba(229,242,234,.16)',qrForeground:'#0B0F0E',qrBackground:'#F2F5F1'}}/>}
+    {qrVisible&&<WizardConnectQRDialog show={qrVisible} uri={wallet.uri!} qrUri={wallet.qrUri!} onClose={()=>setPairingOpen(false)} title="Connect your BCH wallet" subtitle={`This link uses ${relayChoice==='primary'?'relay.riften.net':'relay.cauldron.quest'}. Scan the fresh code or paste its wiz:// link in Paytaca.`} theme={{dialogBackground:'#151D1A',headerBackground:'#101715',titleColor:'#F2F5F1',subtitleColor:'#A6B2AA',borderColor:'rgba(229,242,234,.16)',qrForeground:'#0B0F0E',qrBackground:'#F2F5F1'}}/>}
     {wallet.state==='connecting'&&<div className="wallet-connecting" role="status"><span className="spinner"/>Waiting for wallet connection</div>}
     {walletNotice&&<div className="wallet-notice" role="status"><span className="status-dot online" aria-hidden="true"/>{walletNotice}</div>}
   </div>;
