@@ -15,12 +15,6 @@ The covenant enforces one recipient, a per-payment ceiling, one covenant input, 
 
 The confirmed 1,000 sat Mainnet transaction listed below was an ordinary wallet payment, not a covenant spend. The live covenant interface is implemented for Chipnet and Mainnet, but no Mainnet covenant transaction is claimed as confirmed.
 
-## WizardConnect reconnection
-
-Pact uses a fresh WizardConnect QR pairing and does not persist the connection across page refreshes. After a refresh, connect again with a new QR/link; Pact does not store an app-side pairing key in browser storage.
-
-If Paytaca shows an old Pact entry as “reconnecting” with “Subscription closed”, remove that stale entry in Paytaca. Pact starts with the alternate official relay; if it closes, remove the failed row in Paytaca and use **Try other relay** to switch endpoints and generate a fresh QR/link.
-
 ## Run locally
 
 Requirements: Node.js 22.12 or later and npm.
