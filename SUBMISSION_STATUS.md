@@ -15,6 +15,8 @@ The owner must still submit the project through the authenticated [DoraHacks por
 
 ## Covenant integration
 
+The exact owner-wallet sequence for funding and exercising this integration is in [COVENANT_SPENDING_GUIDE.md](COVENANT_SPENDING_GUIDE.md).
+
 The app now includes a wallet-funded P2SH20 covenant flow. The owner sets one recipient, a per-payment cap, a recovery time, and a funding amount; approves funding through WizardConnect; waits for the covenant output to confirm; and then approves each covenant spend in the wallet. Pact validates the wallet-returned transaction with the BCH 2023 virtual machine before broadcasting it.
 
 The contract enforces one covenant input, the committed recipient, the per-payment cap, no CashTokens in the spent policy input or outputs, an exact same-script continuation, and a fixed 20,000 sat fee. The remaining balance is limited by the value of the tracked covenant output. Separately funded outputs do not share a lifetime cumulative allowance.

@@ -52,3 +52,4 @@ An owner-approved 1,000 sat ordinary BCH Mainnet payment confirmed in block 9781
 - Product overview: [PRODUCT.md](PRODUCT.md)
 - Marketing guide and copy: [MARKETING_GUIDE.md](MARKETING_GUIDE.md)
 - Covenant details: [contracts/README.md](contracts/README.md)
+- How to fund and spend the live-app covenant: [COVENANT_SPENDING_GUIDE.md](COVENANT_SPENDING_GUIDE.md)

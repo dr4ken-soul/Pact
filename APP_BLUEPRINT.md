@@ -239,13 +239,13 @@ Official current resources: https://dorahacks.io/hackathon/bchblaze2026/resource
 | Risk | Mitigation |
 |---|---|
 | An XO template does not enforce all three boundaries | Choose the smallest template that can be proven. Document gaps; do not label UI checks as covenant enforcement. |
-| Repeated spends bypass a cumulative cap | Make remaining allowance a contract-controlled state transition and test repeated/multi-input cases. |
+| Separately funded outputs have independent balances | State clearly that each output follows its own continuation balance; do not claim a shared lifetime cap. The app tests repeated reductions and rejects spends that cannot cover payment, fee, and continuation. |
 | Recovery semantics are misunderstood | Test the owner locktime branch and disclose that payment remains script-valid after it. |
 | Wallet connection support differs across wallets | Verify the chosen WizardConnect path against current wallet and protocol docs, and provide a clear fallback. |
 | Event engine API changes | Re-check latest official XO engine version and pin the tested release. |
-| Demo destination/address is missing | Block release readiness; do not fabricate or reuse an unrelated address. |
+| Mainnet recipient is not prefilled | The owner enters a chosen BCH Mainnet recipient when creating the policy; the app validates its network and script type before funding. |
 | Judges cannot quickly understand the product | Keep the actual app and demo action above the fold; remove generic marketing content. |
-| Mainnet funds at risk | Require explicit user confirmation, low limits, full review, and tested recovery. |
+| Mainnet funds at risk | Use a low funding amount, explicit wallet review, and a locally BCH 2023 VM-validated owner-recovery branch; show the fixed fee and do not call recovery a spend expiry. |
 
 ## 13. Reference links
 
@@ -392,25 +392,15 @@ This is a proposed tree. Revisit it after the user approves a stack and implemen
 4. Publish the Widget Factory deck, live app, and source link in the hackathon submission.
 5. Do not announce metrics, users, revenue, security audit, or successful policy guarantees unless measured and verified.
 
-### Milestone-based build sequence
+### Delivery record — 21 November 2026
 
-- **Milestone 1:** app shell, required banner, responsive product-first screen, and empty/error states.
-- **Milestone 2:** WizardConnect connection and network verification.
-- **Milestone 3:** Chipnet XO template and adversarial constraint tests.
-- **Milestone 4:** wallet-reviewed payment flow, real receipt, and judge walkthrough.
-- **Milestone 5:** Mainnet readiness gate, actual deck/repository/address setup, hosted demo, and submission proof.
+- The app shell, WizardConnect wallet connection, network verification, wallet-reviewed BCH payment, and owner-funded P2SH20 covenant lifecycle are implemented.
+- The production build runs XO template validation, BCH 2023 VM covenant cases, TypeScript checks, and the Vite build.
+- The hosted app, GitHub repository, and editable Widget Factory-based PPTX are available.
+- A 1,000 sat ordinary Mainnet wallet payment is confirmed. A separate XO invitation payment is confirmed on Chipnet.
+- No confirmed transaction from the live Pact-app covenant flow is claimed. Its funding and spend screens require the owner wallet to authorize the covenant transactions; the earlier ordinary Mainnet payment is not covenant funding.
+- The user-facing event actions are to submit the project through DoraHacks and post the project-real confirmation in the BCH BLAZE Telegram. These do not change the app build or require an EMBER2026 address.
 
-This order prioritizes a working, legible judge demo over a calendar-driven feature list.
+## 19. Resolved release configuration
 
-## 19. Open decisions to guide in clickable setup
-
-Before implementation, the build agent should ask only the choices that affect the next step, using clickable questions when practical:
-
-- preferred coding agent, platform, and builder experience;
-- preferred hosting provider and whether a public GitHub repository is acceptable;
-- whether the user has a BCH wallet that supports CashTokens and WizardConnect;
-- whether the demo destination should be a project-controlled address or a judge-chosen recipient;
-- maximum demo amount the user is willing to risk;
-- whether any paid service or LLM should be used.
-
-The agent must provide direct action links and step-by-step instructions for account-specific values as set out in `BUILD_GUIDE.md`.
+The project uses Vercel, the public GitHub repository, WizardConnect, Paytaca, Chipnet as the default network, and an enabled BCH Mainnet send path. The app uses no managed agent signing key and never asks for a wallet seed phrase. The owner supplies the desired recipient and approves each wallet transaction. Mainnet covenant funding and spend can be exercised from the live app, but must be authorized in the owner’s wallet before any transaction is broadcast.
