@@ -19,7 +19,7 @@ The confirmed 1,000 sat Mainnet transaction listed below was an ordinary wallet 
 
 Pact uses a fresh WizardConnect QR pairing and does not persist the connection across page refreshes. After a refresh, connect again with a new QR/link; Pact does not store an app-side pairing key in browser storage.
 
-If Paytaca shows an old Pact entry as “reconnecting” with “Subscription closed”, remove that stale entry in Paytaca. Then use **Try other relay** in Pact to generate a new QR/link through the alternate official endpoint. Remove the failed entry in Paytaca before scanning the replacement.
+If Paytaca shows an old Pact entry as “reconnecting” with “Subscription closed”, remove that stale entry in Paytaca. Pact starts with the alternate official relay; if it closes, remove the failed row in Paytaca and use **Try other relay** to switch endpoints and generate a fresh QR/link.
 
 ## Run locally
 

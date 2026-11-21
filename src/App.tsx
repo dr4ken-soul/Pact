@@ -14,7 +14,7 @@ type WizardRelayChoice='primary'|'alternate';
 const wizardRelayStorageKey='pact-wizardconnect-relay';
 const wizardAlternateRelayUrls=['wss://relay.cauldron.quest:443'];
 function readWizardRelayChoice():WizardRelayChoice {
-  try{return localStorage.getItem(wizardRelayStorageKey)==='alternate'?'alternate':'primary';}catch{return 'primary';}
+  try{return localStorage.getItem(wizardRelayStorageKey)==='primary'?'primary':'alternate';}catch{return 'alternate';}
 }
 function readStoredPolicy(network:'mainnet'|'chipnet'):{policy:CovenantPolicy;outpoint:string}|null {
   try {
