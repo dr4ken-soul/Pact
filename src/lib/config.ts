@@ -20,8 +20,6 @@ export const projectConfig = {
 export function releaseConfigurationIssues(): string[] {
   const issues: string[] = [];
   if (!projectConfig.deckUrl) issues.push('The final project deck URL is missing.');
-  if (!projectConfig.donationAddress) issues.push('The EMBER2026 CashTokens address is missing.');
-  else if (!projectConfig.donationAddressVerified) issues.push('BCH BLAZE says EMBER2026 has not been minted or distributed; no official receive address or token category is available yet.');
   if (!projectConfig.demoRecipient) issues.push('The Chipnet demo recipient is missing.');
   if (!projectConfig.demoAmountBch) issues.push('The owner-approved demo amount is missing.');
   if (!projectConfig.xoTransactionUrl) issues.push('The Chipnet XO transaction proof is missing.');

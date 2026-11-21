@@ -1,17 +1,17 @@
 # Pact App Blueprint
 
-**Status:** Implemented prototype. The WizardConnect BCH Mainnet payment path has completed and confirmed a 1,000 sat owner-approved payment (block 978164, 2026-11-20). Ordinary payment rules remain app-level checks; the separate XO covenant proof is on Chipnet. The project is not a released or audited product, and event submission tasks remain open.
+**Status:** The current source includes a wallet-funded P2SH20 covenant flow and passes local BCH 2023 VM checks for payment, recovery, and invalid-spend cases. The confirmed 1,000 sat WizardConnect Mainnet transaction is an ordinary BCH wallet payment, not a covenant spend. The covenant recovery time is not a strict agent-spend expiry, and each funded output has its own balance rather than a shared lifetime cap. Pact is a hackathon prototype, not an audited release. DoraHacks submission and Telegram confirmation are owner account actions. EMBER2026 remains organizer-controlled and optional for Community Choice.
 
 ## 1. Executive summary
 
-Pact is a bounded-permission payment layer for AI agents on Bitcoin Cash. A user defines a spending cap, an approved recipient, and an expiry. Pact turns that policy into an explicit payment path, makes the resulting transaction legible, and distinguishes wallet approval from contract-enforced constraints.
+Pact is a bounded-permission payment layer for AI agents on Bitcoin Cash. The owner funds a covenant that commits to one recipient and a per-payment cap, then reviews each wallet-signed spend. The recovery timestamp opens owner recovery and is not a strict on-chain payment expiry.
 
 The product is designed for a short judge review: open the live app, understand the boundary, connect a BCH wallet, review a real payment, approve it, and see the real transaction result. The first screen is the app itself, not a marketing splash.
 
 ## 2. Product principles
 
 1. **Bounded authority:** the agent must never have access to wallet seed material or unrestricted signing authority.
-2. **Visible rules:** cap, recipient, expiry, network, fee, and transaction status are visible before a payment is approved.
+2. **Visible rules:** cap, recipient, owner-recovery time, network, fee, and transaction status are visible before a payment is approved.
 3. **Truthful enforcement:** label a rule as on-chain enforced only when a contract condition has been implemented and verified. A client-side check is not a covenant.
 4. **Human control:** no transaction broadcasts without a user-visible review and explicit wallet authorization.
 5. **Judge-ready:** the first screen provides a clear demo path and no confusing setup wizard.
@@ -29,7 +29,7 @@ The product is designed for a short judge review: open the live app, understand 
 
 ### User / policy owner
 
-- Set the maximum amount, recipient, and expiry.
+- Set the per-payment cap, approved recipient, owner-recovery time, and funding amount.
 - Connect a BCH wallet without exposing seed material.
 - Review the precise transaction and any fee before approving.
 - Revoke or recover funds only through a verified contract path.
@@ -49,7 +49,7 @@ The product is designed for a short judge review: open the live app, understand 
 - At least one useful BCH Mainnet transaction possible through the app, with explicit amount, destination, network, fee, wallet review, and user signature.
 - XO template integration as the preferred policy/contract path, using current official resources and a pinned, tested package version. XO is additional to, not a replacement for, WizardConnect.
 - Chipnet-first contract test and a visible distinction between Chipnet contract validation and any Mainnet payment.
-- One bounded policy flow demonstrating spending limit, approved destination, and expiry. Avoid claiming that a single payment cap proves an unrestricted cumulative budget.
+- One funded policy output demonstrating a per-payment cap, approved destination, continuation balance, and owner recovery. Do not call the recovery timestamp an agent-spend expiry or imply separate outputs share one budget.
 - Actual transaction receipt and explorer link, only after a real transaction is returned by the provider.
 - Widget Factory-based presentation, source repository, and top-of-homepage banner. An official EMBER2026 receive address is for Community Choice once the token is issued; do not block Mainnet-track readiness on an unavailable token address.
 
@@ -65,32 +65,31 @@ The product is designed for a short judge review: open the live app, understand 
 
 ### A. Define a policy
 
-1. User opens Pact and immediately sees the policy form and demo card.
-2. User sets cap in BCH or satoshis, chooses an approved BCH recipient, and selects expiry.
-3. Pact validates address/network, precision, amount, available policy mode, and expiry.
-4. Pact previews the exact boundary and labels its enforcement status: `UI preview`, `Chipnet contract verified`, or `Mainnet contract active` as appropriate.
-5. User creates the policy. If funding is needed, Pact shows the funding transaction details and asks for explicit wallet approval.
+1. User opens Pact and sees the covenant policy form and payment panel.
+2. User connects the owner wallet, chooses one recipient, a per-payment cap, an owner-recovery time, and a BCH funding amount.
+3. Pact builds a P2SH20 covenant that commits to the public key, recipient, cap, and recovery time.
+4. The owner reviews and signs funding through WizardConnect; Pact waits until the covenant output confirms.
 
 ### B. Submit a payment intent
 
 1. Agent submits a payment intent with policy ID, destination, and amount.
-2. Pact checks it against policy configuration and passes it to the selected XO/contract adapter.
-3. Contract validation is the source of truth for on-chain limits. UI validation is an early explanation and convenience only.
+2. Pact checks the intent for clear user feedback and builds a transaction spending the confirmed covenant output.
+3. The covenant is the source of truth for the committed recipient, per-payment cap, token exclusion, same-script continuation, and exact fee.
 4. If a check fails, Pact rejects the request with a field-level reason. It does not silently rewrite amount or destination.
 5. If allowed, Pact presents the full transaction review to the policy owner.
 
 ### C. Authorize and verify
 
-1. User reviews network, amount, recipient, fee, policy state, and expiry.
+1. User reviews network, amount, recipient, fee, confirmed covenant balance, and policy state.
 2. The connected wallet signs and, if applicable, broadcasts the transaction.
 3. Pact waits for a real provider response and records the actual txid.
-4. Pact displays pending/confirmed state based on provider data and links to the correct network explorer.
+4. Pact checks the signed BCH 2023 transaction locally before broadcast, then displays the transaction ID and explorer link.
 5. A rejected or failed transaction remains visibly rejected/failed, never a simulated success.
 
 ### D. Revoke or recover
 
 - The UI may offer revoke/reclaim only if a real contract branch or protocol operation supports it.
-- For an expiry-based refund, show the exact height/time semantics and expected delay.
+- The configured time makes owner recovery available. It does not disable the payment branch, because BCH script cannot independently inspect current wall-clock time.
 - Never imply instant cancellation of a transaction already broadcast.
 
 ## 6. Mainnet and contract architecture
@@ -115,21 +114,21 @@ Use a covenant/capability UTXO or XO template that commits to:
 
 - approved recipient locking bytecode or an equally strong canonical destination commitment;
 - maximum authorized value, represented in integer satoshis;
-- expiry basis and threshold, such as a tested block height or timestamp condition;
+- owner-recovery locktime and the limits of its CLTV semantics;
 - allowed agent/public key or other explicit authorization condition;
 - exact fee and change behavior;
-- owner recovery path after expiry;
+- an owner recovery path after the configured locktime;
 - any state transition required to represent remaining allowance.
 
-This is a candidate model, not an already-proven contract. CashScript documentation shows how BCH covenants can inspect and restrict outputs and how local state may be preserved in CashTokens NFT commitments. The selected XO template's semantics must be validated against the desired constraints.
+The web app now creates and spends a wallet-authorized P2SH20 covenant. Its script enforces a fixed recipient, per-payment cap, one covenant input, no CashTokens, same-script continuation, exact 20,000 sat fee, dust floors, and an owner recovery branch. The browser requires the owner wallet to sign each spend and locally validates the signed transaction with the BCH 2023 VM. Local VM checks cover allowed payment/recovery and rejection cases. A confirmed Mainnet wallet payment remains separate from this covenant path; no Mainnet covenant spend is claimed as confirmed.
 
 ### 6.3 Cumulative spending cap caveat
 
-A maximum on one payment is not automatically a maximum across many payments. The total cap must be enforced by the value/state of the remaining capability UTXO or another proven on-chain state transition. Every spend must return only valid remaining value to the same constrained covenant, or use an explicitly reviewed alternative. Tests must cover repeated spends, multiple contract inputs, fee subtraction, change outputs, and re-funding. Do not present a UI counter as an on-chain cumulative cap.
+A maximum on one payment is not automatically a shared lifetime maximum. Each spend returns only the remaining value to the same constrained covenant, so one tracked output lineage is finite and spends down. Separately funded covenant outputs have separate balances. Do not present them as a single cumulative allowance.
 
-### 6.4 Expiry caveat
+### 6.4 Owner-recovery time caveat
 
-A UI expiry timer is not an on-chain expiry. Confirm which chain field/contract rule is used, test boundary conditions on Chipnet, and document the refund/reclaim path. Wallet and provider clocks do not establish consensus expiry.
+The configured timestamp opens an owner-recovery branch. CLTV checks transaction locktime; it does not independently read current wall-clock time. The owner can recover once the BCH consensus locktime condition is met, but the payment branch remains script-valid afterward. Pact must not call this a strict on-chain agent-spend expiry.
 
 ### 6.5 Mainnet demo choice
 
@@ -143,7 +142,7 @@ The product must make at least one useful Mainnet BCH transaction possible throu
 - never use the EMBER2026 CashTokens donation address as a BCH demo recipient unless it is separately verified for that purpose;
 - do not send funds automatically to an arbitrary prefilled destination.
 
-If the transaction path is wallet-signed but policy enforcement is only UI-side, label that honestly. Demonstrate contract enforcement on Chipnet until Mainnet contract behavior is independently verified. A later Mainnet covenant demo requires an explicit user decision and minimal recoverable funds.
+The app validates wallet-returned covenant transactions locally before broadcast. The confirmed Mainnet wallet payment remains separate from the covenant flow. Do not claim Mainnet covenant behavior until a covenant funding output and spend have actually been confirmed there.
 
 ## 7. Data model, conceptual only
 
@@ -158,8 +157,7 @@ All money values are integer satoshis. Avoid floating-point arithmetic for polic
 - `recipientLockingBytecode` or canonical BCH address.
 - `maxAuthorizedSats`: integer.
 - `remainingAuthorizedSats`: authoritative contract-derived value where supported; otherwise do not imply it is authoritative.
-- `expiryType`: documented enum such as `blockHeight` or `timestamp`.
-- `expiryValue`: integer validated against chosen expiry type.
+- `recoveryTimestamp`: Unix timestamp committed to the owner-recovery branch and constrained to the BCH locktime range.
 - `templateId` and `templateVersion`.
 - `fundingOutpoint`, contract address, and policy state when applicable.
 - `enforcementLevel`: `ui-only`, `chipnet-verified`, or `mainnet-verified`.
@@ -201,37 +199,40 @@ Every asynchronous operation needs explicit states:
 - transaction pending: show actual txid when available and an honest pending state;
 - transaction confirmed: use provider confirmation data;
 - empty activity: explain the next action;
-- expiry or reclaim error: state the actual contract condition and next step.
+- recovery locktime error: state the actual BCH consensus condition and next step.
 
 ## 10. Judge demo script
 
 Target: under 90 seconds, without a narrated tour.
 
-1. Open the hosted app. The first screen shows the cap, recipient, expiry, and payment demo.
-2. Point to the visible policy boundary and the current enforcement level.
-3. Connect a BCH wallet and verify the network label.
-4. Use the configured demo profile or enter a destination and amount. The full values remain visible.
-5. Review the fee and policy match, then explicitly approve in the wallet.
-6. Show the real transaction status and explorer receipt.
-7. Open the boundary explainer or technical section to show the XO template and what is enforced on-chain.
+1. Open the hosted app and select the BCH network.
+2. Connect the owner wallet, set the recipient, cap, recovery time, and funding amount.
+3. Review and approve covenant funding, then wait for confirmation.
+4. Prepare a payment from the confirmed covenant output and inspect the exact recipient, amount, continuation, and fee.
+5. Approve the covenant spend in the wallet and show its actual transaction status.
+6. Explain that the recovery time opens owner recovery and does not disable the payment branch.
 
 The demo must not depend on typing a long prompt, creating an account, fake balances, simulated txids, or a broken third-party service. Provide a Chipnet fallback clearly marked as Chipnet.
 
-## 11. Hackathon compliance checklist
+## 11. BLAZE Mainnet track and product checklist
 
 - [x] Live hosted version loads directly into the working app. The production URL is recorded in `SUBMISSION_STATUS.md`.
 - [x] At least one useful BCH Mainnet transaction can be initiated and completed through Pact with explicit wallet approval. Confirmed transaction: `3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704`, block 978164.
 - [x] WizardConnect integration is present and exercised on Mainnet by the confirmed transaction above.
-- [x] XO template integration, if selected for policy enforcement, is separately documented and pinned to the tested version.
-- [x] Build and contract testing start on Chipnet; template validation and BCH 2023 VM validation passed for the documented invitation.
-- [ ] Project uses only minimal Mainnet funds and only with a tested recovery understanding.
-- [x] Widget Factory short presentation is copied and completed as `Pact_Pitch_Deck.pptx`. It is not a native Google Slides copy; check whether the final event form accepts PPTX.
-- [ ] Top banner links to the deck and source. Display an EMBER2026 receive address only after the token has been issued and its destination is verified, for Community Choice eligibility.
-- [ ] Record roll call as missed/closed per the organizer notice and confirm the project is real in the BCH BLAZE Telegram as the CompeteHub mirror of the DoraHacks track listing requires.
-- [ ] Submission is made within the official submission window and judging notes are ready.
+- [x] A useful BCH Mainnet payment was initiated through WizardConnect, approved by the owner, broadcast, and confirmed in block 978164.
+- [x] The live website is usable as a demo and the source repository is available.
+- [x] WizardConnect has been exercised on Mainnet by the confirmed payment.
+- [x] A short Widget Factory-based presentation is available as `Pact_Pitch_Deck.pptx`. It is not a native Google Slides copy; confirm the DoraHacks form accepts PPTX.
+- [x] The owner previously confirmed DoraHacks registration.
+- [ ] Submit the project in DoraHacks with the live demo, source, and presentation before the deadline.
+- [ ] Confirm the project in the BCH BLAZE Telegram and keep proof.
+
+The ordinary Mainnet payment is confirmed. The app has an integrated wallet-funded covenant path with local BCH VM checks; no Mainnet covenant funding or spend is claimed as confirmed. This is separate from the two owner event-account actions and is not an EMBER address issue.
+
+The standalone XO bounty has separate requirements. Its invitation evidence exists, but its template limits and developer feedback still need to be handled separately.
 - [ ] No logo mark is added unless the user requests one.
 
-Official current resources: https://dorahacks.io/hackathon/bchblaze2026/resources
+Official current resources: https://dorahacks.io/hackathon/bchblaze2026/resources. The track requirements were cross-checked against the listing mirror at https://www.competehub.dev/en/competitions/dorahacksbchblaze2026 because the DoraHacks page did not load in the read-only viewer.
 
 ## 12. Risks and mitigations
 
@@ -239,7 +240,7 @@ Official current resources: https://dorahacks.io/hackathon/bchblaze2026/resource
 |---|---|
 | An XO template does not enforce all three boundaries | Choose the smallest template that can be proven. Document gaps; do not label UI checks as covenant enforcement. |
 | Repeated spends bypass a cumulative cap | Make remaining allowance a contract-controlled state transition and test repeated/multi-input cases. |
-| Expiry/recovery semantics are misunderstood | Test exact boundary and reclaim behavior on Chipnet before any Mainnet use. |
+| Recovery semantics are misunderstood | Test the owner locktime branch and disclose that payment remains script-valid after it. |
 | Wallet connection support differs across wallets | Verify the chosen WizardConnect path against current wallet and protocol docs, and provide a clear fallback. |
 | Event engine API changes | Re-check latest official XO engine version and pin the tested release. |
 | Demo destination/address is missing | Block release readiness; do not fabricate or reuse an unrelated address. |
@@ -277,7 +278,7 @@ These are adjacent products or infrastructure, not proven direct competitors to 
 
 | Product | What its public product information shows | Pact distinction to validate |
 |---|---|---|
-| Circle Agent Wallets | Agent wallets with user-defined transfer policies, allowlists, and supported stablecoin/multichain assets. [Circle](https://developers.circle.com/agent-stack/agent-wallets) | Pact is BCH-native and aims to demonstrate an XO/covenant-enforced recipient, cap, and expiry. |
+| Circle Agent Wallets | Agent wallets with user-defined transfer policies, allowlists, and supported stablecoin/multichain assets. [Circle](https://developers.circle.com/agent-stack/agent-wallets) | Pact is BCH-native and demonstrates a covenant-enforced recipient, per-payment cap, continuation balance, and owner-recovery branch. |
 | Coinbase Agentic Wallet CLI | Agent wallet, payment and trading tools with spending limits in Coinbase's supported network ecosystem. [Coinbase](https://docs.cdp.coinbase.com/agentic-wallet/cli/welcome) | Pact targets BCH Mainnet and BCH-specific wallet connection and transaction construction. |
 | Openfort | Agent wallet tooling and scoped permissions in EVM-focused environments. [Openfort](https://www.openfort.io/) | Pact's proof target is Bitcoin Cash, not EVM session permissions. |
 | Paytaca Wallet | BCH and CashTokens wallet infrastructure. [Paytaca](https://www.paytaca.com/applications/wallet) | Paytaca is a BCH wallet, not evidence of an equivalent Pact policy product. It may be a wallet/integration route, subject to WizardConnect compatibility tests. |
@@ -296,7 +297,7 @@ No defensible TAM/SAM/SOM figure is available from the references reviewed. Do n
 
 ### Differentiation hypothesis
 
-The defensible wedge is not merely an AI prompt that says not to overspend. Pact aims to make the scope of the authorization visible and to bind recipient, amount, and expiry to BCH-native transaction conditions. The demo must prove which conditions are actually enforced. If XO/contract behavior cannot prove all three constraints, narrow the claim rather than presenting UI checks as cryptographic protection.
+The defensible wedge is not merely an AI prompt that says not to overspend. Pact makes the scope of authorization visible and binds a recipient, per-payment amount, continuation balance, and owner-recovery branch to BCH transaction conditions. The demo must prove which conditions are enforced. Do not present the recovery timestamp as a strict payment expiry.
 
 ## 15. Monetization hypothesis
 
@@ -387,7 +388,7 @@ This is a proposed tree. Revisit it after the user approves a stack and implemen
 
 1. Start with BCH agent builders from the BLAZE workshops and relevant BCH developer communities.
 2. Show a real, short, reproducible demo rather than claiming planned capabilities.
-3. Ask testers to evaluate recipient, amount, expiry, recovery, and wallet usability.
+3. Ask testers to evaluate recipient, per-payment amount, owner recovery, and wallet usability.
 4. Publish the Widget Factory deck, live app, and source link in the hackathon submission.
 5. Do not announce metrics, users, revenue, security audit, or successful policy guarantees unless measured and verified.
 

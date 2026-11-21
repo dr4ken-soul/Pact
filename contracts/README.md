@@ -13,7 +13,9 @@ Pact provides a custom XO wallet template in `pact-policy.template.json` (versio
 - Agent payment transactions require `nLockTime = 0`.
 - The owner can reclaim the remaining BCH after the configured timestamp, less the fixed 20,000 sat fee.
 
-The timestamp is an owner-recovery delay, not an agent-spend expiry: the agent payment branch remains usable after the timestamp. The covenant caps each payment and spends down each funded UTXO; separately funded UTXOs do not share a cumulative allowance. The browser WizardConnect payment path does not use this covenant.
+The timestamp is an owner-recovery delay, not an agent-spend expiry: the payment branch remains script-valid after the timestamp. The covenant caps each payment and spends down the specific funded output; separately funded outputs do not share a cumulative allowance.
+
+The web app has a separate owner-authorized P2SH20 covenant flow in `src/lib/covenant.ts` and `src/adapters/bch.ts`. It creates and funds the policy through WizardConnect, finds the confirmed covenant output, prepares payment or recovery transactions, and checks the wallet-returned transaction with the BCH 2023 VM before broadcast. The app covenant flow does not use this XO test account or its agent key. Its wallet integration has local VM checks; the confirmed Mainnet transaction in `evidence/mainnet-payment.json` is an ordinary wallet send, not a covenant spend.
 
 ## Public Chipnet proof
 

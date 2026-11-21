@@ -1,12 +1,12 @@
 # Pact Frontend Specification
 
-**Status:** Design specification for the implemented prototype. The WizardConnect BCH Mainnet send path has a confirmed payment; the application-level policy and XO limitations remain as described in the implementation and `SUBMISSION_STATUS.md`.
+**Status:** Design specification for the implemented prototype. The app has a wallet-funded P2SH20 covenant flow with local BCH 2023 VM checks. The confirmed WizardConnect Mainnet payment was an ordinary wallet send, not a covenant spend. The covenant timestamp opens owner recovery, not a strict agent-spend expiry. See `SUBMISSION_STATUS.md`.
 
 ## 0. Product and design decisions
 
 - Product: a bounded-permission AI payment layer for Bitcoin Cash.
 - Name: Pact.
-- Primary promise: an AI agent can prepare payment actions only within a user-defined spending cap, approved recipient, and expiry. The user can understand these limits and the payment outcome immediately.
+- Primary promise: an AI agent can propose payments to one owner-approved BCH recipient under an on-chain per-payment cap. The owner funds the covenant and approves every spend. The recovery timestamp opens owner recovery; it does not stop the payment branch.
 - Mainnet demo: judges can connect a BCH wallet, review a real payment, and explicitly approve it. The app must never broadcast without a user-visible review and wallet signature.
 - Gate 1: Bento Grid Operational.
 - Gate 2: A2 Scroll-morph pill.
@@ -195,7 +195,7 @@ Links: `Policy`, `Activity`, `How it works`. Primary action: `Connect wallet` wh
 
 - Eyebrow: `Bounded authority for AI payments`.
 - Heading: `Set the limits. Keep the keys.`
-- Supporting line: `Give an agent a BCH spending cap, an approved recipient, and an expiry. Pact makes the boundary and the payment result visible.`
+- Supporting line: `Give an agent a BCH spending cap and an approved recipient. Pact makes the covenant boundary and payment result visible.`
 - Primary action: `Create a spending rule`.
 - Secondary action: `Try the payment demo`.
 - Wallet safety copy: `Nothing is broadcast until you review the transaction and approve it in your wallet.`
@@ -237,7 +237,7 @@ Fields use a consistent 44px minimum control height and clear labels:
 - Form grid: `mt-5 grid grid-cols-1 gap-4 md:grid-cols-2`.
 - Spending cap group: `flex flex-col gap-2 md:col-span-1`.
 - Recipient group: `flex flex-col gap-2 md:col-span-1`.
-- Expiry group: `flex flex-col gap-2 md:col-span-1`.
+- Owner-recovery-time group: `flex flex-col gap-2 md:col-span-1`.
 - Field label: `text-xs font-medium text-[var(--text-secondary)]`.
 - Field control: `min-h-11 w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-primary)] px-3 font-mono text-sm text-[var(--text-primary)] outline-none transition-colors duration-150 placeholder:text-[var(--text-muted)] hover:border-[var(--text-muted)] focus:border-[var(--accent)] focus-visible:ring-2 focus-visible:ring-[var(--accent-glow)]`.
 - Currency suffix: `absolute right-3 top-1/2 -translate-y-1/2 font-mono text-xs text-[var(--text-muted)]`.
@@ -329,9 +329,9 @@ Classes are the item and label/value classes above. Do not use static claims suc
 
 Three rows, in order:
 
-- Spending cap: enforce a maximum cumulative funded allowance only if the selected UTXO/covenant design proves the remaining value cannot exceed the user's original funding. Do not present a per-payment cap as a lifetime cap.
-- Approved recipient: compare the transaction locking bytecode or verified destination against the committed recipient, not a display string alone.
-- Expiry: state the actual contract time/height basis and distinguish expiry from UI timeout. Reclaim behavior must be tested before claiming expiry is enforced.
+- Per-payment cap: the current covenant enforces the maximum value of the recipient output for each spend. A single tracked covenant output also spends down its own balance; separately funded outputs do not share a global lifetime budget.
+- Approved recipient: the script compares the output locking bytecode against the committed recipient, not a display string alone.
+- Owner recovery: the timestamp is enforced as a CLTV lower bound for the recovery branch. It does not read current wall-clock time or disable the payment branch.
 
 **Animation:** each row uses initial `{ filter: 'blur(4px)', opacity: 0, y: 8 }`; animate `{ filter: 'blur(0px)', opacity: 1, y: 0 }`; duration `0.32s`; ease `[0.16, 1, 0.3, 1]`; delays `0s`, `0.06s`, `0.12s`. Trigger on each viewport entry and reset on exit. Content is visible by default if JavaScript is unavailable. Reduced motion sets duration `0s`, opacity `1`, filter `none`, transform `none`.
 
@@ -365,7 +365,7 @@ Three rows, in order:
 **Required sequence:**
 
 1. Connect a supported BCH wallet and show the actual selected network.
-2. Review the active policy, amount, complete recipient address, fee estimate, and expiry.
+2. Review the active covenant, amount, complete recipient address, fixed fee, confirmed policy balance, and owner-recovery time.
 3. User explicitly confirms in the connected wallet.
 4. Broadcast only the wallet-approved transaction.
 5. Show the real transaction ID and explorer link only after the provider returns them.
@@ -507,7 +507,7 @@ The following values cannot be invented and must be supplied or configured befor
 - Source repository URL.
 - Project-controlled BCH demo recipient address and an explicitly approved small demo amount.
 - Current supported wallet setup and XO template/engine versions after checking official current docs.
-- Verified contract behavior for spending cap, recipient, expiry, fee handling, change, and reclaim path.
+- Verified contract behavior for the per-payment cap, recipient, one-input continuation, fixed fee, and owner-recovery locktime.
 
 Do not start a mainnet transaction during development or testing without explicit user approval and wallet confirmation.
 

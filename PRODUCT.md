@@ -1,44 +1,46 @@
 # Pact Product Overview
 
-**Status:** implemented prototype, not a released product. The WizardConnect BCH Mainnet send path has a confirmed 1,000 sat payment (block 978164). Browser spending rules remain app-level checks; the separate XO policy has Chipnet evidence and documented limits.
+**Status:** Working hackathon prototype. Pact includes a wallet-funded Bitcoin Cash P2SH20 covenant flow, explicit WizardConnect signing, and a local BCH 2023 VM check before broadcast. The owner-approved 1,000 sat Mainnet payment is confirmed, but it was an ordinary BCH wallet send. No Mainnet covenant funding or spend transaction is claimed as confirmed. The app is not audited or production-certified.
 
 ## What Pact does
 
-Pact lets a user give an AI agent a limited BCH payment capability instead of unrestricted access to a wallet. The user defines an amount boundary, approved recipient, and expiry. Pact makes the rule visible, checks each payment intent, and only describes a condition as on-chain enforced when the selected contract/template has actually proved it.
+Pact lets an AI agent propose a Bitcoin Cash payment under a user-defined recipient and per-payment cap. The user funds the covenant, waits for the output to confirm, and reviews each spend in a connected BCH wallet. Pact shows the transaction and checks the wallet-returned spend against the BCH virtual machine before broadcasting it.
 
-The user remains in control of the wallet approval. The app shows the destination, amount, network, fees, policy, and expiry before the user authorizes a transaction.
+The wallet owner remains the signer. Pact does not receive wallet seed phrases or private keys, and it does not send a transaction without a wallet signature.
+
+## On-chain policy behavior
+
+The P2SH20 covenant commits to the owner's public key, one approved recipient, a per-payment cap, and an owner-recovery timestamp. For a payment, it requires one covenant input, token-free outputs, the committed recipient, a payment no greater than the cap, a continuation to the same policy script, and an exact 20,000 sat fee.
+
+The covenant spends down the value in its current output. Separately funded covenant outputs are separate budgets; Pact does not claim a shared lifetime cumulative cap across them.
+
+After the configured time, the owner can recover the remaining BCH to the committed owner address. BCH script cannot independently read current wall-clock time. The payment branch remains script-valid after that time, so this is an owner-recovery delay rather than an on-chain agent-spend expiry. Each payment also requires the owner wallet's signature.
+
+The covenant builder and spend/recovery paths have local BCH 2023 VM checks for valid payments, recovery, wrong recipient, over-cap amount, changed fee, and early recovery. A live covenant funding and spend still needs an owner wallet transaction; the confirmed Mainnet demo transaction is not evidence of a Mainnet covenant spend.
 
 ## Who Pact is for
 
-- **BCH agent developers** who need a BCH-native way to scope what an agent may pay.
-- **BCH merchants and paid services** that want agents to pay a known destination under clear rules.
+- **BCH agent developers** who need a BCH-native way to scope what an agent may propose.
+- **BCH merchants and paid services** that want agent payments to a known destination under clear rules.
 - **Protocol and operations teams** that need constrained machine payments and an understandable audit trail.
 
-The initial customer segment is a hypothesis. The team should validate it with developers and BCH service operators before making market-size or revenue claims.
-
-## How it works
-
-1. The policy owner connects a BCH wallet through WizardConnect.
-2. The owner sets a cap, recipient, and expiry.
-3. Pact prepares the selected XO template or contract policy and clearly reports its enforcement level.
-4. An AI agent proposes a structured payment intent.
-5. Pact rejects out-of-policy intents and explains the failed condition.
-6. For an allowed payment, the user reviews and authorizes the transaction in the wallet.
-7. Pact shows the actual transaction status and receipt.
+The initial customer segment is a hypothesis to validate with developers and BCH service operators.
 
 ## What Pact does not do
 
-- Pact does not ask for wallet seed phrases or private keys.
-- The AI model does not decide whether the payment policy is valid.
-- Pact does not silently broadcast a Mainnet transaction.
-- A policy shown in the UI is not described as a covenant unless the contract actually enforces it.
-- A one-payment limit is not presented as a cumulative cap without a verified state transition.
-- The prototype is not represented as audited, production-safe, or legally reviewed.
+- It does not ask for wallet seed phrases or private keys.
+- It does not give an agent autonomous wallet signing authority.
+- It does not silently broadcast a transaction.
+- It does not impose a shared lifetime cap across separately funded covenant outputs.
+- It does not make the recovery timestamp a strict agent-spend expiry.
+- It is not represented as audited, production-safe, or legally reviewed.
 
-## Demo promise
+## Confirmed Mainnet wallet demo
 
-A judge can open the app, understand the three bounds, connect a wallet, inspect a real BCH payment, explicitly approve it, and verify the actual result. The demo must use a real configured address and amount, never fake activity.
+On 20 November 2026, the owner approved an ordinary 1,000 sat BCH Mainnet payment through WizardConnect. It confirmed in block 978164 with a 226 sat fee. [View the transaction](https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704).
 
-## Verified Mainnet demo
+This proves that the wallet approval, signing, broadcast, and confirmation path worked for that ordinary BCH payment. It is separate from the P2SH covenant flow.
 
-The Mainnet send path completed an owner-approved 1,000 sat payment on 2026-11-20. It confirmed in block 978164 with a 226 sat fee. [View the transaction](https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704). This demonstrates the wallet approval, signing, broadcast, and confirmation flow for an ordinary BCH payment; it does not demonstrate that the browser policy is enforced by a covenant.
+## Submission note
+
+The owner must submit the project in the [DoraHacks portal](https://dorahacks.io/hackathon/bchblaze2026/) and post the project confirmation in the [BCH BLAZE Telegram](https://t.me/bchblaze). EMBER2026 has not been issued and is optional organizer-controlled Community Choice material, not a Pact software requirement.

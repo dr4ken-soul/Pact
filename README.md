@@ -1,39 +1,54 @@
 # Pact
 
-Pact is a Bitcoin Cash agent-payment prototype. The web app connects through WizardConnect and asks the wallet owner to review every payment before signing. Its browser-side recipient, amount, and time checks are interface checks; the browser payment path does not spend from the XO policy address.
+Pact is a Bitcoin Cash payment prototype for AI agents. An agent proposes a payment; the wallet owner funds a recipient-and-cap covenant, reviews each spend, and signs it through WizardConnect. Pact checks the signed transaction with the BCH 2023 virtual machine before broadcasting.
 
-A separate Chipnet XO template is included under `contracts/`. It commits one recipient, a per-payment cap, one policy input, a same-script balance continuation, a fixed fee, dust floors, no CashTokens, and a timestamped owner recovery branch. The template and executed invitation have public evidence in [contracts/evidence](contracts/evidence/). See the contract README for the exact boundary and expiry limitation.
+## Covenant flow
+
+1. Connect the policy owner's WizardConnect-compatible BCH wallet.
+2. Choose a BCH recipient, per-payment cap, recovery time, and covenant funding amount.
+3. Review and approve funding in the wallet. Wait for the covenant output to confirm.
+4. Enter a payment amount and review the covenant transaction, recipient, continuation, and fixed fee.
+5. Approve the spend in the wallet. Pact broadcasts only after the wallet returns a signature and local VM validation passes.
+6. Wait for the continuation output to confirm before preparing another spend.
+
+The covenant enforces one recipient, a per-payment ceiling, one covenant input, token-free outputs, a same-script continuation, and an exact 20,000 sat fee. Each output has its own finite balance; separate funding outputs do not share one lifetime cap. The recovery timestamp opens the owner's recovery branch but does not disable the payment branch. The owner wallet signs every payment.
+
+The confirmed 1,000 sat Mainnet transaction listed below was an ordinary wallet payment, not a covenant spend. The live covenant interface is implemented for Chipnet and Mainnet, but no Mainnet covenant transaction is claimed as confirmed.
 
 ## Run locally
 
-Requirements: Node.js 22 or later and npm.
+Requirements: Node.js 22.12 or later and npm.
 
 1. Use the actual root `.env` file. Its `VITE_*` values are public client configuration, not credentials.
 2. Run `npm ci --cache .npm-cache`.
 3. Run `npm run dev` and open the local Vite URL.
-4. Use a WizardConnect-compatible BCH wallet. Chipnet is the prefilled demo network; Mainnet is available when enabled in `.env` and requires a Mainnet wallet, recipient, and user signature.
+4. Select Chipnet or Mainnet, connect a wallet on the same network, and review every wallet request.
 
-The production build runs the XO schema checks, TypeScript compilation, and Vite bundle:
+The production build validates the XO template, runs BCH 2023 covenant VM cases, type-checks the app, and builds the Vite bundle:
 
 ```powershell
 $env:NPM_CONFIG_CACHE = 'S:\Hackathon\Pact\.npm-cache'
 npm run build
 ```
 
-## XO Chipnet flow
+## Contract packages
 
-The isolated `contracts/` package pins the XO Engine used for the executable template and invitation. See [contracts/README.md](contracts/README.md) for the setup commands and public transaction proof.
+- `src/lib/covenant.ts` constructs the app's owner-authorized P2SH20 policy.
+- `src/adapters/bch.ts` funds the policy, finds its confirmed output, prepares pay/recovery transactions, asks WizardConnect to sign, validates the returned transaction locally, and broadcasts it.
+- `contracts/pact-policy.template.json` and `contracts/evidence/` contain the separate XO Engine Chipnet invitation and transaction proof.
 
-The XO Engine creates its account from a mnemonic. For this development integration only, the Chipnet scripts generate a separate test account and encrypt its mnemonic with Windows current-user DPAPI under the ignored `contracts/.xo-state/` directory. It is never placed in `.env`, committed, uploaded to Vercel, or used on Mainnet. The Pact web app continues to use WizardConnect and never requests an end-user wallet recovery phrase.
+The XO Engine demo uses its own generated Chipnet test account. Its mnemonic is encrypted locally with Windows DPAPI under ignored `contracts/.xo-state/`; it is not placed in `.env`, committed, uploaded to Vercel, or used on Mainnet. The web app never requests an end-user recovery phrase.
 
-## Honest boundaries
+## Confirmed Mainnet wallet payment
 
-- Browser proposals are app-checked; they are not signed by an agent or enforced by the XO policy.
-- The XO template enforces a maximum per payment and preserves a finite balance for each policy UTXO. It does not establish a global cumulative cap across separately funded UTXOs.
-- The recovery timestamp makes the owner's reclaim branch available. It does not disable the agent payment branch.
-- The EMBER2026 address in `.env` was supplied by the owner, but BCH BLAZE says EMBER2026 has not been minted or distributed and no official receive address or token category is available yet. It is not an official EMBER2026 address.
-- Mainnet sends are enabled behind WizardConnect review and signature; Chipnet remains the default network. One owner-approved 1,000 sat Mainnet payment was broadcast and confirmed in block 978164 on 2026-11-20; the transaction paid a 226 sat fee. [View the transaction](https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704). This proves the wallet approval and BCH Mainnet send path worked for this payment; the UI spending rule remains an app-level check, not an on-chain covenant.
+An owner-approved 1,000 sat ordinary BCH Mainnet payment confirmed in block 978164 on 20 November 2026 with a 226 sat fee. [View the transaction](https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704). This is evidence for the ordinary WizardConnect send path; it is not proof of a Mainnet covenant spend.
 
-## Pinned integration versions
+## Project links
 
-The root lockfile pins React 19.3.1, Vite 8.3.8, TypeScript 7.0.2, WizardConnect React 0.2.6, `@bitauth/libauth` 3.1.0-next.8, and the BCH network packages. The separate contract lockfile pins `@xo-cash/engine` 0.1.1-next.18029697917 and its dependencies.
+- Live demo: https://pact-bch.vercel.app
+- Source: https://github.com/dr4ken-soul/Pact
+- Editable presentation: https://github.com/dr4ken-soul/Pact/raw/refs/heads/main/Pact_Pitch_Deck.pptx
+- Submission status: [SUBMISSION_STATUS.md](SUBMISSION_STATUS.md)
+- Product overview: [PRODUCT.md](PRODUCT.md)
+- Marketing guide and copy: [MARKETING_GUIDE.md](MARKETING_GUIDE.md)
+- Covenant details: [contracts/README.md](contracts/README.md)

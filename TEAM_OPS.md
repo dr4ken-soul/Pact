@@ -34,7 +34,7 @@ Do not claim the user can recover funds unless the recovery path has passed Chip
 ## Contract release gate
 
 - Chipnet tests come first.
-- Test permitted and rejected recipients, over-cap amount, repeated spends, multiple inputs, fee/change behavior, expiry boundary, reclaim path, and network mismatch.
+- Test permitted and rejected recipients, over-cap amount, repeated spends, multiple inputs, fee/change behavior, the owner-recovery locktime, recovery, and network mismatch.
 - Keep the contract/template version, test results, and source commit together.
 - Label the enforcement state accurately as UI-only, Chipnet-verified, or Mainnet-verified.
 - Independent contract review is required before production use. Hackathon participation does not equal a security audit.
@@ -55,8 +55,7 @@ Any future fee model requires an explicit user decision, a public fee policy, a 
 
 ## Event operations checklist
 
-- Roll call status: missed/closed. The BLAZE chat notice shown by the owner says late entrants can still compete and do not need to complete roll call.
-- Submit the project through the final Build form on the official DoraHacks event page. Registration alone is not a project submission. Include the repository, working demo, and short project description; check DoraHacks for the exact required fields and deadline.
-- The CompeteHub mirror of the DoraHacks track listing says projects must confirm they are real in the BCH BLAZE Telegram channel. Post a clear Pact project confirmation with the live demo and repository links, then keep proof. A general introduction or EMBER question may not satisfy this.
+- Submit the project through the final Build form on the official DoraHacks event page. Registration alone is not a project submission. Include the repository, working demo, presentation, and short project description; check DoraHacks for the exact required fields and deadline.
+- Post the project confirmation in the BCH BLAZE Telegram channel with the live demo and repository links, then keep proof. A general introduction or EMBER question may not satisfy this.
 - Mainnet sends are enabled in the current live app. One owner-approved 1,000 sat payment was confirmed in block 978164 with a 226 sat fee; see `contracts/evidence/mainnet-payment.json`. This confirms the wallet-signed Mainnet send path for that payment. Continue to require an owner-selected recipient, confirmed wallet funds, exact amount/fee review, and wallet signature for every payment. The EMBER address remains unverified and is only relevant to Community Choice after token issuance. This payment is not evidence of XO covenant enforcement on Mainnet.
 - Recheck the official event page before submission because dates and requirements can change.

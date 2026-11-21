@@ -23,7 +23,7 @@ The user-provided reference files are in `/home/user/uploads`. `FRONTEND_SKILL.m
 
 ## Product in one sentence
 
-Pact gives an AI agent a BCH payment capability bounded by a user-defined spending cap, approved recipient, and expiry, with honest separation between UI validation, XO/contract enforcement, wallet approval, and on-chain transaction outcome.
+Pact lets an AI agent propose BCH payments under an owner-funded covenant with a committed recipient and per-payment cap. The owner reviews and signs each spend. The recovery timestamp opens owner recovery; it is not a strict on-chain payment expiry.
 
 ## Persistent must-haves
 
@@ -32,7 +32,7 @@ Pact gives an AI agent a BCH payment capability bounded by a user-defined spendi
 - WizardConnect integration is mandatory for the BCH BLAZE 2026 Mainnet track according to the current official Tracks page. XO templates are a separate contract/template path and do not replace the wallet integration requirement. Use both where appropriate. Chipnet testing comes first.
 - Use the official Widget Factory presentation template for the project deck.
 - The homepage banner links to the finished deck and source repository. Display an EMBER2026 CashTokens receive address only when BLAZE has issued the token and the destination is verified; it is for Community Choice, not a prerequisite for ordinary BCH Mainnet sends.
-- Follow current BLAZE instructions. The organizer notice says late entrants can compete without completing roll call; the CompeteHub mirror of the DoraHacks track listing separately says to confirm the project is real in the BCH BLAZE Telegram.
+- The owner must submit through DoraHacks and confirm the project in the BCH BLAZE Telegram.
 - Keep the project minimal, original, plug-and-play, judge-friendly, useful, and ambitious in technical clarity rather than decorative complexity.
 
 ## Security and truthfulness
@@ -41,7 +41,7 @@ Pact gives an AI agent a BCH payment capability bounded by a user-defined spendi
 - Never commit secrets or put secrets in browser-exposed environment variables.
 - Never fabricate a BCH address, CashTokens address, transaction ID, balance, confirmation count, explorer link, benchmark, or contract proof.
 - A UI check is not a covenant. Label enforcement as `ui-only`, `chipnet-verified`, or `mainnet-verified` accurately.
-- A per-payment ceiling is not a cumulative spending cap. Prove the remaining allowance state transition and test repeated spends, multiple inputs, fees, change, expiry, and reclaim behavior.
+- A per-payment ceiling is not a shared lifetime cap across separately funded outputs. The current covenant spends down one tracked output, and its timestamp opens recovery rather than enforcing a strict payment expiry.
 - Use minimal Mainnet funds only after Chipnet tests and with the user's explicit approval.
 - Verify the wallet network before signing and broadcasting.
 
@@ -63,14 +63,12 @@ Pact gives an AI agent a BCH payment capability bounded by a user-defined spendi
 
 The build agent is responsible for helping the user obtain required release values, not merely listing them as blockers. When a value is needed, ask one focused question, give a direct action link and short click-by-click steps, explain what to copy, verify the format, and never ask the user to reveal a seed phrase or private key. Use direct task pages such as the Widget Factory copy link, GitHub's new-repository form, and official wallet download pages. Documentation links may be included as secondary technical references, not as the user's primary route to obtaining a value. The user may need to perform authenticated actions; the agent must guide rather than pretend to create or access private accounts.
 
-## Working protocol after build approval
+## Current implementation and release checks
 
-1. Re-open the project specs and confirm all unresolved configuration values.
-2. Check the current official XO engine/API and WizardConnect docs. Pin versions actually tested.
-3. Build the UI without enabling Mainnet sends.
-4. Implement and verify contract/policy behavior on Chipnet.
-5. Test wrong network, invalid address, amount precision, fees, multiple inputs, repeated spends, expiry boundaries, reclaim, wallet rejection, provider errors, and reduced motion.
-6. Only enable Mainnet flows after explicit user sign-off, verified demo configuration, low-value limits, and a visible review/approval step.
-7. Run the acceptance checklist in `BUILD_GUIDE.md` and keep the project banner values real.
+1. The app includes an owner-funded P2SH20 covenant flow and local BCH 2023 virtual-machine checks. The covenant rules and recovery limitation are documented in `PRODUCT.md` and `SUBMISSION_STATUS.md`.
+2. Ordinary Mainnet wallet sends are enabled and a 1,000 sat owner-approved payment is confirmed. This is separate from a Mainnet covenant transaction.
+3. Do not claim a Mainnet covenant is live-tested until a wallet-funded covenant output and spend have been broadcast and confirmed on Mainnet. Never create or sign a wallet transaction without the owner acting in their wallet.
+4. DoraHacks submission and project confirmation in BCH BLAZE Telegram are owner account actions.
+5. Keep public claims, evidence, and the presentation aligned with the latest confirmed transactions and tested code.
 
 Do not claim completion when a checklist item is still a placeholder or untested.

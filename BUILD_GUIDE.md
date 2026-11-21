@@ -1,8 +1,8 @@
 # Pact Build Guide
 
-**Status:** planning only. Do not start this guide until the user explicitly approves implementation.
+**Status:** implementation and release reference for the built prototype. The app includes the wallet-funded covenant flow and local BCH 2023 VM validation. Use the status and evidence sections to distinguish code verification, network confirmation, and owner account actions.
 
-## 1. Before coding
+## 1. Build requirements and current release values
 
 1. Read `FRONTEND_SPEC.md`, `APP_BLUEPRINT.md`, and `CLAUDE.md` fully.
 2. Guide the project owner through obtaining the release values using Section 1.1. Do not expect the owner to know these values already or simply hand them an unresolved checklist.
@@ -40,7 +40,6 @@ The build agent must actively guide the user to obtain each release value. Do no
 ### Event confirmation and hosting
 
 - Event page and submission entry: https://dorahacks.io/hackathon/bchblaze2026/
-- Roll-call stream: https://bchblaze.cash/live/
 - BCH BLAZE Telegram: https://t.me/bchblaze
 - Direct hosting project page, if the user chooses Vercel: https://vercel.com/new . Offer a direct alternative if the user chooses another host. Do not send the user to a generic docs index to create an account or project.
 
@@ -57,7 +56,7 @@ The build agent must actively guide the user to obtain each release value. Do no
 ### Phase B: Policy UI and local validation
 
 - Implement integer-satoshi parsing and formatting. Do not use floating-point comparisons for BCH limits.
-- Validate network-specific address format, recipient, amount, expiry type, amount precision, and explicit policy mode.
+- Validate network-specific address format, recipient, payment cap, owner-recovery timestamp, amount precision, and explicit policy mode.
 - Make UI-only policy checks visibly distinct from contract-enforced state.
 - Add empty, connecting, invalid, rejected, pending, confirmed, provider-error, and network-mismatch states.
 - Ensure content remains visible if JavaScript or animation support is absent.
@@ -67,8 +66,8 @@ The build agent must actively guide the user to obtain each release value. Do no
 - Inspect official XO template docs and the current template package before choosing a template.
 - Use the simplest template that can prove the policy conditions. Document exactly what is enforced by the transaction script and what remains a UI or wallet-level check.
 - Build and test on Chipnet before any Mainnet deployment or funding.
-- Verify recipient locking bytecode, maximum amount, cumulative remaining allowance, expiry, contract change output, fees, owner recovery, and policy revocation behavior.
-- Test adversarial cases: multiple contract inputs, repeated payments, re-funding, rounding, dust/fee edge cases, wrong recipient, over-cap amount, expired spend, invalid expiry boundary, incorrect change script, and contract state mismatch.
+- Verify recipient locking bytecode, per-payment cap, output-lineage balance reduction, owner-recovery locktime, continuation script, fixed fee, and dust floors.
+- Test adversarial cases: multiple contract inputs, repeated spends from one lineage, separately funded outputs, rounding, fee and dust edges, wrong recipient, over-cap amount, early recovery, token-bearing inputs/outputs, and contract-state mismatch. Do not claim a global cap across separate outputs or a strict agent-expiry after the recovery timestamp.
 - Preserve test vectors and transaction results. Do not write `mainnet-verified` until Mainnet behavior has actually been verified.
 
 ### Phase D: Wallet connection
@@ -81,26 +80,15 @@ The build agent must actively guide the user to obtain each release value. Do no
 
 ### Phase E: Payment review and transaction receipts
 
-- Build the review screen with network, full destination, amount, fee, active policy, cap/remaining allowance, expiry, and any relevant contract funding.
+- Build the review screen with network, full destination, amount, fee, confirmed policy balance, per-payment cap, owner-recovery time, and relevant covenant funding.
 - Require explicit user confirmation and wallet signature for every Mainnet transaction.
 - Display txid and explorer URL only from actual provider output. Never create fake transaction rows.
 - Distinguish wallet-approved, broadcast, pending, and confirmed states.
 - Ensure the configured demo destination and amount are visible to the judge before approval.
 
-### Phase F: Mainnet readiness
+### Mainnet and covenant evidence
 
-Do not enable Mainnet sends until all items below are true:
-
-- [ ] Chipnet contract and wallet tests pass.
-- [ ] Network is checked by the wallet and shown in the UI.
-- [ ] Real project-controlled demo destination is verified.
-- [ ] Demo amount and cap are intentionally small and approved by the owner.
-- [ ] Fee handling and recovery path are understood and tested.
-- [ ] User reviews the exact transaction and confirms in the wallet.
-- [ ] No automatic broadcast or hidden pre-approval exists.
-- [ ] A successful Mainnet receipt is shown only after a real transaction.
-
-The event's official resources advise using Chipnet for development and testing, and using only minimal Mainnet funds when recovery is understood. Follow that instruction.
+Ordinary BCH Mainnet sends are enabled, and one owner-approved 1,000 sat send is confirmed. This proves the wallet-send path for that transaction. The covenant code has local BCH 2023 VM checks, but the ordinary Mainnet payment is not a Mainnet covenant transaction. Do not report a Mainnet covenant as network-verified until its funding output and at least one covenant spend have been broadcast by the owner and confirmed. Keep all Mainnet actions low-value, fully reviewed, and explicitly wallet-approved.
 
 ## 3. QA and accessibility checklist
 
@@ -126,14 +114,13 @@ The event's official resources advise using Chipnet for development and testing,
 
 ### Widget Factory deck and banner
 
-- Copy and complete the official Widget Factory presentation template: https://docs.google.com/presentation/d/1Yfuk9CJkf4U9M_WukcELhumWgj3Ak6345Ewy8hSp-Hk/edit?slide=id.p#slide=id.p
+- The project presentation is the editable `Pact_Pitch_Deck.pptx`, built from the supplied Widget Factory template. It is not a Google Slides copy. Do not submit the template URL as Pact’s deck.
 - The homepage banner links to the deck and source. Show an official EMBER2026 address only after the token is issued and the address is verified; the CompeteHub mirror of the DoraHacks track listing associates that address with Community Choice.
 - Verify the address can receive the relevant token. Do not copy an address from another project.
 - Verify all links on desktop and mobile before submission.
 
 ### Community and deadlines
 
-- Record the current BLAZE roll-call status. The pinned organizer notice says roll call is closed and late entrants may still compete without completing it.
 - Submit the final project through the BCH BLAZE DoraHacks Build page. The CompeteHub mirror of the DoraHacks track listing says to confirm the project is real in the BCH BLAZE Telegram channel; post the project/demo/repository links and keep proof.
 - The BLAZE schedule says hacking ends and submissions/judging begin Sunday 22 November 2026 at 14:00 UTC (15:00 Lagos). A mirrored DoraHacks listing gives a November 14–22 submission period. Confirm the closing time and required fields in the logged-in DoraHacks form before submitting.
 - Submit to the correct track and verify all required fields in DoraHacks.
@@ -143,24 +130,20 @@ The event's official resources advise using Chipnet for development and testing,
 Keep the explanation short and evidence-led:
 
 1. Problem: AI payment authority is risky when it is broader than necessary.
-2. Product: Pact binds the agent's permission to amount, recipient, and expiry.
+2. Product: Pact commits a per-payment cap and recipient to a BCH covenant; the configured time opens owner recovery.
 3. Proof: show the exact conditions and where each one is enforced.
 4. Demo: execute a real, explicitly approved BCH Mainnet payment through the app.
 5. BCH-native value: explain the XO/CashTokens/covenant path and tested boundary behavior.
 6. Business: state the target customer and integration path only when supported by the prototype and user research.
 
-## 5. Definition of done
+## 5. Current completion status
 
-- [ ] Implementation matches the approved frontend spec.
-- [ ] All live controls and empty/error/loading states work.
-- [ ] Current XO and wallet versions are pinned and documented.
-- [ ] Chipnet tests prove the conditions claimed by the UI.
-- [ ] Mainnet transaction path is useful, low-risk, wallet-reviewed, and verified.
-- [ ] Required top banner values are real and clickable.
-- [ ] Widget Factory deck is complete.
-- [ ] Source repository and hosted app are publicly accessible.
-- [ ] Record roll call as missed/closed per the organizer notice; late entrants may still compete without roll call. Confirm the project is real in the BCH BLAZE Telegram as the CompeteHub mirror of the DoraHacks track listing requires.
-- [ ] No unverified claims, fake transaction history, or invented assets are present.
+- The production build validates the XO template, runs BCH 2023 VM cases for the app covenant, type-checks TypeScript, and produces the Vite bundle.
+- Ordinary Mainnet wallet sending is enabled and has one confirmed owner-approved payment.
+- Covenant funding, wallet approval, spends, and owner recovery are implemented. VM validation is local; no Mainnet covenant funding or spend is claimed as confirmed.
+- The hosted app, public GitHub repository, and editable Widget Factory-based PPTX are available. No Google Slides copy exists.
+- The owner must submit the project in DoraHacks and confirm it in the BCH BLAZE Telegram from their authenticated accounts.
+- EMBER2026 is optional organizer-controlled Community Choice material until the team issues the token and confirms its details.
 
 ## 6. Official and technical references
 
