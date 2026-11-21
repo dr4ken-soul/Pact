@@ -24,7 +24,7 @@ This guide follows the live Pact app. The covenant must be funded separately; a 
 3. Click **Open wallet to approve**, then open Paytaca on your phone and approve the pending WizardConnect request.
 4. Pact validates the signed transaction with the BCH 2023 virtual machine, then broadcasts it. Wait for the continuation output to confirm before attempting another spend.
 
-With the current defaults of 0.0005 BCH funding and a 0.00001 BCH cap, one covenant output can cover at most two maximum-size payments: each spend deducts both the payment and the fixed 20,000 sat fee. The wallet also pays a separate fee for the initial funding transaction.
+For example, with 0.0005 BCH funding and a 0.00001 BCH cap, one covenant output can cover at most two maximum-size payments: each spend deducts both the payment and the fixed 20,000 sat fee. The wallet also pays a separate fee for the initial funding transaction.
 
 The previously confirmed 0.00001 BCH Mainnet send was an ordinary wallet payment. It proved the normal send path but did not fund a Pact covenant. To exercise the covenant, complete the separate funding and spend steps above.
 
