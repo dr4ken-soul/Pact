@@ -21,7 +21,7 @@ The contract enforces one covenant input, the committed recipient, the per-payme
 
 The recovery timestamp makes owner recovery available. BCH script does not read the current wall clock independently, so the payment branch remains script-valid after that timestamp. The app describes this as an owner-recovery time, not an on-chain agent-spend expiry. The owner wallet signs each payment; this integration does not give an agent autonomous signing authority.
 
-The app covenant builder and spend/recovery branches pass local BCH 2023 VM checks, including rejection of an incorrect recipient, an above-cap payment, a changed fee, and recovery before the configured locktime. This is code-level validation. The prior confirmed Mainnet transaction is an ordinary wallet payment, not a covenant transaction. No covenant funding or spend transaction has been confirmed on Mainnet yet.
+The app covenant builder and spend/recovery branches pass local BCH 2023 VM checks for valid payment and recovery, repeated value reductions, an exhausted balance, rejected extra inputs or change outputs, an independently funded output, an incorrect recipient, an above-cap payment, a changed fee, and recovery before the configured locktime. This is code-level validation. The prior confirmed Mainnet transaction is an ordinary wallet payment, not a covenant transaction. No covenant funding or spend transaction has been confirmed on Mainnet yet.
 
 ## What is required to submit
 
