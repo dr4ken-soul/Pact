@@ -6,7 +6,7 @@
 
 When a value requires the user's account or wallet, the build agent must guide them through obtaining it. Do not merely list missing values as blockers. Ask one focused question at a time, use clickable options where a decision is needed, provide a direct action link, explain the exact clicks and the exact value to copy, then verify the result format.
 
-Use task pages rather than a docs index as the user's primary route. Current direct setup links are recorded in `BUILD_GUIDE.md`: Google Slides Widget Factory template, GitHub new repository, GitLab project creation, Paytaca wallet, Electron Cash official download, BCH BLAZE event, roll-call stream, Telegram, and hosting project creation.
+Use task pages rather than a docs index as the user's primary route. Current direct setup links are recorded in `BUILD_GUIDE.md`: Google Slides Widget Factory template, GitHub new repository, GitLab project creation, Paytaca wallet, Electron Cash official download, BCH BLAZE event, Telegram, and hosting project creation.
 
 The user may need to perform private or authenticated steps. Do not pretend to create a deck, repository, or wallet address unless the tool actually did so. Never ask the user to share a seed phrase, private key, PIN, wallet file, or recovery phrase.
 
