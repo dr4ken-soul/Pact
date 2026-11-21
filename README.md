@@ -17,7 +17,7 @@ The confirmed 1,000 sat Mainnet transaction listed below was an ordinary wallet 
 
 ## WizardConnect reconnection
 
-Pact restores its WizardConnect pairing after a page refresh using an app-specific browser storage entry. That entry contains the app-side pairing credentials and wallet public key, not a wallet seed phrase or wallet signing key. On a shared device, disconnect from Pact to clear the stored pairing.
+Pact uses a fresh WizardConnect QR pairing and does not persist the connection across page refreshes. After a refresh, connect again with a new QR/link; Pact does not store an app-side pairing key in browser storage.
 
 If Paytaca shows an old Pact entry as “reconnecting” with “Subscription closed”, remove that stale entry in Paytaca. Then use **Try other relay** in Pact to generate a new QR/link through the alternate official endpoint. Remove the failed entry in Paytaca before scanning the replacement.
 
