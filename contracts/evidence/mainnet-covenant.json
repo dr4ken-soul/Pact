@@ -1,8 +1,8 @@
 {
   "network": "Bitcoin Cash Mainnet",
   "status": "confirmed",
-  "checkedAtUtc": "2026-11-22T11:38:50Z",
-  "chainTipAtCheck": 978470,
+  "checkedAtUtc": "2026-11-22T12:07:01Z",
+  "chainTipAtCheck": 978471,
   "policy": {
     "address": "bitcoincash:pzjcc4gdagg8x8rzvtcj48yeyfenu3pshqxqdfue52",
     "approvedRecipient": "bitcoincash:qrx6fm43qwuf5jpdlpcm6r2t8tdv6efutql99sh6l",
@@ -12,7 +12,7 @@
     "txid": "a8666f786627ad94fc0573d990edbc59c7b100af226f6d334baa16dbc445ef68",
     "explorerUrl": "https://blockexplorer.cash/mainnet/tx/a8666f786627ad94fc0573d990edbc59c7b100af226f6d334baa16dbc445ef68",
     "status": "confirmed",
-    "confirmationsAtCheck": 92,
+    "confirmationsAtCheck": 93,
     "blockHeight": 978379,
     "confirmedAtUtc": "2026-11-21T22:15:44Z",
     "inputSats": 94334,
@@ -24,7 +24,7 @@
     "txid": "f53a93a7177b7935cc0f57751a3b82aaad3e173e5c88cbf1b51ba6a53f386638",
     "explorerUrl": "https://blockexplorer.cash/mainnet/tx/f53a93a7177b7935cc0f57751a3b82aaad3e173e5c88cbf1b51ba6a53f386638",
     "status": "confirmed",
-    "confirmationsAtCheck": 90,
+    "confirmationsAtCheck": 91,
     "blockHeight": 978381,
     "confirmedAtUtc": "2026-11-21T22:23:12Z",
     "fundingOutpoint": "a8666f786627ad94fc0573d990edbc59c7b100af226f6d334baa16dbc445ef68:0",
@@ -37,7 +37,7 @@
     "txid": "25d22cab6bc19f89bfd5a2a98560f0e43c2ac7e42553e57f1fe59adde0600c2c",
     "explorerUrl": "https://blockexplorer.cash/mainnet/tx/25d22cab6bc19f89bfd5a2a98560f0e43c2ac7e42553e57f1fe59adde0600c2c",
     "status": "confirmed",
-    "confirmationsAtCheck": 1,
+    "confirmationsAtCheck": 2,
     "blockHeight": 978470,
     "confirmedAtUtc": "2026-11-22T11:37:57Z",
     "inputOutpoint": "f53a93a7177b7935cc0f57751a3b82aaad3e173e5c88cbf1b51ba6a53f386638:1",
@@ -46,5 +46,8 @@
     "ownerRecoverySats": 9000,
     "minerFeeSats": 20000
   },
-  "scopeNote": "Mainnet covenant funding, an agent payment with same-script continuation, and owner recovery are all confirmed. The recovery branch returned the remaining value to the committed owner address after the configured locktime. The recovery timestamp opens owner recovery and does not disable the payment branch."
+  "scopeNote": "The complete exercised Mainnet lifecycle is confirmed: covenant funding, a capped agent payment with same-script continuation, and owner recovery. The owner-recovery transaction spent the tracked continuation, returned 9,000 sats to the committed owner address, paid the fixed 20,000 sat fee, and left no covenant continuation output. The recovery timestamp opens owner recovery and does not disable the payment branch.",
+  "currentCovenantState": "The tracked covenant continuation was spent by the confirmed owner-recovery transaction; no active output remains for this policy.",
+  "trackedContinuationBalanceSats": 0,
+  "trackedContinuationState": "The continuation created by the confirmed covenant payment was spent by the confirmed owner-recovery transaction; no unspent continuation remains in this tested output lineage."
 }

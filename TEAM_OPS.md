@@ -29,7 +29,7 @@ Before any Mainnet transaction:
 5. Record a transaction only from a real provider response.
 6. Start with a low amount the owner explicitly agrees to risk.
 
-Do not claim the user can recover funds unless the recovery path has passed Chipnet tests and has been reviewed for Mainnet conditions.
+The Pact owner-recovery branch has passed local BCH 2023 VM checks and has a confirmed Mainnet transaction returning the continuation balance to the committed owner address; see `contracts/evidence/mainnet-covenant.json`. Do not extend this evidence to other policies or claim a general recovery guarantee.
 
 ## Contract release gate
 
@@ -57,5 +57,5 @@ Any future fee model requires an explicit user decision, a public fee policy, a 
 
 - Submit the project through the final Build form on the official DoraHacks event page. Registration alone is not a project submission. Include the repository, working demo, presentation, and short project description; check DoraHacks for the exact required fields and deadline.
 - Post the project confirmation in the BCH BLAZE Telegram channel with the live demo and repository links, then keep proof. A general introduction or EMBER question may not satisfy this.
-- Mainnet sends are enabled in the current live app. One owner-approved 1,000 sat payment was confirmed in block 978164 with a 226 sat fee; see `contracts/evidence/mainnet-payment.json`. This confirms the wallet-signed Mainnet send path for that payment. Continue to require an owner-selected recipient, confirmed wallet funds, exact amount/fee review, and wallet signature for every payment. The EMBER address remains unverified and is only relevant to Community Choice after token issuance. This payment is not evidence of XO covenant enforcement on Mainnet.
+- Mainnet sends are enabled in the current live app. One owner-approved ordinary 1,000 sat payment confirmed in block 978164 with a 226 sat fee; see `contracts/evidence/mainnet-payment.json`. Separately, Pact-app covenant funding, a capped payment with same-script continuation, and owner recovery confirmed in blocks 978379, 978381, and 978470; see `contracts/evidence/mainnet-covenant.json`. Continue to require an owner-selected recipient, confirmed wallet funds, exact amount/fee review, and wallet signature for every new payment. This evidence is for Pact's app covenant, not the separate XO Chipnet invitation. EMBER remains unissued and optional organizer-controlled Community Choice material.
 - Recheck the official event page before submission because dates and requirements can change.

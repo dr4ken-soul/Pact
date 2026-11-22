@@ -148,7 +148,7 @@ Required links and values:
 - `Source`: actual project repository URL.
 - EMBER2026 address: use an official project-controlled CashTokens receive address verified to accept the issued token. Until issuance, show that no official address exists and do not publish the owner-supplied value as official.
 - Official template source: https://docs.google.com/presentation/d/1Yfuk9CJkf4U9M_WukcELhumWgj3Ak6345Ewy8hSp-Hk/edit?slide=id.p#slide=id.p
-- The repository and PPTX URL are configured, but the native Google Slides copy and official EMBER2026 address are still outstanding. The address is not a Mainnet-send dependency; it is needed for Community Choice after issuance. Do not claim an unverified address is official.
+- The editable Widget Factory-based PPTX is available; no native Google Slides copy has been made. BLAZE has not issued EMBER2026, so there is no official token receive address to publish yet. These presentation-format and organizer-controlled token details do not block the confirmed Mainnet wallet or covenant flows. Do not claim an unverified address is official.
 
 **Responsive behavior:** mobile stacks the label and links; address may wrap and copy remains a 44px target. Desktop uses one row. No horizontal page overflow.
 

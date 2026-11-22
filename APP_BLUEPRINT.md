@@ -1,6 +1,6 @@
 # Pact App Blueprint
 
-**Status:** The current source includes a wallet-funded P2SH20 covenant flow and passes local BCH 2023 VM checks for payment, recovery, and invalid-spend cases. On Mainnet, a 50,000 sat covenant funding transaction confirmed in block 978379; a 1,000 sat covenant payment confirmed in block 978381 and returned 29,000 sats to the same covenant. The recovery time opens owner recovery but is not a strict agent-spend expiry, and each funded output has its own balance rather than a shared lifetime cap. Pact is a hackathon prototype, not an audited release. DoraHacks submission and Telegram confirmation are owner account actions. EMBER2026 remains organizer-controlled and optional for Community Choice.
+**Status:** The current source includes a wallet-funded P2SH20 covenant flow and passes local BCH 2023 VM checks for payment, recovery, and invalid-spend cases. On Mainnet, the full exercised covenant lifecycle is confirmed: 50,000 sats funded in block 978379; a 1,000 sat payment with 29,000 sats continued to the same covenant in block 978381; then 9,000 sats were recovered to the committed owner address in block 978470. A separate 1,000 sat ordinary wallet payment confirmed in block 978164. The recovery time opens owner recovery but is not a strict agent-spend expiry, and separately funded outputs have separate balances rather than a shared lifetime cap. Pact is a hackathon prototype, not an audited release. Event submission and Telegram confirmation are owner account actions; EMBER2026 remains organizer-controlled optional Community Choice material.
 
 ## 1. Executive summary
 
@@ -120,7 +120,7 @@ Use a covenant/capability UTXO or XO template that commits to:
 - an owner recovery path after the configured locktime;
 - any state transition required to represent remaining allowance.
 
-The web app creates, funds, and spends a wallet-authorized P2SH20 covenant. Its script enforces a fixed recipient, per-payment cap, one covenant input, no CashTokens, same-script continuation, exact 20,000 sat fee, dust floors, and an owner recovery branch. The browser requires the owner wallet to sign each spend and locally validates the signed transaction with the BCH 2023 VM. Local VM checks cover allowed payment/recovery and rejection cases. A live Mainnet funding-and-payment cycle is confirmed: 50,000 sats funded in block 978379; the spend in block 978381 paid 1,000 sats, returned 29,000 sats to the same covenant, and paid the fixed fee. Mainnet transaction records are in `contracts/evidence/mainnet-covenant.json`.
+The web app creates, funds, and spends a wallet-authorized P2SH20 covenant. Its script enforces a fixed recipient, per-payment cap, one covenant input, no CashTokens, same-script continuation, exact 20,000 sat fee, dust floors, and an owner recovery branch. The browser requires the owner wallet to sign each spend and locally validates the signed transaction with the BCH 2023 VM. Local VM checks cover allowed payment/recovery and rejection cases. The exercised Mainnet lifecycle is confirmed: 50,000 sats funded in block 978379; the spend in block 978381 paid 1,000 sats, returned 29,000 sats to the same covenant, and paid the fixed fee; owner recovery in block 978470 then returned 9,000 sats to the committed owner address, less the same fixed fee. Transaction IDs and explorer records are in `contracts/evidence/mainnet-covenant.json`.
 
 ### 6.3 Cumulative spending cap caveat
 
@@ -181,7 +181,7 @@ All money values are integer satoshis. Avoid floating-point arithmetic for polic
 - Verify network identity at every wallet/session boundary. Mainnet/Chipnet mismatches block signing.
 - Display the complete recipient during final review and provide a copy action.
 - Make the active enforcement level visible and accurate.
-- Use minimal funds for any Mainnet trial. Never suggest that funds can be recovered until the recovery path is tested.
+- Use minimal funds for any Mainnet trial. Claim recovery only for a path that has been tested and confirmed; Pact's tested Mainnet owner-recovery transaction is recorded in `contracts/evidence/mainnet-covenant.json`.
 - Keep contracts and dependencies pinned and review the current XO engine release before integrating because the event resources say the engine is actively developing.
 
 ## 9. Empty, loading, and error states
@@ -220,6 +220,7 @@ The demo must not depend on typing a long prompt, creating an account, fake bala
 - [x] At least one useful BCH Mainnet transaction can be initiated and completed through Pact with explicit wallet approval. Confirmed transaction: `3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704`, block 978164.
 - [x] WizardConnect integration is present and exercised on Mainnet by the confirmed transaction above.
 - [x] A useful BCH Mainnet payment was initiated through WizardConnect, approved by the owner, broadcast, and confirmed in block 978164.
+- [x] The Pact-app P2SH20 covenant lifecycle was funded, used for a capped payment with same-script continuation, and recovered to the committed owner; all three Mainnet transactions confirmed in blocks 978379, 978381, and 978470.
 - [x] The live website is usable as a demo and the source repository is available.
 - [x] WizardConnect has been exercised on Mainnet by the confirmed payment.
 - [x] A short Widget Factory-based presentation is available as `Pact_Pitch_Deck.pptx`. It is not a native Google Slides copy; confirm the DoraHacks form accepts PPTX.
@@ -228,6 +229,8 @@ The demo must not depend on typing a long prompt, creating an account, fake bala
 - [ ] Confirm the project in the BCH BLAZE Telegram and keep proof.
 
 The ordinary Mainnet payment and the Mainnet covenant funding, payment-continuation, and owner-recovery cycle are confirmed. These software proofs are separate from the two owner event-account actions and are not an EMBER address issue.
+
+The covenant output used for this proof has since been fully recovered. No balance remains in that specific policy output; a fresh live demo requires funding a new covenant.
 
 The standalone XO bounty has separate requirements. Its invitation evidence exists, but its template limits and developer feedback still need to be handled separately.
 - [ ] No logo mark is added unless the user requests one.
@@ -392,15 +395,15 @@ This is a proposed tree. Revisit it after the user approves a stack and implemen
 4. Publish the Widget Factory deck, live app, and source link in the hackathon submission.
 5. Do not announce metrics, users, revenue, security audit, or successful policy guarantees unless measured and verified.
 
-### Delivery record — 21 November 2026
+### Delivery record — 22 November 2026
 
 - The app shell, WizardConnect wallet connection, network verification, wallet-reviewed BCH payment, and owner-funded P2SH20 covenant lifecycle are implemented.
 - The production build runs XO template validation, BCH 2023 VM covenant cases, TypeScript checks, and the Vite build.
 - The hosted app, GitHub repository, and editable Widget Factory-based PPTX are available.
-- A 1,000 sat ordinary Mainnet wallet payment is confirmed. A separate XO invitation payment is confirmed on Chipnet.
-- No confirmed transaction from the live Pact-app covenant flow is claimed. Its funding and spend screens require the owner wallet to authorize the covenant transactions; the earlier ordinary Mainnet payment is not covenant funding.
+- A 1,000 sat ordinary Mainnet wallet payment is confirmed in block 978164. Separately, the live Pact-app covenant funding, capped payment with same-script continuation, and owner recovery are confirmed in blocks 978379, 978381, and 978470. Evidence and exact outpoints are in `contracts/evidence/mainnet-covenant.json`.
+- The XO invitation payment is a separate Chipnet demonstration. It is not the Pact-app Mainnet covenant and its status should be described independently.
 - The user-facing event actions are to submit the project through DoraHacks and post the project-real confirmation in the BCH BLAZE Telegram. These do not change the app build or require an EMBER2026 address.
 
 ## 19. Resolved release configuration
 
-The project uses Vercel, the public GitHub repository, WizardConnect, Paytaca, Chipnet as the default network, and an enabled BCH Mainnet send path. The app uses no managed agent signing key and never asks for a wallet seed phrase. The owner supplies the desired recipient and approves each wallet transaction. Mainnet covenant funding and spend can be exercised from the live app, but must be authorized in the owner’s wallet before any transaction is broadcast.
+The project uses Vercel, the public GitHub repository, WizardConnect, Paytaca, Chipnet as the default network, and an enabled BCH Mainnet send path. The app uses no managed agent signing key and never asks for a wallet seed phrase. The owner supplies the desired recipient and approves each wallet transaction. Mainnet covenant funding, payment/continuation, and owner recovery have been exercised and confirmed; each future transaction still requires the owner's wallet authorization before broadcast.

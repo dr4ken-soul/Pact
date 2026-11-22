@@ -2,7 +2,9 @@
 
 AI-assisted working draft for factual review only. The BLAZE bounty requires personally written feedback and says AI-written submissions will be rejected. Rewrite this in your own words and verify every statement from your own experience before submitting.
 
-**Separate demo evidence for project records:** Pact's WizardConnect browser payment also completed a 1,000 sat BCH Mainnet send, confirmed in block 978164 with a 226 sat fee ([explorer](https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704)). This was an ordinary wallet payment, not the XO Chipnet covenant spend described in this feedback. Keep it out of the first-person bounty feedback unless you personally verify and decide it is relevant.
+**Separate ordinary-payment evidence for project records:** Pact's WizardConnect browser payment also completed a 1,000 sat BCH Mainnet send, confirmed in block 978164 with a 226 sat fee ([explorer](https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704)). This was an ordinary wallet payment, not the XO Chipnet covenant spend described in this feedback. Keep it out of the first-person bounty feedback unless you personally verify and decide it is relevant.
+
+**Separate Pact-app covenant evidence, not XO Engine evidence:** On BCH Mainnet, the Pact app covenant was funded with 50,000 sats in block 978379, spent in block 978381 to pay 1,000 sats and continue 29,000 sats under the same covenant, then recovered in block 978470 with 9,000 sats returned to the committed owner address. Each covenant spend paid a 20,000 sat fee. The covenant output used for this proof is now spent and has no remaining balance. See [`mainnet-covenant.json`](mainnet-covenant.json) and its three explorer links. This evidence demonstrates Pact's distinct WizardConnect app-covenant lifecycle; it does not change the Chipnet XO invitation or belong in first-person bounty feedback unless you personally verify and choose to discuss it.
 
 ## What worked well
 

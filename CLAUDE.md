@@ -2,7 +2,7 @@
 
 ## Project status
 
-Pact is a BCH BLAZE 2026 bounded-permission AI payments project. The owner approved the initial build, and the prototype is implemented. Its WizardConnect BCH Mainnet send path has a confirmed transaction; see `SUBMISSION_STATUS.md` and `contracts/evidence/mainnet-payment.json` for the evidence and remaining submission work.
+Pact is a BCH BLAZE 2026 bounded-permission AI payments project. The hackathon prototype is implemented. Its ordinary WizardConnect BCH Mainnet send and its app's wallet-authorized covenant funding, capped payment/continuation, and owner-recovery lifecycle have confirmed transactions; see `SUBMISSION_STATUS.md` and `contracts/evidence/mainnet-covenant.json`. Event account actions, if not yet completed, are separate from product implementation.
 
 Continue only in response to a specific user request. Do not treat the initial build approval as permission to add unrelated features or make new Mainnet payments. Never handle end-user seed phrases or private keys.
 
@@ -66,8 +66,8 @@ The build agent is responsible for helping the user obtain required release valu
 ## Current implementation and release checks
 
 1. The app includes an owner-funded P2SH20 covenant flow and local BCH 2023 virtual-machine checks. The covenant rules and recovery limitation are documented in `PRODUCT.md` and `SUBMISSION_STATUS.md`.
-2. Ordinary Mainnet wallet sends are enabled and a 1,000 sat owner-approved payment is confirmed. This is separate from a Mainnet covenant transaction.
-3. Do not claim a Mainnet covenant is live-tested until a wallet-funded covenant output and spend have been broadcast and confirmed on Mainnet. Never create or sign a wallet transaction without the owner acting in their wallet.
+2. An ordinary Mainnet wallet send is confirmed in block 978164. Separately, the Pact-app covenant funding, capped payment/continuation, and owner recovery are confirmed in blocks 978379, 978381, and 978470. Keep the ordinary-send, app-covenant, and XO Chipnet evidence distinct.
+3. The exercised Mainnet covenant lifecycle is live-tested. Do not generalize it to an audit, a strict agent-spend expiry, or a shared lifetime cap across separately funded outputs. Never create or sign a wallet transaction without the owner acting in their wallet.
 4. DoraHacks submission and project confirmation in BCH BLAZE Telegram are owner account actions.
 5. Keep public claims, evidence, and the presentation aligned with the latest confirmed transactions and tested code.
 

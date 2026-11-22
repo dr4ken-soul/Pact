@@ -63,8 +63,8 @@ The MVP has no protocol fee. The user sees the BCH miner fee before authorizatio
 
 ## 9. Phased roadmap
 
-- **Phase A, Chipnet:** build and test the policy template, wallet flow, invalid cases, and recovery path with test BCH.
-- **Phase B, guarded Mainnet demo:** enable one explicitly reviewed, low-value BCH payment through Pact. Do not enable contract funding unless its Mainnet behavior and recovery path have been verified.
+- **Phase A, Chipnet (demonstrated):** build and test the policy template, wallet flow, invalid cases, and recovery path with test BCH.
+- **Phase B, guarded Mainnet demo (demonstrated for this policy):** owner-approved ordinary BCH sending and the app covenant funding, capped payment/continuation, and recovery lifecycle were exercised and confirmed in the transaction record. This proves the demonstrated flows, not every possible covenant case or an independent audit.
 - **Phase C, post-hackathon:** independent contract review, user research, policy monitoring, broader agent adapters, and any hosted business model.
 
 ## 10. Audit and disclosure

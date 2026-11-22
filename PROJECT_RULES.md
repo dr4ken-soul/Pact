@@ -73,7 +73,7 @@ Apply these rules to every visible string, planning document, code comment, JSDo
 - A UI expiry timer is not an on-chain expiry. Specify and test the actual time/height rule and reclaim path.
 - Mainnet requires full address, network, amount, fee, policy, and wallet review. No hidden approval or automatic broadcast.
 - Chain/contract/provider confirmation is the source of truth for on-chain records. Never write or display a confirmed transaction before actual evidence exists.
-- Use minimal Mainnet funds and do not claim a recovery path until it has been tested. Mainnet transactions require explicit user approval.
+- Use minimal Mainnet funds. Claim recovery only for the exact path that has been tested and confirmed; Pact's Mainnet owner recovery is recorded in `contracts/evidence/mainnet-covenant.json`. Every new Mainnet transaction still requires explicit user approval.
 - Keep the project CashTokens donation address separate from the BCH demo recipient. Verify the EMBER2026 token identity before publishing the donation address.
 - Do not introduce a treasury wallet, protocol fee, managed agent key, or paid service without a separate design and user approval.
 

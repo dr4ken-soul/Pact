@@ -1,15 +1,18 @@
 # Pact submission and implementation status
 
-**Checked:** 22 November 2026. The official schedule says submissions and judging begin 22 November at 14:00 UTC (15:00 Lagos); check the logged-in DoraHacks form for its closing time.
+**Checked:** 22 November 2026, 12:07 UTC. At this check, BlockExplorer.cash showed chain tip 978471 and confirmed counts of 93 for funding, 91 for the covenant payment, and 2 for owner recovery. The official schedule says submissions and judging begin 22 November at 14:00 UTC (15:00 Lagos); check the logged-in DoraHacks form for its closing time.
 
 ## BLAZE Mainnet track
 
 Pact has the listed software demo components: a hosted app, source repository, WizardConnect, a confirmed BCH Mainnet wallet payment, a confirmed live covenant funding, payment, continuation, and owner-recovery cycle, and an editable Widget Factory-based presentation.
 
+The tested Mainnet wallet and app-covenant flows are built and confirmed. “Everything works on Mainnet” should refer to those demonstrated flows, not every separate Pact track or every possible covenant condition: the XO Engine invitation is a separate Chipnet demo, and the covenant is a hackathon prototype without an independent audit, strict agent-spend expiry, or shared cumulative cap across separate funding outputs.
+
 - The app is deployed at https://pact-bch.vercel.app.
 - A user-approved 1,000 sat ordinary Mainnet wallet payment confirmed in block 978164 with a 226 sat fee. [Inspect it](https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704).
 - The live P2SH20 covenant was funded with 50,000 sats in block 978379, then spent in block 978381: 1,000 sats to the committed recipient, 29,000 sats back to the same covenant, and a 20,000 sat fee. [Funding transaction](https://blockexplorer.cash/mainnet/tx/a8666f786627ad94fc0573d990edbc59c7b100af226f6d334baa16dbc445ef68) · [Confirmed covenant spend](https://blockexplorer.cash/mainnet/tx/f53a93a7177b7935cc0f57751a3b82aaad3e173e5c88cbf1b51ba6a53f386638).
 - Owner recovery then spent the 29,000 sat continuation, returned 9,000 sats to the committed owner address, and paid the fixed 20,000 sat fee. It confirmed in block 978470. [Confirmed owner recovery](https://blockexplorer.cash/mainnet/tx/25d22cab6bc19f89bfd5a2a98560f0e43c2ac7e42553e57f1fe59adde0600c2c).
+- The covenant output used for this proof was fully recovered; it no longer holds a covenant balance. To repeat the live demo, fund a new policy.
 - The presentation file is [Pact_Pitch_Deck.pptx](https://github.com/dr4ken-soul/Pact/raw/refs/heads/main/Pact_Pitch_Deck.pptx). It is an editable PowerPoint file, not a Google Slides copy.
 - The owner previously confirmed DoraHacks registration.
 

@@ -22,9 +22,15 @@ After the configured timestamp, the owner recovery branch can return the remaini
 
 Yes. The owner connects a WizardConnect-compatible BCH wallet, reviews the network and transaction, and signs in the wallet.
 
-## Is the Mainnet payment proof a covenant payment?
+## Is the ordinary Mainnet payment proof a covenant payment?
 
-No. The confirmed 1,000 sat Mainnet transaction was an ordinary BCH wallet send. It demonstrates that wallet approval, signing, broadcast, and confirmation worked for that send. It is separate from the covenant flow.
+No. The confirmed 1,000 sat transaction in block 978164 was an ordinary BCH wallet send. It proves that send path for that payment. Pact has separate covenant evidence: a 50,000 sat funding transaction, a capped payment with same-script continuation, and owner recovery are all confirmed on Mainnet. See [`contracts/evidence/mainnet-covenant.json`](contracts/evidence/mainnet-covenant.json).
+
+## Has the covenant been tested on Mainnet?
+
+Yes. The app's wallet-authorized covenant funding, payment/continuation, and owner-recovery path has confirmed Mainnet transactions in blocks 978379, 978381, and 978470. This demonstrates the exercised lifecycle. It is not an independent security audit or exhaustive test of every adversarial transaction. The recovery timestamp opens owner recovery; it does not disable the payment branch, and separately funded outputs do not share a lifetime cap.
+
+The output used for the confirmed demonstration was fully recovered, so it has no active covenant balance. A new live cycle needs a new funded policy.
 
 ## Can I test it without risking real BCH?
 

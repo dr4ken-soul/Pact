@@ -27,15 +27,16 @@ AI agents need a narrower way to request payments than unrestricted wallet acces
 - The covenant enforces one committed recipient, a per-payment cap, a token-free one-input spend, same-script balance continuation, and a fixed 20,000 sat fee.
 - Each covenant output spends down its own balance. Separately funded outputs do not share one lifetime allowance.
 - The recovery timestamp makes owner recovery available. It does not make the payment branch expire on-chain.
-- The confirmed 1,000 sat Mainnet transaction is an ordinary BCH wallet payment. It is separate evidence from the XO Chipnet invitation and does not prove the covenant has been funded or spent on Mainnet.
+- Pact has separate, confirmed Mainnet proof for the ordinary 1,000 sat wallet send and for the app covenant lifecycle. Covenant funding (50,000 sats), a capped 1,000 sat payment with 29,000 sat same-script continuation, and owner recovery (9,000 sats returned) confirmed in blocks 978379, 978381, and 978470. See `contracts/evidence/mainnet-covenant.json`. Keep these app transactions distinct from the separate XO Chipnet invitation.
+- The covenant output used in that proof has since been recovered and is no longer funded. A fresh live covenant demo needs a new funding transaction.
 - EMBER2026 has not been issued. Its receive address is organizer-controlled and is not required for Pact's ordinary BCH payment flow or the Mainnet-track demo.
 
 ## Public proof before posting
 
 - Link the live app and source repository.
 - Show the completed Widget Factory-based presentation.
-- Link the confirmed Mainnet wallet payment as proof of the ordinary BCH send flow.
-- Describe the covenant as an integrated prototype unless a covenant funding and spend transaction has also been confirmed on the network being claimed.
+- Link the confirmed Mainnet wallet payment as proof of the ordinary BCH send flow, and link the three confirmed covenant transactions as proof of the exercised app covenant lifecycle.
+- Describe what these transactions demonstrate. Do not imply an exhaustive adversarial audit, a strict expiry of the payment branch, or one shared cumulative limit across separately funded outputs.
 - State the actual enforcement rules and the recovery-time limitation.
 
 ## Demo walkthrough

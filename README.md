@@ -39,9 +39,13 @@ npm run build
 
 The XO Engine demo uses its own generated Chipnet test account. Its mnemonic is encrypted locally with Windows DPAPI under ignored `contracts/.xo-state/`; it is not placed in `.env`, committed, uploaded to Vercel, or used on Mainnet. The web app never requests an end-user recovery phrase.
 
-## Confirmed Mainnet wallet payment
+## Mainnet transaction evidence
 
-An owner-approved 1,000 sat ordinary BCH Mainnet payment confirmed in block 978164 on 20 November 2026 with a 226 sat fee. [View the transaction](https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704). This is evidence for the ordinary WizardConnect send path; it is not proof of a Mainnet covenant spend.
+An owner-approved 1,000 sat ordinary BCH Mainnet payment confirmed in block 978164 on 20 November 2026 with a 226 sat fee. [View the ordinary payment](https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704).
+
+Separately, the app's wallet-authorized covenant lifecycle completed on Mainnet: 50,000 sats funded in block 978379, a 1,000 sat capped payment plus a 29,000 sat same-script continuation confirmed in block 978381, and 9,000 sats returned to the committed owner address through confirmed recovery in block 978470. See the [funding](https://blockexplorer.cash/mainnet/tx/a8666f786627ad94fc0573d990edbc59c7b100af226f6d334baa16dbc445ef68), [covenant payment](https://blockexplorer.cash/mainnet/tx/f53a93a7177b7935cc0f57751a3b82aaad3e173e5c88cbf1b51ba6a53f386638), [owner recovery](https://blockexplorer.cash/mainnet/tx/25d22cab6bc19f89bfd5a2a98560f0e43c2ac7e42553e57f1fe59adde0600c2c), and full [evidence record](contracts/evidence/mainnet-covenant.json).
+
+The tested covenant output was fully recovered, so that particular policy has no remaining covenant balance. A new demo cycle requires a new policy funding transaction.
 
 ## Project links
 
