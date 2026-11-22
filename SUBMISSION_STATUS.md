@@ -1,13 +1,14 @@
 # Pact submission and implementation status
 
-**Checked:** 21 November 2026. The official schedule says submissions and judging begin 22 November at 14:00 UTC (15:00 Lagos); check the logged-in DoraHacks form for its closing time.
+**Checked:** 22 November 2026. The official schedule says submissions and judging begin 22 November at 14:00 UTC (15:00 Lagos); check the logged-in DoraHacks form for its closing time.
 
 ## BLAZE Mainnet track
 
-Pact has the listed software demo components: a hosted app, source repository, WizardConnect, a confirmed BCH Mainnet payment, and an editable Widget Factory-based presentation.
+Pact has the listed software demo components: a hosted app, source repository, WizardConnect, a confirmed BCH Mainnet wallet payment, a confirmed live covenant funding-and-spend cycle, and an editable Widget Factory-based presentation.
 
 - The app is deployed at https://pact-bch.vercel.app.
-- A user-approved 1,000 sat Mainnet wallet payment confirmed in block 978164 with a 226 sat fee. [Inspect the transaction](https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704).
+- A user-approved 1,000 sat ordinary Mainnet wallet payment confirmed in block 978164 with a 226 sat fee. [Inspect it](https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704).
+- The live P2SH20 covenant was funded with 50,000 sats in block 978379, then spent in block 978381: 1,000 sats to the committed recipient, 29,000 sats back to the same covenant, and a 20,000 sat fee. [Funding transaction](https://blockexplorer.cash/mainnet/tx/a8666f786627ad94fc0573d990edbc59c7b100af226f6d334baa16dbc445ef68) · [Confirmed covenant spend](https://blockexplorer.cash/mainnet/tx/f53a93a7177b7935cc0f57751a3b82aaad3e173e5c88cbf1b51ba6a53f386638).
 - The presentation file is [Pact_Pitch_Deck.pptx](https://github.com/dr4ken-soul/Pact/raw/refs/heads/main/Pact_Pitch_Deck.pptx). It is an editable PowerPoint file, not a Google Slides copy.
 - The owner previously confirmed DoraHacks registration.
 
@@ -23,7 +24,7 @@ The contract enforces one covenant input, the committed recipient, the per-payme
 
 The recovery timestamp makes owner recovery available. BCH script does not read the current wall clock independently, so the payment branch remains script-valid after that timestamp. The app describes this as an owner-recovery time, not an on-chain agent-spend expiry. The owner wallet signs each payment; this integration does not give an agent autonomous signing authority.
 
-The app covenant builder and spend/recovery branches pass local BCH 2023 VM checks for valid payment and recovery, repeated value reductions, an exhausted balance, rejected extra inputs or change outputs, an independently funded output, an incorrect recipient, an above-cap payment, a changed fee, and recovery before the configured locktime. This is code-level validation. The prior confirmed Mainnet transaction is an ordinary wallet payment, not a covenant transaction. No covenant funding or spend transaction has been confirmed on Mainnet yet.
+The app covenant builder and spend/recovery branches pass local BCH 2023 VM checks for valid payment and recovery, repeated value reductions, an exhausted balance, rejected extra inputs or change outputs, an independently funded output, an incorrect recipient, an above-cap payment, a changed fee, and recovery before the configured locktime. The Mainnet funding and one payment continuation have also now been confirmed on-chain; this validates the live funding-to-spend path. Owner recovery is implemented and VM-validated but has not been exercised on Mainnet. It is separate branch coverage, not a missing component of the confirmed payment path. The recovery timestamp opens owner recovery; it does not disable the agent-payment branch.
 
 ## What is required to submit
 
@@ -54,8 +55,9 @@ The separate XO invitation has confirmed Chipnet evidence. Its public transactio
 
 Evidence:
 
-- Mainnet wallet payment: [Blockchair](https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704)
-- Mainnet evidence snapshot: `contracts/evidence/mainnet-payment.json`
+- Mainnet ordinary wallet payment: [Blockchair](https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704)
+- Mainnet covenant funding and spend: [`mainnet-covenant.json`](contracts/evidence/mainnet-covenant.json) · [Funding tx](https://blockexplorer.cash/mainnet/tx/a8666f786627ad94fc0573d990edbc59c7b100af226f6d334baa16dbc445ef68) · [Spend tx](https://blockexplorer.cash/mainnet/tx/f53a93a7177b7935cc0f57751a3b82aaad3e173e5c88cbf1b51ba6a53f386638)
+- Mainnet ordinary-payment evidence snapshot: `contracts/evidence/mainnet-payment.json`
 - XO Chipnet covenant payment: [Selene explorer](https://explorer.selene.cash/tx/da7d089a14e5bc9206535013ce20c7b5048d0303a1fe5b64e3a9769f1aec3aa6?network=chipnet)
 - Live app: https://pact-bch.vercel.app
 - GitHub: https://github.com/dr4ken-soul/Pact

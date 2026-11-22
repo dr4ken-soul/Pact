@@ -14,6 +14,13 @@ node contracts/scripts/verify-chipnet-transaction.mjs
 
 The verifier reads the live transaction, the funding transaction history, and both script histories from Chipnet Electrum. The mnemonic and engine database remain local; the public proof bundle contains only the signed invitation, raw transaction, transaction ID, and verified output values.
 
-## Separate BCH Mainnet wallet payment
+## Mainnet wallet and covenant evidence
 
-Pact's WizardConnect browser flow also completed a user-approved 1,000 sat ordinary BCH Mainnet payment. It confirmed in block 978164 with a 226 sat fee. The snapshot and explorer link are recorded in [`mainnet-payment.json`](mainnet-payment.json). This is wallet-flow evidence; it is not an XO invitation or proof that the browser's spending rule is enforced on-chain.
+Pact's WizardConnect browser flow completed a user-approved 1,000 sat ordinary BCH Mainnet payment, confirmed in block 978164 with a 226 sat fee. See [`mainnet-payment.json`](mainnet-payment.json). That transaction proves the ordinary wallet send path.
+
+The separate live P2SH20 covenant flow is now confirmed on Mainnet:
+
+- Funding tx [`a8666f…c445ef68`](https://blockexplorer.cash/mainnet/tx/a8666f786627ad94fc0573d990edbc59c7b100af226f6d334baa16dbc445ef68) confirmed in block 978379. It funded 50,000 sats to the covenant and paid a 226 sat miner fee.
+- Covenant payment [`f53a93…3f386638`](https://blockexplorer.cash/mainnet/tx/f53a93a7177b7935cc0f57751a3b82aaad3e173e5c88cbf1b51ba6a53f386638) confirmed in block 978381. It spent that covenant output, paid 1,000 sats to the committed recipient, returned 29,000 sats to the same covenant, and paid the fixed 20,000 sat covenant fee.
+
+The transaction details and confirmation counts at verification time are recorded in [`mainnet-covenant.json`](mainnet-covenant.json). This is evidence that one live funding-to-payment continuation succeeded under the covenant. The owner-recovery branch is implemented and locally BCH VM-validated, but has not been exercised on Mainnet; the recovery time opens that branch and does not disable the payment branch.

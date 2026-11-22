@@ -1,6 +1,6 @@
 # Pact App Blueprint
 
-**Status:** The current source includes a wallet-funded P2SH20 covenant flow and passes local BCH 2023 VM checks for payment, recovery, and invalid-spend cases. The confirmed 1,000 sat WizardConnect Mainnet transaction is an ordinary BCH wallet payment, not a covenant spend. The covenant recovery time is not a strict agent-spend expiry, and each funded output has its own balance rather than a shared lifetime cap. Pact is a hackathon prototype, not an audited release. DoraHacks submission and Telegram confirmation are owner account actions. EMBER2026 remains organizer-controlled and optional for Community Choice.
+**Status:** The current source includes a wallet-funded P2SH20 covenant flow and passes local BCH 2023 VM checks for payment, recovery, and invalid-spend cases. On Mainnet, a 50,000 sat covenant funding transaction confirmed in block 978379; a 1,000 sat covenant payment confirmed in block 978381 and returned 29,000 sats to the same covenant. The recovery time opens owner recovery but is not a strict agent-spend expiry, and each funded output has its own balance rather than a shared lifetime cap. Pact is a hackathon prototype, not an audited release. DoraHacks submission and Telegram confirmation are owner account actions. EMBER2026 remains organizer-controlled and optional for Community Choice.
 
 ## 1. Executive summary
 
@@ -120,7 +120,7 @@ Use a covenant/capability UTXO or XO template that commits to:
 - an owner recovery path after the configured locktime;
 - any state transition required to represent remaining allowance.
 
-The web app now creates and spends a wallet-authorized P2SH20 covenant. Its script enforces a fixed recipient, per-payment cap, one covenant input, no CashTokens, same-script continuation, exact 20,000 sat fee, dust floors, and an owner recovery branch. The browser requires the owner wallet to sign each spend and locally validates the signed transaction with the BCH 2023 VM. Local VM checks cover allowed payment/recovery and rejection cases. A confirmed Mainnet wallet payment remains separate from this covenant path; no Mainnet covenant spend is claimed as confirmed.
+The web app creates, funds, and spends a wallet-authorized P2SH20 covenant. Its script enforces a fixed recipient, per-payment cap, one covenant input, no CashTokens, same-script continuation, exact 20,000 sat fee, dust floors, and an owner recovery branch. The browser requires the owner wallet to sign each spend and locally validates the signed transaction with the BCH 2023 VM. Local VM checks cover allowed payment/recovery and rejection cases. A live Mainnet funding-and-payment cycle is confirmed: 50,000 sats funded in block 978379; the spend in block 978381 paid 1,000 sats, returned 29,000 sats to the same covenant, and paid the fixed fee. Mainnet transaction records are in `contracts/evidence/mainnet-covenant.json`.
 
 ### 6.3 Cumulative spending cap caveat
 
@@ -142,7 +142,7 @@ The product must make at least one useful Mainnet BCH transaction possible throu
 - never use the EMBER2026 CashTokens donation address as a BCH demo recipient unless it is separately verified for that purpose;
 - do not send funds automatically to an arbitrary prefilled destination.
 
-The app validates wallet-returned covenant transactions locally before broadcast. The confirmed Mainnet wallet payment remains separate from the covenant flow. Do not claim Mainnet covenant behavior until a covenant funding output and spend have actually been confirmed there.
+The app validates wallet-returned covenant transactions locally before broadcast. Mainnet covenant behavior now has a confirmed funding output and one confirmed spend; inspect the two transactions in `contracts/evidence/mainnet-covenant.json`. The owner-recovery branch has not been exercised on Mainnet.
 
 ## 7. Data model, conceptual only
 
@@ -227,7 +227,7 @@ The demo must not depend on typing a long prompt, creating an account, fake bala
 - [ ] Submit the project in DoraHacks with the live demo, source, and presentation before the deadline.
 - [ ] Confirm the project in the BCH BLAZE Telegram and keep proof.
 
-The ordinary Mainnet payment is confirmed. The app has an integrated wallet-funded covenant path with local BCH VM checks; no Mainnet covenant funding or spend is claimed as confirmed. This is separate from the two owner event-account actions and is not an EMBER address issue.
+The ordinary Mainnet payment and one Mainnet covenant funding-to-spend cycle are confirmed. The owner-recovery branch is implemented and locally validated but has not been used on Mainnet; that additional branch demonstration is not a blocker to the confirmed payment path. These software proofs are separate from the two owner event-account actions and are not an EMBER address issue.
 
 The standalone XO bounty has separate requirements. Its invitation evidence exists, but its template limits and developer feedback still need to be handled separately.
 - [ ] No logo mark is added unless the user requests one.

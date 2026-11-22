@@ -4,7 +4,7 @@ import { WizardConnectQRDialog, useWizardConnect } from '@wizardconnect/react';
 import { locateCovenantUtxo, prepareCovenantPayment, prepareCovenantRecovery, preparePolicyFunding, signAndBroadcastPayment, verifyBchProvider, type PaymentPlan, type PaymentReceipt, type WizardManager } from './adapters/bch';
 import { projectConfig, releaseConfigurationIssues } from './lib/config';
 import { createCovenantPolicy, type CovenantPolicy, type CovenantUtxo } from './lib/covenant';
-import { mainnetPaymentEvidence } from './lib/evidence';
+import { mainnetCovenantEvidence, mainnetPaymentEvidence } from './lib/evidence';
 import { checkCashAddress, evaluateIntent, formatSatoshis, parseBchAmount } from './lib/policy';
 
 const initialExpiry = (() => { const date=new Date(Date.now()+60*60*1000); const pad=(n:number)=>String(n).padStart(2,'0'); return date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate())+'T'+pad(date.getHours())+':'+pad(date.getMinutes()); })();
@@ -262,6 +262,11 @@ export default function App() {
           <div className="mainnet-proof-status"><span className="status-dot online"/>CONFIRMED MAINNET DEMO</div>
           <div className="mainnet-proof-copy"><strong>1,000 sats sent · block {mainnetPaymentEvidence.blockHeight}</strong><span>Confirmed {mainnetPaymentEvidence.confirmedAt} · 226 sat fee · ordinary WizardConnect payment</span><code>{mainnetPaymentEvidence.transactionId}</code></div>
           <a href={mainnetPaymentEvidence.explorerUrl} target="_blank" rel="noreferrer">View transaction <span aria-hidden="true">-&gt;</span></a>
+        </aside>
+        <aside className="mainnet-proof covenant-proof" aria-label="Confirmed Bitcoin Cash Mainnet covenant funding and spend">
+          <div className="mainnet-proof-status"><span className="status-dot online"/>CONFIRMED MAINNET COVENANT</div>
+          <div className="mainnet-proof-copy"><strong>50,000 sats funded · block {mainnetCovenantEvidence.fundingBlockHeight} → 1,000 sats spent · block {mainnetCovenantEvidence.spendBlockHeight}</strong><span>29,000 sats returned to the same covenant · 20,000 sat covenant fee</span><code>{mainnetCovenantEvidence.fundingTxid} · {mainnetCovenantEvidence.spendTxid}</code></div>
+          <div className="mainnet-proof-links"><a href={mainnetCovenantEvidence.fundingExplorerUrl} target="_blank" rel="noreferrer">Funding tx <span aria-hidden="true">-&gt;</span></a><a href={mainnetCovenantEvidence.spendExplorerUrl} target="_blank" rel="noreferrer">Covenant spend <span aria-hidden="true">-&gt;</span></a></div>
         </aside>
         {wallet.error&&<div className="inline-alert error-alert" role="alert">{wallet.error}</div>}
         {providerState==='offline'&&<div className="inline-alert error-alert" role="status"><span>{providerError||'Unable to reach a BCH provider.'}</span><button className="retry-button" type="button" onClick={()=>setProviderRetry(value=>value+1)}>Retry connection</button></div>}

@@ -88,7 +88,7 @@ The build agent must actively guide the user to obtain each release value. Do no
 
 ### Mainnet and covenant evidence
 
-Ordinary BCH Mainnet sends are enabled, and one owner-approved 1,000 sat send is confirmed. This proves the wallet-send path for that transaction. The covenant code has local BCH 2023 VM checks, but the ordinary Mainnet payment is not a Mainnet covenant transaction. Do not report a Mainnet covenant as network-verified until its funding output and at least one covenant spend have been broadcast by the owner and confirmed. Keep all Mainnet actions low-value, fully reviewed, and explicitly wallet-approved.
+Ordinary BCH Mainnet sending is enabled, and an owner-approved 1,000 sat wallet payment is confirmed. Separately, Pact's owner-approved P2SH20 covenant was funded with 50,000 sats in block 978379 and its first 1,000 sat payment confirmed in block 978381, returning 29,000 sats to the same covenant with the fixed 20,000 sat fee. This is live Mainnet funding-to-spend evidence. The owner-recovery branch is implemented and locally VM-validated but has not been exercised on Mainnet. Keep all Mainnet actions low-value, fully reviewed, and explicitly wallet-approved.
 
 ## 3. QA and accessibility checklist
 
@@ -140,7 +140,7 @@ Keep the explanation short and evidence-led:
 
 - The production build validates the XO template, runs BCH 2023 VM cases for the app covenant, type-checks TypeScript, and produces the Vite bundle.
 - Ordinary Mainnet wallet sending is enabled and has one confirmed owner-approved payment.
-- Covenant funding, wallet approval, spends, and owner recovery are implemented. VM validation is local; no Mainnet covenant funding or spend is claimed as confirmed.
+- Covenant funding and one covenant payment have been wallet-approved and confirmed on Mainnet (blocks 978379 and 978381). Owner recovery is implemented and passes local BCH 2023 VM checks, but has not been exercised on Mainnet.
 - The hosted app, public GitHub repository, and editable Widget Factory-based PPTX are available. No Google Slides copy exists.
 - The owner must submit the project in DoraHacks and confirm it in the BCH BLAZE Telegram from their authenticated accounts.
 - EMBER2026 is optional organizer-controlled Community Choice material until the team issues the token and confirms its details.

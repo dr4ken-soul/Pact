@@ -2,7 +2,7 @@
 
 **Status:** proposal and technical rationale, not an audited protocol specification.
 
-**Implementation update, 21 November 2026:** Pact now has an owner-funded P2SH20 covenant flow with a committed recipient, per-payment cap, same-script continuation, fixed fee, and owner-recovery branch. Local BCH 2023 VM checks cover valid and rejected spends. The recovery timestamp does not stop the payment branch after that time, and separate covenant outputs do not share a lifetime cap. The confirmed Mainnet transaction was an ordinary wallet send; no Mainnet covenant spend is claimed as confirmed.
+**Implementation update, 21 November 2026:** Pact has an owner-funded P2SH20 covenant flow with a committed recipient, per-payment cap, same-script continuation, fixed fee, and owner-recovery branch. Local BCH 2023 VM checks cover valid and rejected spends. A 50,000 sat Mainnet funding output and one Mainnet covenant payment are confirmed; the spend returned 29,000 sats to the same script and paid the fixed 20,000 sat fee. The recovery timestamp does not stop the payment branch after that time, and separate covenant outputs do not share a lifetime cap. The owner-recovery branch has not been exercised on Mainnet.
 
 ## 1. Problem
 

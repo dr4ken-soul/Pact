@@ -13,7 +13,7 @@ Pact is a Bitcoin Cash payment prototype for AI agents. An agent proposes a paym
 
 The covenant enforces one recipient, a per-payment ceiling, one covenant input, token-free outputs, a same-script continuation, and an exact 20,000 sat fee. Each output has its own finite balance; separate funding outputs do not share one lifetime cap. The recovery timestamp opens the owner's recovery branch but does not disable the payment branch. The owner wallet signs every payment.
 
-The confirmed 1,000 sat Mainnet transaction listed below was an ordinary wallet payment, not a covenant spend. The live covenant interface is implemented for Chipnet and Mainnet, but no Mainnet covenant transaction is claimed as confirmed.
+The Mainnet covenant has now completed a confirmed funding-and-payment cycle. Funding transaction [`a8666f78…c445ef68`](https://blockexplorer.cash/mainnet/tx/a8666f786627ad94fc0573d990edbc59c7b100af226f6d334baa16dbc445ef68) funded 50,000 sats to the covenant in block 978379. Covenant spend [`f53a93a7…3f386638`](https://blockexplorer.cash/mainnet/tx/f53a93a7177b7935cc0f57751a3b82aaad3e173e5c88cbf1b51ba6a53f386638) confirmed in block 978381, paid 1,000 sats to the committed recipient, returned 29,000 sats to the same covenant, and paid the fixed 20,000 sat fee. The owner-recovery branch is implemented and locally validated, but has not been exercised on Mainnet. Full transaction details are in [`contracts/evidence/mainnet-covenant.json`](contracts/evidence/mainnet-covenant.json).
 
 ## Run locally
 

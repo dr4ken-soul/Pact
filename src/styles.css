@@ -127,5 +127,7 @@ body::after { z-index:3; }
 .mainnet-proof-copy span { color:var(--text-muted); font-size:8px; }
 .mainnet-proof-copy code { overflow-wrap:anywhere; color:var(--text-muted); font:7px var(--font-mono); }
 .mainnet-proof>a { color:var(--accent); font-size:9px; text-decoration:none; white-space:nowrap; }
-.mainnet-proof>a:hover { text-decoration:underline; }
-@media (max-width:760px) { .mainnet-proof { grid-template-columns:1fr; gap:10px; } .mainnet-proof>a { justify-self:start; } }
+.mainnet-proof>a:hover,.mainnet-proof-links a:hover { text-decoration:underline; }
+.mainnet-proof-links { display:flex; flex-direction:column; align-items:flex-end; gap:6px; }
+.mainnet-proof-links a { color:var(--accent); font-size:9px; text-decoration:none; white-space:nowrap; }
+@media (max-width:760px) { .mainnet-proof { grid-template-columns:1fr; gap:10px; } .mainnet-proof>a,.mainnet-proof-links { justify-self:start; align-items:flex-start; } }

@@ -1,0 +1,36 @@
+{
+  "network": "Bitcoin Cash Mainnet",
+  "status": "confirmed",
+  "checkedAtUtc": "2026-11-22T11:03:53Z",
+  "policy": {
+    "address": "bitcoincash:pzjcc4gdagg8x8rzvtcj48yeyfenu3pshqxqdfue52",
+    "approvedRecipient": "bitcoincash:qrx6fm43qwuf5jpdlpcm6r2t8tdv6efutql99sh6l",
+    "perPaymentCapSats": 2000
+  },
+  "funding": {
+    "txid": "a8666f786627ad94fc0573d990edbc59c7b100af226f6d334baa16dbc445ef68",
+    "explorerUrl": "https://blockexplorer.cash/mainnet/tx/a8666f786627ad94fc0573d990edbc59c7b100af226f6d334baa16dbc445ef68",
+    "status": "confirmed",
+    "confirmationsAtCheck": 89,
+    "blockHeight": 978379,
+    "confirmedAtUtc": "2026-11-21T22:15:44Z",
+    "inputSats": 94334,
+    "covenantOutputSats": 50000,
+    "walletChangeSats": 44108,
+    "minerFeeSats": 226
+  },
+  "spend": {
+    "txid": "f53a93a7177b7935cc0f57751a3b82aaad3e173e5c88cbf1b51ba6a53f386638",
+    "explorerUrl": "https://blockexplorer.cash/mainnet/tx/f53a93a7177b7935cc0f57751a3b82aaad3e173e5c88cbf1b51ba6a53f386638",
+    "status": "confirmed",
+    "confirmationsAtCheck": 87,
+    "blockHeight": 978381,
+    "confirmedAtUtc": "2026-11-21T22:23:12Z",
+    "fundingOutpoint": "a8666f786627ad94fc0573d990edbc59c7b100af226f6d334baa16dbc445ef68:0",
+    "inputSats": 50000,
+    "recipientSats": 1000,
+    "covenantContinuationSats": 29000,
+    "minerFeeSats": 20000
+  },
+  "scopeNote": "One Mainnet covenant funding-to-payment continuation is confirmed. The owner-recovery branch is implemented and locally BCH VM-validated, but has not been exercised on Mainnet. The recovery timestamp opens owner recovery and does not disable the payment branch."
+}

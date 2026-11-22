@@ -1,6 +1,6 @@
 # Pact Product Overview
 
-**Status:** Working hackathon prototype. Pact includes a wallet-funded Bitcoin Cash P2SH20 covenant flow, explicit WizardConnect signing, and a local BCH 2023 VM check before broadcast. The owner-approved 1,000 sat Mainnet payment is confirmed, but it was an ordinary BCH wallet send. No Mainnet covenant funding or spend transaction is claimed as confirmed. The app is not audited or production-certified.
+**Status:** Working hackathon prototype. Pact includes a wallet-funded Bitcoin Cash P2SH20 covenant flow, explicit WizardConnect signing, and a local BCH 2023 VM check before broadcast. The ordinary owner-approved 1,000 sat Mainnet send is confirmed. Separately, Mainnet covenant funding (50,000 sats) and one covenant payment (1,000 sats, with a 29,000 sat continuation) are confirmed in blocks 978379 and 978381. The app is not audited or production-certified.
 
 ## What Pact does
 
@@ -16,7 +16,7 @@ The covenant spends down the value in its current output. Separately funded cove
 
 After the configured time, the owner can recover the remaining BCH to the committed owner address. BCH script cannot independently read current wall-clock time. The payment branch remains script-valid after that time, so this is an owner-recovery delay rather than an on-chain agent-spend expiry. Each payment also requires the owner wallet's signature.
 
-The covenant builder and spend/recovery paths have local BCH 2023 VM checks for valid payments, recovery, wrong recipient, over-cap amount, changed fee, and early recovery. A live covenant funding and spend still needs an owner wallet transaction; the confirmed Mainnet demo transaction is not evidence of a Mainnet covenant spend.
+The covenant builder and spend/recovery paths have local BCH 2023 VM checks for valid payments, recovery, wrong recipient, over-cap amount, changed fee, and early recovery. One funding-to-payment covenant path has now been confirmed on Mainnet; the separate owner-recovery branch is implemented and locally validated but has not been exercised on Mainnet. See `contracts/evidence/mainnet-covenant.json` for both transaction records.
 
 ## Who Pact is for
 
