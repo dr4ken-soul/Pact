@@ -1,7 +1,8 @@
 {
   "network": "Bitcoin Cash Mainnet",
   "status": "confirmed",
-  "checkedAtUtc": "2026-11-22T11:03:53Z",
+  "checkedAtUtc": "2026-11-22T11:38:50Z",
+  "chainTipAtCheck": 978470,
   "policy": {
     "address": "bitcoincash:pzjcc4gdagg8x8rzvtcj48yeyfenu3pshqxqdfue52",
     "approvedRecipient": "bitcoincash:qrx6fm43qwuf5jpdlpcm6r2t8tdv6efutql99sh6l",
@@ -11,7 +12,7 @@
     "txid": "a8666f786627ad94fc0573d990edbc59c7b100af226f6d334baa16dbc445ef68",
     "explorerUrl": "https://blockexplorer.cash/mainnet/tx/a8666f786627ad94fc0573d990edbc59c7b100af226f6d334baa16dbc445ef68",
     "status": "confirmed",
-    "confirmationsAtCheck": 89,
+    "confirmationsAtCheck": 92,
     "blockHeight": 978379,
     "confirmedAtUtc": "2026-11-21T22:15:44Z",
     "inputSats": 94334,
@@ -23,7 +24,7 @@
     "txid": "f53a93a7177b7935cc0f57751a3b82aaad3e173e5c88cbf1b51ba6a53f386638",
     "explorerUrl": "https://blockexplorer.cash/mainnet/tx/f53a93a7177b7935cc0f57751a3b82aaad3e173e5c88cbf1b51ba6a53f386638",
     "status": "confirmed",
-    "confirmationsAtCheck": 87,
+    "confirmationsAtCheck": 90,
     "blockHeight": 978381,
     "confirmedAtUtc": "2026-11-21T22:23:12Z",
     "fundingOutpoint": "a8666f786627ad94fc0573d990edbc59c7b100af226f6d334baa16dbc445ef68:0",
@@ -32,5 +33,18 @@
     "covenantContinuationSats": 29000,
     "minerFeeSats": 20000
   },
-  "scopeNote": "One Mainnet covenant funding-to-payment continuation is confirmed. The owner-recovery branch is implemented and locally BCH VM-validated, but has not been exercised on Mainnet. The recovery timestamp opens owner recovery and does not disable the payment branch."
+  "recovery": {
+    "txid": "25d22cab6bc19f89bfd5a2a98560f0e43c2ac7e42553e57f1fe59adde0600c2c",
+    "explorerUrl": "https://blockexplorer.cash/mainnet/tx/25d22cab6bc19f89bfd5a2a98560f0e43c2ac7e42553e57f1fe59adde0600c2c",
+    "status": "confirmed",
+    "confirmationsAtCheck": 1,
+    "blockHeight": 978470,
+    "confirmedAtUtc": "2026-11-22T11:37:57Z",
+    "inputOutpoint": "f53a93a7177b7935cc0f57751a3b82aaad3e173e5c88cbf1b51ba6a53f386638:1",
+    "inputSats": 29000,
+    "ownerAddress": "bitcoincash:qzum2gdrnegyg7fakwd3k4exmhgxe373hc0ns8qpf8",
+    "ownerRecoverySats": 9000,
+    "minerFeeSats": 20000
+  },
+  "scopeNote": "Mainnet covenant funding, an agent payment with same-script continuation, and owner recovery are all confirmed. The recovery branch returned the remaining value to the committed owner address after the configured locktime. The recovery timestamp opens owner recovery and does not disable the payment branch."
 }

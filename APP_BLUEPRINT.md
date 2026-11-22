@@ -142,7 +142,7 @@ The product must make at least one useful Mainnet BCH transaction possible throu
 - never use the EMBER2026 CashTokens donation address as a BCH demo recipient unless it is separately verified for that purpose;
 - do not send funds automatically to an arbitrary prefilled destination.
 
-The app validates wallet-returned covenant transactions locally before broadcast. Mainnet covenant behavior now has a confirmed funding output and one confirmed spend; inspect the two transactions in `contracts/evidence/mainnet-covenant.json`. The owner-recovery branch has not been exercised on Mainnet.
+The app validates wallet-returned covenant transactions locally before broadcast. Mainnet covenant behavior has confirmed funding, a payment with same-script continuation, and owner recovery; inspect the three transactions in `contracts/evidence/mainnet-covenant.json`.
 
 ## 7. Data model, conceptual only
 
@@ -227,7 +227,7 @@ The demo must not depend on typing a long prompt, creating an account, fake bala
 - [ ] Submit the project in DoraHacks with the live demo, source, and presentation before the deadline.
 - [ ] Confirm the project in the BCH BLAZE Telegram and keep proof.
 
-The ordinary Mainnet payment and one Mainnet covenant funding-to-spend cycle are confirmed. The owner-recovery branch is implemented and locally validated but has not been used on Mainnet; that additional branch demonstration is not a blocker to the confirmed payment path. These software proofs are separate from the two owner event-account actions and are not an EMBER address issue.
+The ordinary Mainnet payment and the Mainnet covenant funding, payment-continuation, and owner-recovery cycle are confirmed. These software proofs are separate from the two owner event-account actions and are not an EMBER address issue.
 
 The standalone XO bounty has separate requirements. Its invitation evidence exists, but its template limits and developer feedback still need to be handled separately.
 - [ ] No logo mark is added unless the user requests one.
@@ -245,7 +245,7 @@ Official current resources: https://dorahacks.io/hackathon/bchblaze2026/resource
 | Event engine API changes | Re-check latest official XO engine version and pin the tested release. |
 | Mainnet recipient is not prefilled | The owner enters a chosen BCH Mainnet recipient when creating the policy; the app validates its network and script type before funding. |
 | Judges cannot quickly understand the product | Keep the actual app and demo action above the fold; remove generic marketing content. |
-| Mainnet funds at risk | Use a low funding amount, explicit wallet review, and a locally BCH 2023 VM-validated owner-recovery branch; show the fixed fee and do not call recovery a spend expiry. |
+| Mainnet funds at risk | Use a low funding amount, explicit wallet review, and the owner-recovery branch demonstrated on Mainnet; show the fixed fee and do not call recovery a spend expiry. |
 
 ## 13. Reference links
 

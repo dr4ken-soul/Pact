@@ -1,6 +1,6 @@
 # Pact Frontend Specification
 
-**Status:** Design specification for the implemented prototype. The app has a wallet-funded P2SH20 covenant flow with local BCH 2023 VM checks. Mainnet funding and one covenant payment are confirmed; a separate ordinary WizardConnect payment is also confirmed. The covenant timestamp opens owner recovery, not a strict agent-spend expiry. See `SUBMISSION_STATUS.md` and `contracts/evidence/mainnet-covenant.json`.
+**Status:** Design specification for the implemented prototype. The app has a wallet-funded P2SH20 covenant flow with local BCH 2023 VM checks. Mainnet funding, a covenant payment with same-script continuation, owner recovery, and a separate ordinary WizardConnect payment are confirmed. The covenant timestamp opens owner recovery, not a strict agent-spend expiry. See `SUBMISSION_STATUS.md` and `contracts/evidence/mainnet-covenant.json`.
 
 ## 0. Product and design decisions
 

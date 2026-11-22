@@ -19,4 +19,9 @@ export const mainnetCovenantEvidence = {
   recipientSats: 1000,
   continuationSats: 29000,
   spendFeeSats: 20000,
+  recoveryTxid: '25d22cab6bc19f89bfd5a2a98560f0e43c2ac7e42553e57f1fe59adde0600c2c',
+  recoveryExplorerUrl: 'https://blockexplorer.cash/mainnet/tx/25d22cab6bc19f89bfd5a2a98560f0e43c2ac7e42553e57f1fe59adde0600c2c',
+  recoveryBlockHeight: 978470,
+  recoverySats: 9000,
+  recoveryFeeSats: 20000,
 } as const;

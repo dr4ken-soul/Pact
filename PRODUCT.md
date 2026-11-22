@@ -16,7 +16,7 @@ The covenant spends down the value in its current output. Separately funded cove
 
 After the configured time, the owner can recover the remaining BCH to the committed owner address. BCH script cannot independently read current wall-clock time. The payment branch remains script-valid after that time, so this is an owner-recovery delay rather than an on-chain agent-spend expiry. Each payment also requires the owner wallet's signature.
 
-The covenant builder and spend/recovery paths have local BCH 2023 VM checks for valid payments, recovery, wrong recipient, over-cap amount, changed fee, and early recovery. One funding-to-payment covenant path has now been confirmed on Mainnet; the separate owner-recovery branch is implemented and locally validated but has not been exercised on Mainnet. See `contracts/evidence/mainnet-covenant.json` for both transaction records.
+The covenant builder and spend/recovery paths have local BCH 2023 VM checks for valid payments, recovery, wrong recipient, over-cap amount, changed fee, and early recovery. Mainnet now has confirmed evidence for covenant funding, an agent payment with same-script continuation, and owner recovery. See `contracts/evidence/mainnet-covenant.json` for the three transaction records.
 
 ## Who Pact is for
 

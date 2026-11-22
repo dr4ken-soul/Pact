@@ -15,7 +15,7 @@ Pact provides a custom XO wallet template in `pact-policy.template.json` (versio
 
 The timestamp is an owner-recovery delay, not an agent-spend expiry: the payment branch remains script-valid after the timestamp. The covenant caps each payment and spends down the specific funded output; separately funded outputs do not share a cumulative allowance.
 
-The web app has a separate owner-authorized P2SH20 covenant flow in `src/lib/covenant.ts` and `src/adapters/bch.ts`. It creates and funds the policy through WizardConnect, finds the confirmed covenant output, prepares payment or recovery transactions, and checks the wallet-returned transaction with the BCH 2023 VM before broadcast. The app covenant flow does not use this XO test account or its agent key. Its live Mainnet funding and one covenant payment are confirmed; see [`evidence/mainnet-covenant.json`](evidence/mainnet-covenant.json). Owner recovery is implemented and locally VM-validated, but has not been exercised on Mainnet.
+The web app has a separate owner-authorized P2SH20 covenant flow in `src/lib/covenant.ts` and `src/adapters/bch.ts`. It creates and funds the policy through WizardConnect, finds the confirmed covenant output, prepares payment or recovery transactions, and checks the wallet-returned transaction with the BCH 2023 VM before broadcast. The app covenant flow does not use this XO test account or its agent key. Mainnet funding, a covenant payment, and owner recovery are confirmed; see [`evidence/mainnet-covenant.json`](evidence/mainnet-covenant.json). This is a separate app integration from the XO test account and invitation.
 
 ## Public Chipnet proof
 
