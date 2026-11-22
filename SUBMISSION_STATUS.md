@@ -6,7 +6,7 @@
 
 Pact has the listed software demo components: a hosted app, source repository, WizardConnect, a confirmed BCH Mainnet wallet payment, a confirmed live covenant funding, payment, continuation, and owner-recovery cycle, and an editable Widget Factory-based presentation.
 
-The tested Mainnet wallet and app-covenant flows are built and confirmed. “Everything works on Mainnet” should refer to those demonstrated flows, not every separate Pact track or every possible covenant condition: the XO Engine invitation is a separate Chipnet demo, and the covenant is a hackathon prototype without an independent audit, strict agent-spend expiry, or shared cumulative cap across separate funding outputs.
+The Mainnet-track app implementation is built and its advertised demo paths are confirmed: an ordinary WizardConnect BCH payment, plus the app covenant's funding, capped payment, same-script continuation, and owner recovery. There is no missing Mainnet implementation step for those paths. This does not mean the prototype has been independently audited or that the covenant enforces a strict agent-payment expiry or a shared lifetime cap across separately funded outputs; those are explicit design boundaries.
 
 - The app is deployed at https://pact-bch.vercel.app.
 - A user-approved 1,000 sat ordinary Mainnet wallet payment confirmed in block 978164 with a 226 sat fee. [Inspect it](https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704).
@@ -45,7 +45,9 @@ BCH BLAZE told the owner that EMBER2026 has not yet been minted or distributed, 
 
 ## Separate XO bounty
 
-The separate XO invitation has confirmed Chipnet evidence. Its public transaction is [da7d089a…](https://explorer.selene.cash/tx/da7d089a14e5bc9206535013ce20c7b5048d0303a1fe5b64e3a9769f1aec3aa6?network=chipnet). The developer-feedback file is a review draft. The owner should personally verify and rewrite any first-person feedback before submitting it to a bounty that requires personally written comments.
+The XO Engine template and invitation are a separate integration from the app's Mainnet P2SH20 covenant. The invitation has confirmed Chipnet evidence: [da7d089a…](https://explorer.selene.cash/tx/da7d089a14e5bc9206535013ce20c7b5048d0303a1fe5b64e3a9769f1aec3aa6?network=chipnet). A Mainnet XO deployment is not required by BCH BLAZE's Build with XO bounty: its rules accept an executed invitation on Chipnet or Mainnet and specifically recommend Chipnet testing.
+
+The current XO evidence demonstrates a payment and covenant continuation. Its rules are per-payment, each separately funded output has its own balance, and the recovery timestamp does not disable the agent-payment branch. These are design limits to disclose when describing the XO template; if the bounty's requested contract semantics require a lifetime shared cap or strict agent-payment expiry, this template does not implement those stronger properties. Do not describe the separate XO bounty package as fully verified against requirements until the owner checks whether another continuation spend is applicable to its follow-up criterion and personally writes the required developer feedback. These XO-specific items do not make the Mainnet-track app implementation incomplete.
 
 ## Configuration and evidence
 

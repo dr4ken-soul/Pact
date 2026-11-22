@@ -1,6 +1,6 @@
 # Pact XO Chipnet policy
 
-Pact provides a custom XO wallet template in `pact-policy.template.json` (version 0.1.7, template ID `a1248b8f4bb968c21072e930324a5e69b73cc642444d7807abf2456cccbd8321`). The template compiles with the pinned XO Engine and has a broadcast invitation on BCH Chipnet. Its latest Chipnet invitation is confirmed at block 337884. See the public evidence in evidence/README.md.
+Pact provides a custom XO wallet template in `pact-policy.template.json` (version 0.1.7, template ID `a1248b8f4bb968c21072e930324a5e69b73cc642444d7807abf2456cccbd8321`). The template compiles with the pinned XO Engine and has a broadcast invitation on BCH Chipnet, confirmed at block 337884. This XO invitation is a separate bounty demo; it has not been deployed on Mainnet. BCH BLAZE's Build with XO bounty accepts Chipnet or Mainnet and recommends building and testing on Chipnet, so a Mainnet XO invitation is not required for that network criterion. See the public evidence in evidence/README.md.
 
 ## What the covenant enforces
 
@@ -23,7 +23,7 @@ The latest confirmed policy transaction spends a 100,000 sat policy output, send
 
 The invitation runner checks the transaction structure and exact outputs, then verifies the signed transaction with the BCH 2023 virtual machine before broadcasting. The earlier version 0.1.6, which used a 1,000 sat fee and remains pending, is preserved under `evidence/archive/v0.1.6-pending/`.
 
-Chipnet funding and transaction records are public. The generated test-account mnemonic and local engine database remain excluded from Git and stored only in ignored local state. XO deployment and invitation execution remain Chipnet-only. The separate web app has a WizardConnect BCH Mainnet send path enabled by VITE_ENABLE_MAINNET_SENDS and uses the owner wallet; it does not use this test account.
+Chipnet funding and transaction records are public. The generated test-account mnemonic and local engine database remain excluded from Git and stored only in ignored local state. The current XO invitation was executed on Chipnet; this describes the tested deployment, not a Chipnet-only restriction in the template. The separate web app has a WizardConnect BCH Mainnet send path enabled by VITE_ENABLE_MAINNET_SENDS and uses the owner wallet; it does not use this test account.
 
 ## Reproduce on Windows
 

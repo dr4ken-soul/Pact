@@ -232,7 +232,7 @@ The ordinary Mainnet payment and the Mainnet covenant funding, payment-continuat
 
 The covenant output used for this proof has since been fully recovered. No balance remains in that specific policy output; a fresh live demo requires funding a new covenant.
 
-The standalone XO bounty has separate requirements. Its invitation evidence exists, but its template limits and developer feedback still need to be handled separately.
+The standalone XO bounty is separate from the Mainnet-track app. Its invitation transaction is confirmed on Chipnet; BCH BLAZE's Build with XO bounty accepts Chipnet or Mainnet and recommends Chipnet, so a Mainnet XO deployment is not a missing Mainnet-track feature. The XO template's per-payment cap, independent balances for separate funding outputs, and recovery-time behavior must be described accurately. The bounty package should only be called complete after checking whether another continuation spend is applicable to its follow-up criterion and the owner has personally written the requested developer feedback. These package requirements do not leave the demonstrated Mainnet app paths unbuilt.
 - [ ] No logo mark is added unless the user requests one.
 
 Official current resources: https://dorahacks.io/hackathon/bchblaze2026/resources. The track requirements were cross-checked against the listing mirror at https://www.competehub.dev/en/competitions/dorahacksbchblaze2026 because the DoraHacks page did not load in the read-only viewer.

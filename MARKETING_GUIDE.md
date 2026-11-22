@@ -17,6 +17,26 @@ Pact lets an agent propose a payment to one approved BCH recipient under a per-p
 
 Pact keeps wallet keys with the owner and makes the transaction and its on-chain rules visible. Its recovery time opens the owner's recovery path; it is not an automatic cutoff for agent payments.
 
+## Copy-ready ordinary Mainnet payment proof
+
+Pact's WizardConnect flow completed an owner-approved 1,000 sat BCH Mainnet payment. It confirmed in block 978164 with a 226 sat network fee.
+
+This demonstrates the ordinary wallet-send path. The app covenant has separate funding, payment, continuation, and recovery transactions.
+
+Transaction: https://blockchair.com/bitcoin-cash/transaction/3016046b74c212788c08d99b7637458edfaa2fcc1ab3b71682aa542182c19704
+
+## Copy-ready Mainnet proof
+
+Pact has completed a confirmed BCH Mainnet covenant cycle. The owner funded a policy with 50,000 sats, approved a capped 1,000 sat payment to its committed recipient, and the covenant returned 29,000 sats to the same policy output. The owner then used the recovery branch to return the remaining 9,000 sats. All three transactions confirmed on Mainnet.
+
+This demonstrates the exercised funding, payment, continuation, and owner-recovery paths. Pact remains a hackathon prototype: the recovery time does not disable agent payments, and separately funded policy outputs have separate balances.
+
+Funding: https://blockexplorer.cash/mainnet/tx/a8666f786627ad94fc0573d990edbc59c7b100af226f6d334baa16dbc445ef68
+
+Payment and continuation: https://blockexplorer.cash/mainnet/tx/f53a93a7177b7935cc0f57751a3b82aaad3e173e5c88cbf1b51ba6a53f386638
+
+Owner recovery: https://blockexplorer.cash/mainnet/tx/25d22cab6bc19f89bfd5a2a98560f0e43c2ac7e42553e57f1fe59adde0600c2c
+
 ## Core narrative
 
 AI agents need a narrower way to request payments than unrestricted wallet access. Pact combines an owner-authorized BCH covenant with a wallet review step, and shows which payment conditions are enforced by the contract.
